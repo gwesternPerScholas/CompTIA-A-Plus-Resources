@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CompTIA A+ Command Line Challenge</title>
+<style>
+  :root {
+    --ps-navy: #002855;
+    --ps-gold: #f7dd63;
+    --ps-blue: #0062a3;
+    --ps-light: #f0f4f8;
+    --win-color: #0078d4;
+    --mac-color: #555555;
+    --linux-color: #e95420;
+    --correct: #2e7d32;
+    --wrong: #c62828;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--ps-navy);
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  header {
+    text-align: center;
+    padding: 20px 10px 10px;
+  }
+  header h1 {
+    font-size: 1.8rem;
+    color: var(--ps-gold);
+    letter-spacing: 1px;
+  }
+  header p {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-top: 6px;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--ps-gold);
+    color: var(--ps-navy);
+    font-weight: bold;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin: 4px 3px;
+  }
+
+  /* ── MODE SELECTOR ── */
+  .mode-bar {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 18px 0 10px;
+  }
+  .mode-btn {
+    padding: 10px 22px;
+    border: 2px solid var(--ps-gold);
+    background: transparent;
+    color: var(--ps-gold);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  .mode-btn:hover, .mode-btn.active {
+    background: var(--ps-gold);
+    color: var(--ps-navy);
+  }
+
+  /* ── OS FILTER ── */
+  .filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .filter-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    opacity: 0.55;
+  }
+  .filter-btn.active { opacity: 1; border-color: #fff; }
+  .filter-btn.win  { background: var(--win-color);   color: #fff; }
+  .filter-btn.mac  { background: var(--mac-color);   color: #fff; }
+  .filter-btn.linux{ background: var(--linux-color); color: #fff; }
+  .filter-btn.all  { background: #444; color: #fff; }
+
+  /* ── SCOREBOARD ── */
+  .scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+  .scoreboard span { color: var(--ps-gold); font-weight: bold; font-size: 1.1rem; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    max-width: 700px;
+    margin: 0 auto 16px;
+    background: #1a3a5c;
+    border-radius: 8px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--ps-gold);
+    transition: width 0.4s ease;
+    border-radius: 8px;
+  }
+
+  /* ── CARD ── */
+  .card-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    perspective: 1200px;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    min-height: 260px;
+    transform-style: preserve-3d;
+    transition: transform 0.55s ease;
+    cursor: pointer;
+    border-radius: 16px;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute;
+    width: 100%;
+    min-height: 260px;
+    border-radius: 16px;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 28px;
+    text-align: center;
+  }
+  .card-front {
+    background: #0d2a4a;
+    border: 2px solid var(--ps-gold);
+  }
+  .card-back {
+    background: #0a3d1f;
+    border: 2px solid #4caf50;
+    transform: rotateY(180deg);
+  }
+  .os-tag {
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 3px 12px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .os-tag.win   { background: var(--win-color); }
+  .os-tag.mac   { background: var(--mac-color); }
+  .os-tag.linux { background: var(--linux-color); }
+  .os-tag.all   { background: #555; }
+  .cmd-text {
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--ps-gold);
+    margin-bottom: 10px;
+    word-break: break-all;
+  }
+  .card-hint {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-top: 10px;
+  }
+  .answer-title {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .answer-text {
+    font-size: 1.15rem;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .example-text {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #a5d6a7;
+    background: rgba(0,0,0,0.3);
+    padding: 6px 14px;
+    border-radius: 6px;
+    margin-top: 6px;
+    word-break: break-all;
+  }
+  .exam-obj {
+    font-size: 0.75rem;
+    color: #80cbc4;
+    margin-top: 10px;
+  }
+
+  /* ── FLASHCARD CONTROLS ── */
+  .fc-controls {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .fc-btn {
+    padding: 10px 26px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: opacity 0.2s;
+  }
+  .fc-btn:hover { opacity: 0.85; }
+  .btn-prev { background: #444; color: #fff; }
+  .btn-next { background: var(--ps-blue); color: #fff; }
+  .btn-shuffle { background: #6a1b9a; color: #fff; }
+  .btn-reset  { background: #37474f; color: #fff; }
+
+  /* ── QUIZ MODE ── */
+  #quiz-section { max-width: 700px; margin: 0 auto; }
+  .quiz-question {
+    background: #0d2a4a;
+    border: 2px solid var(--ps-gold);
+    border-radius: 14px;
+    padding: 26px 24px;
+    margin-bottom: 16px;
+  }
+  .quiz-q-text {
+    font-size: 1.05rem;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .quiz-q-text .cmd-inline {
+    font-family: 'Courier New', monospace;
+    background: rgba(247,221,99,0.15);
+    color: var(--ps-gold);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media(max-width:500px){ .options-grid { grid-template-columns: 1fr; } }
+  .opt-btn {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 2px solid #1a3a5c;
+    background: #1a3a5c;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-align: left;
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--ps-gold); background: #1e4a70; }
+  .opt-btn.correct { background: var(--correct); border-color: #66bb6a; }
+  .opt-btn.wrong   { background: var(--wrong);   border-color: #ef9a9a; }
+  .opt-btn:disabled { cursor: default; }
+  .feedback-box {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: rgba(46,125,50,0.3); border: 1px solid #66bb6a; }
+  .feedback-box.wrong-fb   { background: rgba(198,40,40,0.3);  border: 1px solid #ef9a9a; }
+  .quiz-next-btn {
+    display: none;
+    margin: 14px auto 0;
+    padding: 10px 30px;
+    background: var(--ps-blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95rem;
+  }
+  .quiz-next-btn.show { display: block; }
+
+  /* ── MATCH MODE ── */
+  #match-section { max-width: 800px; margin: 0 auto; }
+  .match-instructions {
+    text-align: center;
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+  .match-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media(max-width:550px){ .match-grid { grid-template-columns: 1fr; } }
+  .match-col { display: flex; flex-direction: column; gap: 10px; }
+  .match-col h3 {
+    text-align: center;
+    color: var(--ps-gold);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .match-item {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 2px solid #1a3a5c;
+    background: #1a3a5c;
+    cursor: pointer;
+    font-size: 0.88rem;
+    text-align: center;
+    transition: all 0.2s;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.3;
+  }
+  .match-item.cmd-item {
+    font-family: 'Courier New', monospace;
+    color: var(--ps-gold);
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  .match-item:hover:not(.matched):not(.wrong-match) { border-color: var(--ps-gold); }
+  .match-item.selected { border-color: var(--ps-gold); background: #1e4a70; }
+  .match-item.matched  { border-color: #66bb6a; background: rgba(46,125,50,0.35); cursor: default; opacity: 0.7; }
+  .match-item.wrong-match { border-color: #ef9a9a; background: rgba(198,40,40,0.3); }
+  .match-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* ── RESULTS ── */
+  .results-panel {
+    max-width: 600px;
+    margin: 20px auto;
+    background: #0d2a4a;
+    border: 2px solid var(--ps-gold);
+    border-radius: 16px;
+    padding: 30px 24px;
+    text-align: center;
+    display: none;
+  }
+  .results-panel.show { display: block; }
+  .results-score {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--ps-gold);
+  }
+  .results-label { color: #ccc; margin-bottom: 16px; }
+  .results-msg { font-size: 1rem; color: #fff; margin-bottom: 20px; line-height: 1.5; }
+  .results-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+  }
+  .rb-item { text-align: center; }
+  .rb-num { font-size: 1.8rem; font-weight: bold; }
+  .rb-num.green { color: #66bb6a; }
+  .rb-num.red   { color: #ef9a9a; }
+  .rb-lbl { font-size: 0.8rem; color: #aaa; }
+
+  /* ── REFERENCE TABLE ── */
+  #ref-section { max-width: 900px; margin: 0 auto; }
+  .ref-filter {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .ref-filter-btn {
+    padding: 6px 16px;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: bold;
+    opacity: 0.6;
+    transition: all 0.2s;
+  }
+  .ref-filter-btn.active { opacity: 1; border-color: #fff; }
+  .ref-filter-btn.win   { background: var(--win-color);   color: #fff; }
+  .ref-filter-btn.mac   { background: var(--mac-color);   color: #fff; }
+  .ref-filter-btn.linux { background: var(--linux-color); color: #fff; }
+  .ref-filter-btn.all   { background: #444; color: #fff; }
+  .ref-search {
+    display: block;
+    margin: 0 auto 14px;
+    padding: 9px 16px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 8px;
+    border: 2px solid #1a3a5c;
+    background: #0d2a4a;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  .ref-search::placeholder { color: #666; }
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .ref-table th {
+    background: var(--ps-navy);
+    color: var(--ps-gold);
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--ps-gold);
+    position: sticky;
+    top: 0;
+  }
+  .ref-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #1a3a5c;
+    vertical-align: top;
+  }
+  .ref-table tr:hover td { background: #0d2a4a; }
+  .ref-table .cmd-cell {
+    font-family: 'Courier New', monospace;
+    color: var(--ps-gold);
+    font-weight: bold;
+    white-space: nowrap;
+  }
+  .os-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: bold;
+    color: #fff;
+    margin: 1px;
+  }
+  .os-pill.win   { background: var(--win-color); }
+  .os-pill.mac   { background: var(--mac-color); }
+  .os-pill.linux { background: var(--linux-color); }
+  .ref-table-wrap {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid #1a3a5c;
+  }
+
+  /* ── HIDDEN ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  footer {
+    text-align: center;
+    color: #555;
+    font-size: 0.75rem;
+    margin-top: 30px;
+    padding-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⌨️ CompTIA A+ Command Line Challenge</h1>
+  <p>Master the CLI commands tested on the A+ exams</p>
+  <div style="margin-top:10px;">
+    <span class="badge">220-1201 Core 1</span>
+    <span class="badge">220-1202 Core 2</span>
+    <span class="badge">Windows · macOS · Linux</span>
+  </div>
+</header>
+
+<!-- MODE SELECTOR -->
+<div class="mode-bar">
+  <button class="mode-btn active" onclick="setMode('flashcard')">🃏 Flashcards</button>
+  <button class="mode-btn" onclick="setMode('quiz')">🧠 Quiz</button>
+  <button class="mode-btn" onclick="setMode('match')">🔗 Match</button>
+  <button class="mode-btn" onclick="setMode('ref')">📋 Reference</button>
+</div>
+
+<!-- OS FILTER (flashcard + quiz) -->
+<div class="filter-bar" id="os-filter">
+  <button class="filter-btn all active" onclick="setOS('all')">All OS</button>
+  <button class="filter-btn win"  onclick="setOS('win')">🪟 Windows</button>
+  <button class="filter-btn mac"  onclick="setOS('mac')">🍎 macOS</button>
+  <button class="filter-btn linux" onclick="setOS('linux')">🐧 Linux</button>
+</div>
+
+<!-- SCOREBOARD -->
+<div class="scoreboard" id="scoreboard">
+  Card <span id="card-num">1</span> of <span id="card-total">1</span>
+  &nbsp;|&nbsp; ✅ <span id="score-correct">0</span>
+  &nbsp; ❌ <span id="score-wrong">0</span>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+<!-- ══════════════ FLASHCARD SECTION ══════════════ -->
+<div id="flashcard-section" class="section active">
+  <div class="card-wrap">
+    <div class="card" id="main-card" onclick="flipCard()">
+      <div class="card-face card-front" id="card-front">
+        <div class="os-tag" id="fc-os-tag">Windows</div>
+        <div class="cmd-text" id="fc-cmd">ipconfig</div>
+        <div style="color:#aaa;font-size:0.9rem;margin-top:8px;" id="fc-category">Networking</div>
+        <div class="card-hint">Click to reveal definition →</div>
+      </div>
+      <div class="card-face card-back" id="card-back">
+        <div class="answer-title">What it does</div>
+        <div class="answer-text" id="fc-answer">Displays IP address, subnet mask, and default gateway for all adapters</div>
+        <div class="example-text" id="fc-example">ipconfig /all</div>
+        <div class="exam-obj" id="fc-obj">Exam Obj: 1.5 (Core 2) · Networking</div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-controls">
+    <button class="fc-btn btn-prev" onclick="prevCard()">◀ Prev</button>
+    <button class="fc-btn btn-shuffle" onclick="shuffleCards()">🔀 Shuffle</button>
+    <button class="fc-btn btn-next" onclick="nextCard()">Next ▶</button>
+    <button class="fc-btn btn-reset" onclick="resetScores()">↺ Reset</button>
+  </div>
+  <div style="display:flex;justify-content:center;gap:14px;margin-top:14px;" id="know-btns">
+    <button class="fc-btn" style="background:#c62828;" onclick="markCard(false)">❌ Still Learning</button>
+    <button class="fc-btn" style="background:#2e7d32;" onclick="markCard(true)">✅ Got It</button>
+  </div>
+</div>
+
+<!-- ══════════════ QUIZ SECTION ══════════════ -->
+<div id="quiz-section" class="section">
+  <div id="quiz-container"></div>
+  <div class="results-panel" id="quiz-results">
+    <div class="results-score" id="q-score-pct">0%</div>
+    <div class="results-label">Quiz Complete</div>
+    <div class="results-breakdown">
+      <div class="rb-item"><div class="rb-num green" id="q-correct-num">0</div><div class="rb-lbl">Correct</div></div>
+      <div class="rb-item"><div class="rb-num red"   id="q-wrong-num">0</div><div class="rb-lbl">Wrong</div></div>
+    </div>
+    <div class="results-msg" id="q-msg"></div>
+    <button class="fc-btn btn-next" onclick="startQuiz()" style="margin:0 auto;display:block;">🔄 Retake Quiz</button>
+  </div>
+</div>
+
+<!-- ══════════════ MATCH SECTION ══════════════ -->
+<div id="match-section" class="section">
+  <p class="match-instructions">Click a command, then click its matching definition. Match all pairs to win!</p>
+  <div class="scoreboard" id="match-score" style="margin-bottom:10px;">
+    Matched: <span id="match-count">0</span> / <span id="match-total">8</span>
+  </div>
+  <div class="match-grid">
+    <div class="match-col"><h3>Commands</h3><div id="match-cmds"></div></div>
+    <div class="match-col"><h3>Definitions</h3><div id="match-defs"></div></div>
+  </div>
+  <div class="match-controls">
+    <button class="fc-btn btn-shuffle" onclick="initMatch()">🔀 New Round</button>
+  </div>
+  <div class="results-panel" id="match-results">
+    <div class="results-score">🎉</div>
+    <div class="results-label" style="font-size:1.3rem;color:var(--ps-gold);font-weight:bold;">All Matched!</div>
+    <div class="results-msg" id="match-msg"></div>
+    <button class="fc-btn btn-shuffle" onclick="initMatch()" style="margin:0 auto;display:block;">🔀 New Round</button>
+  </div>
+</div>
+
+<!-- ══════════════ REFERENCE SECTION ══════════════ -->
+<div id="ref-section" class="section">
+  <div class="ref-filter">
+    <button class="ref-filter-btn all active" onclick="refFilter('all')">All OS</button>
+    <button class="ref-filter-btn win"   onclick="refFilter('win')">🪟 Windows</button>
+    <button class="ref-filter-btn mac"   onclick="refFilter('mac')">🍎 macOS</button>
+    <button class="ref-filter-btn linux" onclick="refFilter('linux')">🐧 Linux</button>
+  </div>
+  <input class="ref-search" type="text" placeholder="🔍 Search commands or descriptions..." oninput="refSearch(this.value)" id="ref-search-input"/>
+  <div class="ref-table-wrap">
+    <table class="ref-table" id="ref-table">
+      <thead>
+        <tr>
+          <th>Command</th>
+          <th>OS</th>
+          <th>What It Does</th>
+          <th>Example</th>
+          <th>Exam Obj.</th>
+        </tr>
+      </thead>
+      <tbody id="ref-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>CompTIA A+ 220-1201 &amp; 220-1202 | Per Scholas IT Support | Built with ❤️ for learners</footer>
+
+<script>
+// ══════════════════════════════════════════════
+//  COMMAND DATABASE
+// ══════════════════════════════════════════════
+const COMMANDS = [
+  // ── WINDOWS ──
+  {os:'win', cmd:'ipconfig', category:'Networking', answer:'Displays IP address, subnet mask, and default gateway for all network adapters', example:'ipconfig /all', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'ipconfig /release', category:'Networking', answer:'Releases the current DHCP-assigned IP address', example:'ipconfig /release', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'ipconfig /renew', category:'Networking', answer:'Requests a new IP address from the DHCP server', example:'ipconfig /renew', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'ipconfig /flushdns', category:'Networking', answer:'Clears the DNS resolver cache — useful when DNS changes aren\'t resolving', example:'ipconfig /flushdns', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'ping', category:'Networking', answer:'Tests connectivity to a host by sending ICMP echo requests', example:'ping 8.8.8.8', obj:'Core 1 Obj 2.7 / Core 2 Obj 1.5'},
+  {os:'win', cmd:'tracert', category:'Networking', answer:'Traces the route packets take to a destination, showing each hop', example:'tracert google.com', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'nslookup', category:'Networking', answer:'Queries DNS servers to resolve hostnames to IP addresses (and vice versa)', example:'nslookup google.com', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'netstat', category:'Networking', answer:'Displays active network connections, listening ports, and protocol stats', example:'netstat -an', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'net use', category:'Networking', answer:'Maps a network drive or connects to a shared resource', example:'net use Z: \\\\server\\share', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'net user', category:'User Mgmt', answer:'Creates, modifies, or displays local user account information', example:'net user jsmith /add', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'net localgroup', category:'User Mgmt', answer:'Manages local groups — add/remove users from groups like Administrators', example:'net localgroup Administrators jsmith /add', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'sfc /scannow', category:'System', answer:'Scans and repairs corrupted Windows system files', example:'sfc /scannow', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'DISM', category:'System', answer:'Deployment Image Servicing and Management — repairs Windows image and component store', example:'DISM /Online /Cleanup-Image /RestoreHealth', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'chkdsk', category:'Disk', answer:'Checks a disk for errors and optionally repairs file system issues', example:'chkdsk C: /f /r', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'diskpart', category:'Disk', answer:'Command-line disk partitioning utility — create, delete, format partitions', example:'diskpart → list disk → select disk 0', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'format', category:'Disk', answer:'Formats a disk partition with a specified file system (NTFS, FAT32, exFAT)', example:'format D: /fs:NTFS', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'gpupdate', category:'Policy', answer:'Forces an immediate refresh of Group Policy settings', example:'gpupdate /force', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'gpresult', category:'Policy', answer:'Displays the Resultant Set of Policy (RSoP) — what GPOs are applied to a user/computer', example:'gpresult /r', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'tasklist', category:'Process', answer:'Displays a list of all currently running processes', example:'tasklist | findstr chrome', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'taskkill', category:'Process', answer:'Terminates a running process by name or PID', example:'taskkill /IM notepad.exe /F', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'shutdown', category:'System', answer:'Shuts down, restarts, or logs off the computer', example:'shutdown /r /t 0', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'robocopy', category:'File Mgmt', answer:'Robust file copy utility — supports mirroring, retries, and large file transfers', example:'robocopy C:\\src D:\\dst /MIR', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'xcopy', category:'File Mgmt', answer:'Copies files and directory trees; older alternative to robocopy', example:'xcopy C:\\src D:\\dst /s /e', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'dir', category:'File Mgmt', answer:'Lists files and directories in the current or specified directory', example:'dir C:\\Windows /a', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'cd', category:'Navigation', answer:'Changes the current working directory', example:'cd C:\\Users\\Public', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'md / mkdir', category:'File Mgmt', answer:'Creates a new directory', example:'mkdir C:\\NewFolder', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'del', category:'File Mgmt', answer:'Deletes one or more files', example:'del C:\\temp\\*.tmp', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'copy', category:'File Mgmt', answer:'Copies one or more files to another location', example:'copy file.txt D:\\backup\\', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'move', category:'File Mgmt', answer:'Moves files or renames files and directories', example:'move file.txt D:\\archive\\', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'attrib', category:'File Mgmt', answer:'Displays or changes file attributes (hidden, read-only, system, archive)', example:'attrib +h secretfile.txt', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'cipher', category:'Security', answer:'Encrypts or decrypts files/folders using EFS (Encrypting File System)', example:'cipher /e /s:C:\\SecureFolder', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'regedit', category:'System', answer:'Opens the Windows Registry Editor — view and modify registry keys', example:'regedit', obj:'Core 2 Obj 1.4'},
+  {os:'win', cmd:'msconfig', category:'System', answer:'System Configuration utility — manage startup items, boot options, services', example:'msconfig', obj:'Core 2 Obj 1.4'},
+  {os:'win', cmd:'mmc', category:'System', answer:'Microsoft Management Console — hosts snap-ins like Device Manager, Disk Mgmt', example:'mmc', obj:'Core 2 Obj 1.4'},
+  {os:'win', cmd:'eventvwr', category:'System', answer:'Opens Event Viewer — review system, application, and security logs', example:'eventvwr', obj:'Core 2 Obj 1.4'},
+  {os:'win', cmd:'winver', category:'System', answer:'Displays the current Windows version and build number', example:'winver', obj:'Core 2 Obj 1.3'},
+  {os:'win', cmd:'systeminfo', category:'System', answer:'Displays detailed system configuration including OS version, RAM, hotfixes', example:'systeminfo', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'pathping', category:'Networking', answer:'Combines ping and tracert — shows packet loss at each hop over time', example:'pathping google.com', obj:'Core 2 Obj 1.5'},
+  {os:'win', cmd:'arp', category:'Networking', answer:'Displays and modifies the ARP cache (IP-to-MAC address mappings)', example:'arp -a', obj:'Core 2 Obj 1.5'},
+
+  // ── macOS ──
+  {os:'mac', cmd:'ifconfig', category:'Networking', answer:'Displays and configures network interface parameters (macOS equivalent of ipconfig)', example:'ifconfig en0', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'ping', category:'Networking', answer:'Tests network connectivity to a host using ICMP echo requests', example:'ping -c 4 google.com', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'traceroute', category:'Networking', answer:'Traces the network path to a destination host, showing each hop', example:'traceroute google.com', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'nslookup', category:'Networking', answer:'Queries DNS to resolve hostnames to IP addresses', example:'nslookup apple.com', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'netstat', category:'Networking', answer:'Displays active connections, routing tables, and network statistics', example:'netstat -an', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'ls', category:'Navigation', answer:'Lists files and directories in the current directory', example:'ls -la', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'cd', category:'Navigation', answer:'Changes the current working directory', example:'cd /Users/student/Desktop', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'pwd', category:'Navigation', answer:'Prints the current working directory (full path)', example:'pwd', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'mkdir', category:'File Mgmt', answer:'Creates a new directory', example:'mkdir ~/Projects/NewApp', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'rm', category:'File Mgmt', answer:'Removes files or directories (use -r for recursive, -f to force)', example:'rm -rf /tmp/oldfiles/', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'cp', category:'File Mgmt', answer:'Copies files or directories to a new location', example:'cp file.txt ~/Desktop/', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'mv', category:'File Mgmt', answer:'Moves or renames files and directories', example:'mv oldname.txt newname.txt', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'chmod', category:'Permissions', answer:'Changes file or directory permissions using symbolic or numeric notation', example:'chmod 755 script.sh', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'chown', category:'Permissions', answer:'Changes the owner and/or group of a file or directory', example:'chown student:staff file.txt', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'sudo', category:'User Mgmt', answer:'Executes a command with superuser (root) privileges', example:'sudo rm /etc/hosts', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'top', category:'Process', answer:'Displays real-time system resource usage — CPU, memory, running processes', example:'top', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'ps', category:'Process', answer:'Displays a snapshot of currently running processes', example:'ps aux | grep Safari', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'kill', category:'Process', answer:'Sends a signal to terminate a process by PID', example:'kill -9 1234', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'diskutil', category:'Disk', answer:'Manages disks and volumes — format, partition, repair, mount/unmount', example:'diskutil list', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'df', category:'Disk', answer:'Reports disk space usage for file systems', example:'df -h', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'du', category:'Disk', answer:'Estimates file and directory space usage', example:'du -sh ~/Downloads', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'grep', category:'Search', answer:'Searches for a pattern in files or command output', example:'grep "error" /var/log/system.log', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'find', category:'Search', answer:'Searches for files and directories matching specified criteria', example:'find / -name "*.log" -type f', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'cat', category:'File Mgmt', answer:'Displays the contents of a file to the terminal', example:'cat /etc/hosts', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'nano / vi', category:'File Mgmt', answer:'Text editors for editing files directly in the terminal', example:'nano /etc/hosts', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'softwareupdate', category:'System', answer:'Manages macOS software updates from the command line', example:'softwareupdate -l', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'system_profiler', category:'System', answer:'Displays detailed hardware and software system information', example:'system_profiler SPHardwareDataType', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'defaults', category:'System', answer:'Reads and writes macOS user defaults (preferences) from the command line', example:'defaults write com.apple.finder AppleShowAllFiles YES', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'launchctl', category:'System', answer:'Manages launchd services — start, stop, load, unload daemons', example:'launchctl list', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'spctl', category:'Security', answer:'Controls Gatekeeper — manages app security policies and code signing', example:'spctl --status', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'fdesetup', category:'Security', answer:'Manages FileVault full-disk encryption — enable, disable, check status', example:'fdesetup status', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'networksetup', category:'Networking', answer:'Configures network settings from the command line (Wi-Fi, DNS, proxy)', example:'networksetup -listallnetworkservices', obj:'Core 2 Obj 1.8'},
+  {os:'mac', cmd:'airport', category:'Networking', answer:'Manages Wi-Fi connections and scans for available networks', example:'/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s', obj:'Core 2 Obj 1.8'},
+
+  // ── LINUX ──
+  {os:'linux', cmd:'ls', category:'Navigation', answer:'Lists files and directories; -l for long format, -a to show hidden files', example:'ls -la /home/user', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'cd', category:'Navigation', answer:'Changes the current working directory', example:'cd /var/log', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'pwd', category:'Navigation', answer:'Prints the full path of the current working directory', example:'pwd', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'cat', category:'File Mgmt', answer:'Displays file contents; can also concatenate multiple files', example:'cat /etc/passwd', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'cp', category:'File Mgmt', answer:'Copies files or directories to a destination', example:'cp -r /src /dest', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'mv', category:'File Mgmt', answer:'Moves or renames files and directories', example:'mv file.txt /backup/', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'rm', category:'File Mgmt', answer:'Removes files or directories (-r recursive, -f force — use with caution!)', example:'rm -rf /tmp/junk/', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'mkdir', category:'File Mgmt', answer:'Creates a new directory; -p creates parent directories as needed', example:'mkdir -p /opt/app/logs', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'df', category:'Disk', answer:'Reports disk space usage for mounted file systems', example:'df -h', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'du', category:'Disk', answer:'Estimates disk usage of files and directories', example:'du -sh /var/log/*', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'mount', category:'Disk', answer:'Mounts a filesystem to a directory (mount point)', example:'mount /dev/sdb1 /mnt/usb', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'umount', category:'Disk', answer:'Unmounts a mounted filesystem safely', example:'umount /mnt/usb', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'fdisk', category:'Disk', answer:'Partition table manipulator — create, delete, and manage disk partitions', example:'fdisk -l', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'find', category:'Search', answer:'Searches for files/directories matching criteria (name, size, type, date)', example:'find /home -name "*.conf" -type f', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'grep', category:'Search', answer:'Searches for a text pattern in files or piped output', example:'grep -r "error" /var/log/', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'chmod', category:'Permissions', answer:'Changes file permissions using symbolic (rwx) or numeric (755) notation', example:'chmod 644 file.txt', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'chown', category:'Permissions', answer:'Changes file owner and group', example:'chown root:root /etc/shadow', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'sudo', category:'User Mgmt', answer:'Runs a command with elevated (root) privileges', example:'sudo apt update', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'su', category:'User Mgmt', answer:'Switches to another user account (default: root)', example:'su - root', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'useradd', category:'User Mgmt', answer:'Creates a new user account', example:'useradd -m -s /bin/bash jsmith', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'passwd', category:'User Mgmt', answer:'Sets or changes a user\'s password', example:'passwd jsmith', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'usermod', category:'User Mgmt', answer:'Modifies a user account (add to groups, change shell, etc.)', example:'usermod -aG sudo jsmith', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'ps', category:'Process', answer:'Displays a snapshot of running processes', example:'ps aux', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'top', category:'Process', answer:'Interactive real-time process viewer — CPU, memory, load average', example:'top', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'kill', category:'Process', answer:'Sends a signal to a process by PID (SIGKILL = -9 to force-terminate)', example:'kill -9 4321', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'systemctl', category:'Process', answer:'Controls systemd services — start, stop, enable, disable, status', example:'systemctl status sshd', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'ping', category:'Networking', answer:'Tests network connectivity using ICMP echo requests', example:'ping -c 4 8.8.8.8', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'ip', category:'Networking', answer:'Displays and configures network interfaces, routes, and addresses (replaces ifconfig)', example:'ip addr show', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'traceroute', category:'Networking', answer:'Traces the route packets take to a destination', example:'traceroute google.com', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'dig', category:'Networking', answer:'DNS lookup utility — queries DNS servers for detailed record information', example:'dig google.com A', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'curl', category:'Networking', answer:'Transfers data from/to a server using various protocols (HTTP, FTP, etc.)', example:'curl -I https://example.com', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'apt / apt-get', category:'Package Mgmt', answer:'Package manager for Debian/Ubuntu — install, update, remove software', example:'sudo apt install nmap', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'dnf / yum', category:'Package Mgmt', answer:'Package manager for Red Hat/CentOS/Fedora — install, update, remove software', example:'sudo dnf install vim', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'cron / crontab', category:'Scheduling', answer:'Schedules recurring tasks; crontab -e edits the cron schedule for a user', example:'crontab -e', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'tar', category:'File Mgmt', answer:'Archives and compresses files (tape archive) — create, extract, list archives', example:'tar -czvf backup.tar.gz /home/user/', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'nano / vi / vim', category:'File Mgmt', answer:'Terminal-based text editors for creating and editing files', example:'nano /etc/hosts', obj:'Core 2 Obj 1.9'},
+  {os:'linux', cmd:'ssh', category:'Remote Access', answer:'Securely connects to a remote machine over an encrypted channel', example:'ssh user@192.168.1.10', obj:'Core 2 Obj 4.9'},
+  {os:'linux', cmd:'scp', category:'Remote Access', answer:'Securely copies files between hosts over SSH', example:'scp file.txt user@server:/home/user/', obj:'Core 2 Obj 4.9'},
+];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let currentMode = 'flashcard';
+let currentOS   = 'all';
+let filteredCards = [];
+let cardIndex   = 0;
+let isFlipped   = false;
+let scoreCorrect = 0;
+let scoreWrong   = 0;
+
+// Quiz state
+let quizCards = [];
+let quizIndex = 0;
+let quizCorrect = 0;
+let quizWrong   = 0;
+
+// Match state
+let matchSelected = null;
+let matchCount    = 0;
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function getFiltered(os) {
+  if (os === 'all') return [...COMMANDS];
+  return COMMANDS.filter(c => c.os === os);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function osLabel(os) {
+  return {win:'Windows', mac:'macOS', linux:'Linux', all:'All OS'}[os] || os;
+}
+function osClass(os) { return os; }
+
+// ══════════════════════════════════════════════
+//  MODE / OS SWITCHING
+// ══════════════════════════════════════════════
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['flashcard','quiz','match','ref'][i] === mode);
+  });
+  ['flashcard-section','quiz-section','match-section','ref-section'].forEach(id => {
+    document.getElementById(id).classList.toggle('active', id === mode+'-section');
+  });
+  const showFilter = (mode === 'flashcard' || mode === 'quiz');
+  document.getElementById('os-filter').style.display = showFilter ? 'flex' : 'none';
+  document.getElementById('scoreboard').style.display = (mode === 'flashcard') ? 'flex' : 'none';
+  document.querySelector('.progress-wrap').style.display = (mode === 'flashcard') ? 'block' : 'none';
+
+  if (mode === 'flashcard') { filteredCards = getFiltered(currentOS); cardIndex = 0; renderCard(); }
+  if (mode === 'quiz')      { startQuiz(); }
+  if (mode === 'match')     { document.getElementById('os-filter').style.display = 'none'; initMatch(); }
+  if (mode === 'ref')       { renderRefTable('all', ''); }
+}
+
+function setOS(os) {
+  currentOS = os;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.classList.contains(os) || (os==='all' && b.classList.contains('all')));
+  });
+  filteredCards = getFiltered(os);
+  cardIndex = 0;
+  isFlipped = false;
+  scoreCorrect = 0;
+  scoreWrong   = 0;
+  updateScoreboard();
+  if (currentMode === 'flashcard') renderCard();
+  if (currentMode === 'quiz')      startQuiz();
+}
+
+// ══════════════════════════════════════════════
+//  FLASHCARD
+// ══════════════════════════════════════════════
+function renderCard() {
+  if (!filteredCards.length) return;
+  const c = filteredCards[cardIndex];
+  const card = document.getElementById('main-card');
+  card.classList.remove('flipped');
+  isFlipped = false;
+
+  const tag = document.getElementById('fc-os-tag');
+  tag.textContent = osLabel(c.os);
+  tag.className = 'os-tag ' + osClass(c.os);
+
+  document.getElementById('fc-cmd').textContent = c.cmd;
+  document.getElementById('fc-category').textContent = c.category;
+  document.getElementById('fc-answer').textContent = c.answer;
+  document.getElementById('fc-example').textContent = c.example;
+  document.getElementById('fc-obj').textContent = 'Exam Obj: ' + c.obj + ' · ' + c.category;
+
+  updateScoreboard();
+  updateProgress();
+}
+
+function flipCard() {
+  const card = document.getElementById('main-card');
+  isFlipped = !isFlipped;
+  card.classList.toggle('flipped', isFlipped);
+}
+
+function nextCard() {
+  if (!filteredCards.length) return;
+  cardIndex = (cardIndex + 1) % filteredCards.length;
+  renderCard();
+}
+
+function prevCard() {
+  if (!filteredCards.length) return;
+  cardIndex = (cardIndex - 1 + filteredCards.length) % filteredCards.length;
+  renderCard();
+}
+
+function shuffleCards() {
+  filteredCards = shuffle(filteredCards);
+  cardIndex = 0;
+  renderCard();
+}
+
+function markCard(correct) {
+  if (correct) scoreCorrect++; else scoreWrong++;
+  updateScoreboard();
+  nextCard();
+}
+
+function resetScores() {
+  scoreCorrect = 0; scoreWrong = 0;
+  cardIndex = 0;
+  filteredCards = getFiltered(currentOS);
+  renderCard();
+}
+
+function updateScoreboard() {
+  document.getElementById('card-num').textContent   = filteredCards.length ? cardIndex + 1 : 0;
+  document.getElementById('card-total').textContent = filteredCards.length;
+  document.getElementById('score-correct').textContent = scoreCorrect;
+  document.getElementById('score-wrong').textContent   = scoreWrong;
+}
+
+function updateProgress() {
+  const pct = filteredCards.length ? ((cardIndex + 1) / filteredCards.length * 100).toFixed(0) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// ══════════════════════════════════════════════
+//  QUIZ
+// ══════════════════════════════════════════════
+function startQuiz() {
+  document.getElementById('quiz-results').classList.remove('show');
+  quizCards = shuffle(getFiltered(currentOS)).slice(0, 15);
+  quizIndex = 0; quizCorrect = 0; quizWrong = 0;
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const container = document.getElementById('quiz-container');
+  if (quizIndex >= quizCards.length) {
+    container.innerHTML = '';
+    showQuizResults();
+    return;
+  }
+  const q = quizCards[quizIndex];
+  // Build 4 options: 1 correct + 3 random wrong
+  const pool = COMMANDS.filter(c => c.cmd !== q.cmd);
+  const wrongs = shuffle(pool).slice(0, 3).map(c => c.answer);
+  const options = shuffle([q.answer, ...wrongs]);
+
+  // Randomly choose question type
+  const qType = Math.random() < 0.5 ? 'cmd2def' : 'def2cmd';
+  let qText, correctAnswer;
+  if (qType === 'cmd2def') {
+    qText = `What does the <span class="cmd-inline">${q.cmd}</span> command do on <strong>${osLabel(q.os)}</strong>?`;
+    correctAnswer = q.answer;
+  } else {
+    qText = `Which command on <strong>${osLabel(q.os)}</strong> is used to: <em>"${q.answer}"</em>`;
+    const cmdPool = shuffle(COMMANDS.filter(c => c.cmd !== q.cmd)).slice(0,3).map(c=>c.cmd);
+    const cmdOptions = shuffle([q.cmd, ...cmdPool]);
+    container.innerHTML = buildQuizHTML(qType, qText, cmdOptions, q.cmd, q, quizIndex, quizCards.length);
+    return;
+  }
+  container.innerHTML = buildQuizHTML(qType, qText, options, correctAnswer, q, quizIndex, quizCards.length);
+}
+
+function buildQuizHTML(qType, qText, options, correct, q, idx, total) {
+  const optBtns = options.map((o,i) => `
+    <button class="opt-btn" onclick="checkAnswer(this, '${escQ(o)}', '${escQ(correct)}')">${o}</button>
+  `).join('');
+  return `
+    <div class="quiz-question">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span class="os-tag ${q.os}" style="position:static;margin:0;">${osLabel(q.os)}</span>
+        <span style="color:#aaa;font-size:0.8rem;">Q ${idx+1} / ${total}</span>
+      </div>
+      <div class="quiz-q-text">${qText}</div>
+      <div class="options-grid">${optBtns}</div>
+      <div class="feedback-box" id="quiz-feedback"></div>
+      <button class="quiz-next-btn" id="quiz-next-btn" onclick="quizNext()">Next Question ▶</button>
+    </div>`;
+}
+
+function escQ(s) { return s.replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
+
+function checkAnswer(btn, selected, correct) {
+  const btns = btn.closest('.options-grid').querySelectorAll('.opt-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === correct) b.classList.add('correct');
+  });
+  const fb = document.getElementById('quiz-feedback');
+  const nextBtn = document.getElementById('quiz-next-btn');
+  if (selected === correct) {
+    btn.classList.add('correct');
+    quizCorrect++;
+    fb.className = 'feedback-box show correct-fb';
+    fb.innerHTML = '✅ <strong>Correct!</strong> ' + getExtraInfo(correct);
+  } else {
+    btn.classList.add('wrong');
+    quizWrong++;
+    fb.className = 'feedback-box show wrong-fb';
+    fb.innerHTML = '❌ <strong>Not quite.</strong> The correct answer is: <em>' + correct + '</em>. ' + getExtraInfo(correct);
+  }
+  nextBtn.classList.add('show');
+}
+
+function getExtraInfo(answer) {
+  const match = COMMANDS.find(c => c.answer === answer || c.cmd === answer);
+  if (!match) return '';
+  return `<br><span style="font-family:monospace;color:#a5d6a7;">Example: ${match.example}</span>`;
+}
+
+function quizNext() {
+  quizIndex++;
+  renderQuizQuestion();
+}
+
+function showQuizResults() {
+  const pct = Math.round(quizCorrect / quizCards.length * 100);
+  document.getElementById('q-score-pct').textContent = pct + '%';
+  document.getElementById('q-correct-num').textContent = quizCorrect;
+  document.getElementById('q-wrong-num').textContent   = quizWrong;
+  let msg = '';
+  if (pct >= 90) msg = '🏆 Outstanding! You\'re exam-ready on these commands. The Omnissiah approves.';
+  else if (pct >= 75) msg = '💪 Solid work! A few more rounds and you\'ll own this section.';
+  else if (pct >= 60) msg = '📚 Good effort — keep drilling the ones you missed. You\'re getting there.';
+  else msg = '🔄 Keep going! Repetition is the path to mastery. Retry and watch the score climb.';
+  document.getElementById('q-msg').textContent = msg;
+  document.getElementById('quiz-results').classList.add('show');
+}
+
+// ══════════════════════════════════════════════
+//  MATCH MODE
+// ══════════════════════════════════════════════
+function initMatch() {
+  document.getElementById('match-results').classList.remove('show');
+  matchSelected = null;
+  matchCount = 0;
+
+  const pool = shuffle([...COMMANDS]).slice(0, 8);
+  document.getElementById('match-total').textContent = pool.length;
+  document.getElementById('match-count').textContent = 0;
+
+  const cmds = shuffle(pool.map(c => c.cmd));
+  const defs = shuffle(pool.map(c => c.answer));
+
+  const cmdContainer = document.getElementById('match-cmds');
+  const defContainer = document.getElementById('match-defs');
+  cmdContainer.innerHTML = '';
+  defContainer.innerHTML = '';
+
+  cmds.forEach(cmd => {
+    const el = document.createElement('div');
+    el.className = 'match-item cmd-item';
+    el.textContent = cmd;
+    el.dataset.value = cmd;
+    el.dataset.type = 'cmd';
+    el.onclick = () => handleMatchClick(el, pool);
+    cmdContainer.appendChild(el);
+  });
+
+  defs.forEach(def => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = def;
+    el.dataset.value = def;
+    el.dataset.type = 'def';
+    el.onclick = () => handleMatchClick(el, pool);
+    defContainer.appendChild(el);
+  });
+}
+
+function handleMatchClick(el, pool) {
+  if (el.classList.contains('matched')) return;
+
+  if (!matchSelected) {
+    // First selection
+    document.querySelectorAll('.match-item.selected').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    matchSelected = el;
+  } else {
+    if (matchSelected === el) {
+      el.classList.remove('selected');
+      matchSelected = null;
+      return;
+    }
+    // Second selection — check if same type
+    if (matchSelected.dataset.type === el.dataset.type) {
+      matchSelected.classList.remove('selected');
+      el.classList.add('selected');
+      matchSelected = el;
+      return;
+    }
+    // Different types — check match
+    const cmdEl = matchSelected.dataset.type === 'cmd' ? matchSelected : el;
+    const defEl = matchSelected.dataset.type === 'def' ? matchSelected : el;
+    const cmd = cmdEl.dataset.value;
+    const def = defEl.dataset.value;
+    const correct = pool.find(c => c.cmd === cmd && c.answer === def);
+
+    if (correct) {
+      cmdEl.classList.remove('selected'); cmdEl.classList.add('matched');
+      defEl.classList.remove('selected'); defEl.classList.add('matched');
+      matchCount++;
+      document.getElementById('match-count').textContent = matchCount;
+      if (matchCount >= pool.length) {
+        setTimeout(() => {
+          const msgs = [
+            'Perfect score! You matched all commands. The Emperor protects — and so does knowing your CLI.',
+            'All matched! You\'re operating at full efficiency. Exam day won\'t know what hit it.',
+            'Flawless. Your command-line knowledge is locked in. Ready for the real thing.'
+          ];
+          document.getElementById('match-msg').textContent = msgs[Math.floor(Math.random()*msgs.length)];
+          document.getElementById('match-results').classList.add('show');
+        }, 400);
+      }
+    } else {
+      cmdEl.classList.add('wrong-match'); defEl.classList.add('wrong-match');
+      setTimeout(() => {
+        cmdEl.classList.remove('wrong-match','selected');
+        defEl.classList.remove('wrong-match','selected');
+      }, 800);
+    }
+    matchSelected = null;
+  }
+}
+
+// ══════════════════════════════════════════════
+//  REFERENCE TABLE
+// ══════════════════════════════════════════════
+let refCurrentOS = 'all';
+let refCurrentSearch = '';
+
+function refFilter(os) {
+  refCurrentOS = os;
+  document.querySelectorAll('.ref-filter-btn').forEach(b => {
+    b.classList.toggle('active', b.classList.contains(os) || (os==='all' && b.classList.contains('all')));
+  });
+  renderRefTable(os, refCurrentSearch);
+}
+
+function refSearch(val) {
+  refCurrentSearch = val.toLowerCase();
+  renderRefTable(refCurrentOS, refCurrentSearch);
+}
+
+function renderRefTable(os, search) {
+  let data = os === 'all' ? COMMANDS : COMMANDS.filter(c => c.os === os);
+  if (search) {
+    data = data.filter(c =>
+      c.cmd.toLowerCase().includes(search) ||
+      c.answer.toLowerCase().includes(search) ||
+      c.category.toLowerCase().includes(search) ||
+      c.example.toLowerCase().includes(search)
+    );
+  }
+  const tbody = document.getElementById('ref-tbody');
+  tbody.innerHTML = data.map(c => `
+    <tr>
+      <td class="cmd-cell">${c.cmd}</td>
+      <td><span class="os-pill ${c.os}">${osLabel(c.os)}</span></td>
+      <td>${c.answer}</td>
+      <td><span style="font-family:monospace;font-size:0.8rem;color:#a5d6a7;">${c.example}</span></td>
+      <td style="color:#80cbc4;font-size:0.78rem;">${c.obj}</td>
+    </tr>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+filteredCards = getFiltered('all');
+renderCard();
+</script>
+</body>
+</html>
