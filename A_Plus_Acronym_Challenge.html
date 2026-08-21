@@ -6,363 +6,691 @@
     <title>CompTIA A+ Acronym Challenge</title>
     <style>
         :root {
-            --ps-navy: #002855;
-            --ps-gold: #f7dd63;
-            --ps-blue: #0062a3;
-            --ps-light: #f0f4f8;
-            --correct: #2e7d32;
-            --wrong: #c62828;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --correct-green: #22c55e;
+            --wrong-red: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: var(--ps-navy);
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             min-height: 100vh;
-            padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
         }
 
         header {
             text-align: center;
-            padding: 20px 10px 10px;
+            margin-bottom: 2rem;
         }
 
-        header h1 {
-            font-size: 1.8rem;
-            color: var(--ps-gold);
-            letter-spacing: 1px;
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        header p {
-            color: #ccc;
-            font-size: 0.9rem;
-            margin-top: 6px;
-        }
-
-        .badge {
-            display: inline-block;
-            background: var(--ps-gold);
-            color: var(--ps-navy);
-            font-weight: bold;
-            font-size: 0.75rem;
-            padding: 3px 10px;
-            border-radius: 12px;
-            margin: 4px 3px;
-        }
-
-        /* ── NAVIGATION BAR ── */
-        .nav-bar {
-            text-align: center;
-            margin: 15px 0;
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
         }
 
         .home-link {
             display: inline-block;
-            padding: 8px 18px;
-            border: 2px solid var(--ps-gold);
-            background: transparent;
-            color: var(--ps-gold);
-            border-radius: 8px;
+            margin-top: 1rem;
+            color: var(--accent-blue);
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: bold;
-            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .home-link:hover {
-            background: var(--ps-gold);
-            color: var(--ps-navy);
+            text-decoration: underline;
         }
 
-        /* ── SCOREBOARD ── */
-        .scoreboard {
+        /* Mode Selection Tabs */
+        .mode-selector {
             display: flex;
             justify-content: center;
-            gap: 24px;
-            margin-bottom: 16px;
-            font-size: 0.9rem;
-            color: #ccc;
+            gap: 10px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
-        .scoreboard span {
-            color: var(--ps-gold);
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        /* ── PROGRESS BAR ── */
-        .progress-wrap {
-            max-width: 700px;
-            margin: 0 auto 16px;
-            background: #1a3a5c;
+        .mode-btn {
+            background-color: var(--card-bg);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.6rem 1.2rem;
             border-radius: 8px;
-            height: 8px;
-            overflow: hidden;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--ps-gold);
-            transition: width 0.4s ease;
-            border-radius: 8px;
+        .mode-btn.active, .mode-btn:hover {
+            background-color: var(--accent-blue);
+            color: var(--bg-color);
+            border-color: var(--accent-blue);
         }
 
-        /* ── CARD ── */
+        /* Panels */
+        .game-panel {
+            display: none;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-panel.active {
+            display: block;
+        }
+
+        /* Flashcard Styles */
         .card-wrap {
-            max-width: 700px;
-            margin: 0 auto;
             perspective: 1200px;
+            margin-bottom: 1.5rem;
         }
 
-        .card {
+        .flashcard {
             position: relative;
             width: 100%;
-            min-height: 260px;
+            min-height: 220px;
             transform-style: preserve-3d;
-            transition: transform 0.55s ease;
+            transition: transform 0.5s ease;
             cursor: pointer;
-            border-radius: 16px;
         }
 
-        .card.flipped {
+        .flashcard.flipped {
             transform: rotateY(180deg);
         }
 
         .card-face {
             position: absolute;
             width: 100%;
-            min-height: 260px;
-            border-radius: 16px;
-            backface-visibility: hidden;
+            height: 100%;
+            min-height: 220px;
+            border-radius: 10px;
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 30px 28px;
+            padding: 2rem;
+            backface-visibility: hidden;
             text-align: center;
-        }
-
-        .card-front {
-            background: #0d2a4a;
-            border: 2px solid var(--ps-gold);
         }
 
         .card-back {
-            background: #0a3d1f;
-            border: 2px solid #4caf50;
             transform: rotateY(180deg);
+            border-color: var(--correct-green);
         }
 
-        .acronym-text {
-            font-size: 2.2rem;
+        .term-display {
+            font-size: 2.5rem;
             font-weight: bold;
-            color: var(--ps-gold);
-            margin-bottom: 10px;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
         }
 
-        .card-hint {
-            font-size: 0.8rem;
-            color: #aaa;
-            margin-top: 10px;
-        }
-
-        .answer-title {
-            font-size: 0.85rem;
-            color: #aaa;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .answer-text {
-            font-size: 1.25rem;
-            color: #fff;
-            font-weight: 600;
+        .def-display {
+            font-size: 1.2rem;
+            color: var(--text-main);
             line-height: 1.4;
         }
 
-        /* ── FLASHCARD CONTROLS ── */
-        .fc-controls {
+        .hint-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        /* Controls / Buttons */
+        .controls {
             display: flex;
             justify-content: center;
-            gap: 14px;
-            margin-top: 18px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
-        .fc-btn {
-            padding: 10px 26px;
-            border-radius: 8px;
+        .btn {
+            background: var(--accent-blue);
+            color: var(--bg-color);
             border: none;
-            cursor: pointer;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
             font-weight: bold;
-            font-size: 0.95rem;
+            cursor: pointer;
             transition: opacity 0.2s;
-            color: #fff;
         }
 
-        .fc-btn:hover { opacity: 0.85; }
+        .btn:hover { opacity: 0.9; }
+        .btn-secondary { background: #334155; color: var(--text-main); }
+        .btn-green { background: var(--correct-green); color: #fff; }
+        .btn-red { background: var(--wrong-red); color: #fff; }
 
-        .btn-prev { background: #444; }
-        .btn-next { background: var(--ps-blue); }
-        .btn-shuffle { background: #6a1b9a; }
-        .btn-reset  { background: #37474f; }
+        /* Quiz Specifics */
+        .quiz-setup {
+            text-align: center;
+        }
+
+        .quiz-setup select {
+            background: #0f172a;
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            margin: 0 10px;
+            font-size: 1rem;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--accent-blue);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-btn {
+            background: #0f172a;
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent-blue);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .option-btn.correct { background: rgba(34, 197, 94, 0.2); border-color: var(--correct-green); }
+        .option-btn.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--wrong-red); }
+
+        .score-board {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
 
         footer {
             text-align: center;
-            color: #777;
-            font-size: 0.75rem;
-            margin-top: 30px;
-            padding-bottom: 10px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 2rem;
+            padding: 1rem 0;
         }
 
         footer a {
-            color: #999;
+            color: var(--accent-blue);
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>📖 CompTIA A+ Acronym Challenge</h1>
-        <p>Master essential hardware, networking, and security acronyms</p>
-        <div style="margin-top:10px;">
-            <span class="badge">Core 1 &amp; Core 2</span>
-        </div>
-        <div class="nav-bar">
+    <div class="container">
+        <header>
+            <h1>A+ Acronym Challenge</h1>
+            <p class="subtitle">Master crucial hardware, networking, and security acronyms</p>
             <a href="index.html" class="home-link">&larr; Back to Dashboard</a>
+        </header>
+
+        <!-- Mode Selectors -->
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="switchMode('flashcards')">Flashcard Mode</button>
+            <button class="mode-btn" onclick="switchMode('quiz')">Multiple-Choice Quiz</button>
+            <button class="mode-btn" onclick="switchMode('arcade')">Arcade Game (Coming Soon)</button>
         </div>
-    </header>
 
-    <!-- SCOREBOARD -->
-    <div class="scoreboard" id="scoreboard">
-        Card <span id="card-num">1</span> of <span id="card-total">1</span> &nbsp;|&nbsp; ✅ <span id="score-correct">0</span> &nbsp; ❌ <span id="score-wrong">0</span>
-    </div>
-
-    <!-- PROGRESS BAR -->
-    <div class="progress-wrap"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-
-    <!-- FLASHCARD CONTAINER -->
-    <div class="card-wrap">
-        <div class="card" id="main-card" onclick="flipCard()">
-            <div class="card-face card-front">
-                <div class="acronym-text" id="acronym-term">BIOS</div>
-                <div class="card-hint">Click to reveal definition →</div>
+        <!-- FLASHCARD PANEL -->
+        <div id="flashcard-panel" class="game-panel active">
+            <div class="score-board">Card <span id="fc-current">1</span> of <span id="fc-total">1</span></div>
+            <div class="card-wrap">
+                <div class="flashcard" id="flashcard" onclick="flipCard()">
+                    <div class="card-face">
+                        <div class="term-display" id="fc-term">BIOS</div>
+                        <div class="hint-text">Click card to flip definition &rarr;</div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="def-display" id="fc-def">Basic Input/Output System</div>
+                    </div>
+                </div>
             </div>
-            <div class="card-face card-back">
-                <div class="answer-title">Definition</div>
-                <div class="answer-text" id="acronym-def">Basic Input/Output System</div>
+            <div class="controls">
+                <button class="btn btn-secondary" onclick="prevCard()">&#9664; Prev</button>
+                <button class="btn" onclick="shuffleFlashcards()">Shuffle</button>
+                <button class="btn btn-secondary" onclick="nextCard()">Next &#9654;</button>
             </div>
         </div>
-    </div>
 
-    <div class="fc-controls">
-        <button class="fc-btn btn-prev" onclick="prevCard()">◀ Prev</button>
-        <button class="fc-btn btn-shuffle" onclick="shuffleCards()">🔀 Shuffle</button>
-        <button class="fc-btn btn-next" onclick="nextCard()">Next ▶</button>
-        <button class="fc-btn btn-reset" onclick="resetScores()">↺ Reset</button>
-    </div>
+        <!-- QUIZ PANEL -->
+        <div id="quiz-panel" class="game-panel">
+            <div id="quiz-setup-screen" class="quiz-setup">
+                <p style="margin-bottom: 1.5rem;">Select your quiz length:</p>
+                <select id="quiz-length">
+                    <option value="10">10 Questions</option>
+                    <option value="25">25 Questions</option>
+                    <option value="50">50 Questions</option>
+                </select>
+                <button class="btn" onclick="startQuiz()">Start Quiz</button>
+            </div>
 
-    <div style="display:flex;justify-content:center;gap:14px;margin-top:14px;">
-        <button class="fc-btn" style="background:#c62828;" onclick="markCard(false)">❌ Still Learning</button>
-        <button class="fc-btn" style="background:#2e7d32;" onclick="markCard(true)">✅ Got It</button>
+            <div id="quiz-play-screen" style="display: none;">
+                <div class="score-board">Question <span id="q-current">1</span> of <span id="q-total">10</span> | Score: <span id="q-score">0</span></div>
+                <div class="quiz-question" id="quiz-question-text">What does BIOS stand for?</div>
+                <div class="options-grid" id="quiz-options">
+                    <!-- Options injected via JS -->
+                </div>
+                <div class="controls">
+                    <button id="next-q-btn" class="btn" style="display: none;" onclick="nextQuestion()">Next Question &rarr;</button>
+                </div>
+            </div>
+
+            <div id="quiz-result-screen" style="display: none; text-align: center;">
+                <h2 style="color: var(--accent-blue); margin-bottom: 1rem;">Quiz Complete!</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">Your final score: <span id="final-score" style="font-weight: bold; color: var(--accent-purple);">0</span></p>
+                <button class="btn" onclick="resetQuizSetup()">Try Again</button>
+            </div>
+        </div>
+
+        <!-- ARCADE GAME PLACEHOLDER PANEL -->
+        <div id="arcade-panel" class="game-panel" style="text-align: center;">
+            <h2 style="color: var(--accent-blue); margin-bottom: 1rem;">Arcade Mini-Game</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Space reserved for building an interactive matching or shooter style acronym mini-game later!</p>
+            <div style="padding: 3rem; border: 2px dashed rgba(255,255,255,0.1); border-radius: 8px; color: var(--text-muted);">
+                Game Sandbox Area
+            </div>
+        </div>
     </div>
 
     <footer>
-        Source material adapted from <strong>Charles Smith</strong> on <a href="https://www.gimkit.com/" target="_blank" rel="noopener noreferrer">Gimkit</a> | Per Scholas IT Support
+        Source material adapted from <strong>Charles Smith</strong> on <a href="https://www.gimkit.com/" target="_blank" rel="noopener noreferrer">Gimkit</a>
     </footer>
 
     <script>
-        const ACRONYMS = [
+        // Full Acronym Dataset
+        const ACRONYMS_DATA = [
+            { term: "IOPS", def: "Input/Output Operations Per Second" },
+            { term: "IR", def: "Infrared" },
+            { term: "ISO", def: "International Organization for Standardization" },
+            { term: "HTTPS", def: "Hypertext Transfer Protocol Secure" },
+            { term: "LAN", def: "Local Area Network" },
+            { term: "IP", def: "Internet Protocol" },
+            { term: "LC", def: "Lucent Connector" },
+            { term: "IPS", def: "In-Plane Switching" },
+            { term: "ITX", def: "Information Technology Extended" },
+            { term: "ISP", def: "Internet Service Provider" },
+            { term: "LTE", def: "Long-Term Evolution" },
+            { term: "LED", def: "Light-Emitting Diode" },
+            { term: "IoT", def: "Internet of Things" },
+            { term: "KVM", def: "Keyboard, Video, and Mouse" },
+            { term: "IAM", def: "Identity and Access Management" },
+            { term: "IMAP", def: "Internet Message Access Protocol" },
+            { term: "HD", def: "High Definition" },
+            { term: "IaaS", def: "Infrastructure as a Service" },
+            { term: "MAC", def: "Media Access Control" },
+            { term: "ESD", def: "Electrostatic Discharge" },
+            { term: "GPU", def: "Graphics Processing Unit" },
+            { term: "LCD", def: "Liquid Crystal Display" },
+            { term: "eSIM", def: "Embedded Subscriber Identity Module" },
+            { term: "LDAP", def: "Lightweight Directory Access Protocol" },
+            { term: "exFAT", def: "Extensible File Allocation Table" },
+            { term: "FRT", def: "Facial Recognition Technology" },
+            { term: "AP", def: "Access Point" },
+            { term: "GFS", def: "Grandfather-Father-Son" },
+            { term: "CAC", def: "Common Access Card" },
+            { term: "CMDB", def: "Configuration Management Database" },
+            { term: "FAT32", def: "32-bit File Allocation Table" },
+            { term: "GUI", def: "Graphical User Interface" },
+            { term: "ACL", def: "Access Control List" },
+            { term: "BYOD", def: "Bring Your Own Device" },
+            { term: "eSATA", def: "External Serial Advanced Technology Attachment" },
+            { term: "ARM", def: "Advanced RISC Machine" },
+            { term: "BSOD", def: "Blue Screen of Death" },
+            { term: "FaaS", def: "Function as a Service" },
+            { term: "APIPA", def: "Automatic Private Internet Protocol Addressing" },
+            { term: "FTP", def: "File Transfer Protocol" },
+            { term: "ATX", def: "Advanced Technology Extended" },
+            { term: "AMD", def: "Advanced Micro Devices" },
+            { term: "HDMI", def: "High-Definition Multimedia Interface" },
+            { term: "AUP", def: "Acceptable Use Policy" },
+            { term: "CAS", def: "Column Address Strobe" },
+            { term: "GUID", def: "Globally Unique Identifier" },
+            { term: "AES", def: "Advanced Encryption Standard" },
+            { term: "EULA", def: "End-User License Agreement" },
+            { term: "APFS", def: "Apple File System" },
+            { term: "HTTP", def: "Hypertext Transfer Protocol" },
             { term: "BIOS", def: "Basic Input/Output System" },
-            { term: "UEFI", def: "Unified Extensible Firmware Interface" },
-            { term: "DHCP", def: "Dynamic Host Configuration Protocol" },
+            { term: "HDD", def: "Hard Disk Drive" },
+            { term: "BNC", def: "Bayonet Neill-Concelman" },
+            { term: "GPT", def: "GUID Partition Table" },
+            { term: "CIFS", def: "Common Internet File System" },
+            { term: "GPS", def: "Global Positioning System" },
+            { term: "ADF", def: "Automatic Document Feeder" },
+            { term: "EDR", def: "Endpoint Detection and Response" },
+            { term: "HSM", def: "Hardware Security Module" },
+            { term: "BEC", def: "Business Email Compromise" },
+            { term: "CPU", def: "Central Processing Unit" },
+            { term: "DVI", def: "Digital Visual Interface" },
+            { term: "AAA", def: "Authentication, Authorization, and Accounting" },
             { term: "DNS", def: "Domain Name System" },
-            { term: "APIPA", def: "Automatic Private IP Addressing" },
+            { term: "DDR", def: "Double Data Rate" },
+            { term: "CNAME", def: "Canonical Name" },
+            { term: "DSL", def: "Digital Subscriber Line" },
+            { term: "DHCP", def: "Dynamic Host Configuration Protocol" },
+            { term: "DB-9", def: "D-subminiature 9-pin connector" },
+            { term: "DKIM", def: "DomainKeys Identified Mail" },
+            { term: "EOL", def: "End of Life" },
+            { term: "DoS", def: "Denial of Service" },
+            { term: "EFS", def: "Encrypting File System" },
+            { term: "CMOS", def: "Complementary Metal-Oxide Semiconductor" },
+            { term: "DMARC", def: "Domain-based Message Authentication, Reporting, and Conformance" },
+            { term: "DDoS", def: "Distributed Denial of Service" },
+            { term: "ECC", def: "Error-Correcting Code" },
+            { term: "DLP", def: "Data Loss Prevention" },
+            { term: "DRM", def: "Digital Rights Management" },
+            { term: "DIMM", def: "Dual In-line Memory Module" },
+            { term: "RDP", def: "Remote Desktop Protocol" },
+            { term: "RPM", def: "Revolutions Per Minute" },
+            { term: "RJ11", def: "Registered Jack 11" },
             { term: "RAID", def: "Redundant Array of Independent Disks" },
-            { term: "SMART", def: "Self-Monitoring, Analysis, and Reporting Technology" },
-            { term: "TCP", def: "Transmission Control Protocol" },
+            { term: "ReFS", def: "Resilient File System" },
+            { term: "SaaS", def: "Software as a Service" },
+            { term: "RISC", def: "Reduced Instruction Set Computer" },
+            { term: "RAM", def: "Random-Access Memory" },
+            { term: "RADIUS", def: "Remote Authentication Dial-In User Service" },
             { term: "UDP", def: "User Datagram Protocol" },
-            { term: "NAT", def: "Network Address Translation" }
+            { term: "PXE", def: "Preboot Execution Environment" },
+            { term: "VA", def: "Vertical Alignment" },
+            { term: "SAN", def: "Storage Area Network" },
+            { term: "VDI", def: "Virtual Desktop Infrastructure" },
+            { term: "MBR", def: "Master Boot Record" },
+            { term: "QoS", def: "Quality of Service" },
+            { term: "MAN", def: "Metropolitan Area Network" },
+            { term: "UEFI", def: "Unified Extensible Firmware Interface" },
+            { term: "VRAM", def: "Video Random-Access Memory" },
+            { term: "ST", def: "Straight Tip" },
+            { term: "WWAN", def: "Wireless Wide Area Network" },
+            { term: "NAS", def: "Network-Attached Storage" },
+            { term: "mSATA", def: "Mini-Serial Advanced Technology Attachment" },
+            { term: "UTM", def: "Unified Threat Management" },
+            { term: "WinRM", def: "Windows Remote Management" },
+            { term: "NTFS", def: "New Technology File System" },
+            { term: "SSH", def: "Secure Shell" },
+            { term: "NTP", def: "Network Time Protocol" },
+            { term: "WAN", def: "Wide Area Network" },
+            { term: "TXT", def: "Text" },
+            { term: "ONT", def: "Optical Network Terminal" },
+            { term: "MNDA", def: "Mutual Non-Disclosure Agreement" },
+            { term: "RMM", def: "Remote Monitoring and Management" },
+            { term: "WEP", def: "Wired Equivalent Privacy" },
+            { term: "TPM", def: "Trusted Platform Module" },
+            { term: "SAS", def: "Serial Attached SCSI" },
+            { term: "OTP", def: "One-Time Password or Passcode" },
+            { term: "WPA", def: "Wi-Fi Protected Access" },
+            { term: "MX", def: "Mail Exchange" },
+            { term: "UAC", def: "User Account Control" },
+            { term: "PUP", def: "Potentially Unwanted Program" },
+            { term: "SAML", def: "Security Assertion Markup Language" },
+            { term: "NDA", def: "Non-Disclosure Agreement" },
+            { term: "VM", def: "Virtual Machine" },
+            { term: "TN", def: "Twisted Nematic" },
+            { term: "SD", def: "Secure Digital" },
+            { term: "MFA", def: "Multifactor Authentication" },
+            { term: "VoIP", def: "Voice over Internet Protocol" },
+            { term: "SSO", def: "Single Sign-On" },
+            { term: "PIN", def: "Personal Identification Number" },
+            { term: "RSR", def: "Rapid Security Response" },
+            { term: "MDR", def: "Managed Detection and Response" },
+            { term: "UPnP", def: "Universal Plug and Play" },
+            { term: "OLED", def: "Organic Light-Emitting Diode" },
+            { term: "SDS", def: "Safety Data Sheet" },
+            { term: "SSID", def: "Service Set Identifier" },
+            { term: "NIC", def: "Network Interface Card" },
+            { term: "WLAN", def: "Wireless Local Area Network" },
+            { term: "RJ45", def: "Registered Jack 45" },
+            { term: "PIV", def: "Personal Identity Verification" },
+            { term: "VNC", def: "Virtual Network Computing" },
+            { term: "USB-C", def: "Universal Serial Bus Type-C" },
+            { term: "RFID", def: "Radio-Frequency Identification" },
+            { term: "MDM", def: "Mobile Device Management" },
+            { term: "S.M.A.R.T.", def: "Self-Monitoring, Analysis, and Reporting Technology" },
+            { term: "PaaS", def: "Platform as a Service" },
+            { term: "NFC", def: "Near-Field Communication" },
+            { term: "XSS", def: "Cross-Site Scripting" },
+            { term: "TOTP", def: "Time-Based One-Time Password" },
+            { term: "SPICE", def: "Simple Protocol for Independent Computing Environments" },
+            { term: "NAT", def: "Network Address Translation" },
+            { term: "TCP", def: "Transmission Control Protocol" },
+            { term: "PCIe", def: "Peripheral Component Interconnect Express" },
+            { term: "XFS", def: "X File System" },
+            { term: "NVMe", def: "Non-Volatile Memory Express" },
+            { term: "RGB", def: "Red, Green, and Blue" },
+            { term: "SLA", def: "Service-Level Agreement" },
+            { term: "TKIP", def: "Temporal Key Integrity Protocol" },
+            { term: "MMC", def: "Microsoft Management Console" },
+            { term: "SATA", def: "Serial Advanced Technology Attachment" },
+            { term: "OS", def: "Operating System" },
+            { term: "SOHO", def: "Small Office/Home Office" },
+            { term: "MFP", def: "Multifunction Printer" },
+            { term: "WAP", def: "Wireless Access Point" },
+            { term: "POST", def: "Power-On Self-Test" },
+            { term: "USB", def: "Universal Serial Bus" },
+            { term: "NetBIOS", def: "Network Basic Input/Output System" },
+            { term: "SPF", def: "Sender Policy Framework" },
+            { term: "UPS", def: "Uninterruptible Power Supply" },
+            { term: "WISP", def: "Wireless Internet Service Provider" },
+            { term: "PCL", def: "Printer Command Language" },
+            { term: "SSD", def: "Solid-State Drive" },
+            { term: "NAC", def: "Network Access Control" },
+            { term: "VPN", def: "Virtual Private Network" },
+            { term: "PC", def: "Personal Computer" },
+            { term: "TACACS", def: "Terminal Access Controller Access-Control System" },
+            { term: "SIM", def: "Subscriber Identity Module" },
+            { term: "PAN", def: "Personal Area Network" },
+            { term: "VGA", def: "Video Graphics Array" },
+            { term: "XDR", def: "Extended Detection and Response" },
+            { term: "SFTP", def: "SSH File Transfer Protocol" },
+            { term: "POP", def: "Post Office Protocol" },
+            { term: "SCADA", def: "Supervisory Control and Data Acquisition" },
+            { term: "PAM", def: "Privileged Access Management" },
+            { term: "XaaS", def: "Anything as a Service" },
+            { term: "SMB", def: "Server Message Block" },
+            { term: "PCI", def: "Peripheral Component Interconnect" },
+            { term: "SC", def: "Subscriber Connector" },
+            { term: "OEM", def: "Original Equipment Manufacturer" },
+            { term: "SOP", def: "Standard Operating Procedure" },
+            { term: "PSU", def: "Power Supply Unit" },
+            { term: "SCSI", def: "Small Computer System Interface" },
+            { term: "PoE", def: "Power over Ethernet" },
+            { term: "VLAN", def: "Virtual Local Area Network" },
+            { term: "SNMP", def: "Simple Network Management Protocol" },
+            { term: "SMTP", def: "Simple Mail Transfer Protocol" },
+            { term: "PII", def: "Personally Identifiable Information" },
+            { term: "SODIMM", def: "Small Outline Dual In-line Memory Module" },
+            { term: "SMS", def: "Short Message Service" },
+            { term: "SQL", def: "Structured Query Language" }
         ];
 
-        let currentIndex = 0;
+        // --- Navigation Logic ---
+        function switchMode(mode) {
+            document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            
+            if(mode === 'flashcards') {
+                document.getElementById('flashcard-panel').classList.add('active');
+                event.target.classList.add('active');
+            } else if(mode === 'quiz') {
+                document.getElementById('quiz-panel').classList.add('active');
+                event.target.classList.add('active');
+            } else if(mode === 'arcade') {
+                document.getElementById('arcade-panel').classList.add('active');
+                event.target.classList.add('active');
+            }
+        }
+
+        // --- Flashcard Logic ---
+        let currentCardIndex = 0;
         let isFlipped = false;
-        let scoreCorrect = 0;
-        let scoreWrong = 0;
 
-        function renderCard() {
-            const c = ACRONYMS[currentIndex];
-            const card = document.getElementById('main-card');
-            card.classList.remove('flipped');
+        function updateFlashcard() {
+            const cardData = ACRONYMS_DATA[currentCardIndex];
+            document.getElementById('fc-term').textContent = cardData.term;
+            document.getElementById('fc-def').textContent = cardData.def;
+            document.getElementById('fc-current').textContent = currentCardIndex + 1;
+            document.getElementById('fc-total').textContent = ACRONYMS_DATA.length;
+            
+            const cardElem = document.getElementById('flashcard');
+            cardElem.classList.remove('flipped');
             isFlipped = false;
-
-            document.getElementById('acronym-term').textContent = c.term;
-            document.getElementById('acronym-def').textContent = c.def;
-
-            updateScoreboard();
-            updateProgress();
         }
 
         function flipCard() {
-            const card = document.getElementById('main-card');
             isFlipped = !isFlipped;
-            card.classList.toggle('flipped', isFlipped);
+            document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
         }
 
         function nextCard() {
-            currentIndex = (currentIndex + 1) % ACRONYMS.length;
-            renderCard();
+            currentCardIndex = (currentCardIndex + 1) % ACRONYMS_DATA.length;
+            updateFlashcard();
         }
 
         function prevCard() {
-            currentIndex = (currentIndex - 1 + ACRONYMS.length) % ACRONYMS.length;
-            renderCard();
+            currentCardIndex = (currentCardIndex - 1 + ACRONYMS_DATA.length) % ACRONYMS_DATA.length;
+            updateFlashcard();
         }
 
-        function shuffleCards() {
-            for (let i = ACRONYMS.length - 1; i > 0; i--) {
+        function shuffleFlashcards() {
+            for (let i = ACRONYMS_DATA.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [ACRONYMS[i], ACRONYMS[j]] = [ACRONYMS[j], ACRONYMS[i]];
+                [ACRONYMS_DATA[i], ACRONYMS_DATA[j]] = [ACRONYMS_DATA[j], ACRONYMS_DATA[i]];
             }
-            currentIndex = 0;
-            renderCard();
+            currentCardIndex = 0;
+            updateFlashcard();
         }
 
-        function markCard(correct) {
-            if (correct) scoreCorrect++;
-            else scoreWrong++;
-            updateScoreboard();
-            nextCard();
+        // --- Quiz Logic ---
+        let quizQuestions = [];
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+
+        function startQuiz() {
+            const length = parseInt(document.getElementById('quiz-length').value);
+            // Shuffle dataset copy
+            const shuffled = [...ACRONYMS_DATA].sort(() => 0.5 - Math.random());
+            quizQuestions = shuffled.slice(0, length);
+            quizCurrentIndex = 0;
+            quizScore = 0;
+
+            document.getElementById('quiz-setup-screen').style.display = 'none';
+            document.getElementById('quiz-result-screen').style.display = 'none';
+            document.getElementById('quiz-play-screen').style.display = 'block';
+            loadQuizQuestion();
         }
 
-        function resetScores() {
-            scoreCorrect = 0;
-            scoreWrong = 0;
-            currentIndex = 0;
-            renderCard();
+        function loadQuizQuestion() {
+            document.getElementById('next-q-btn').style.display = 'none';
+            const q = quizQuestions[quizCurrentIndex];
+            
+            document.getElementById('q-current').textContent = quizCurrentIndex + 1;
+            document.getElementById('q-total').textContent = quizQuestions.length;
+            document.getElementById('q-score').textContent = quizScore;
+            document.getElementById('quiz-question-text').textContent = `What does "${q.term}" stand for?`;
+
+            // Generate 3 wrong options + 1 correct option
+            let options = [q.def];
+            while(options.length < 4) {
+                const randomDef = ACRONYMS_DATA[Math.floor(Math.random() * ACRONYMS_DATA.length)].def;
+                if(!options.includes(randomDef)) {
+                    options.push(randomDef);
+                }
+            }
+            options.sort(() => 0.5 - Math.random());
+
+            const optionsGrid = document.getElementById('quiz-options');
+            optionsGrid.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => selectQuizOption(btn, opt === q.def);
+                optionsGrid.appendChild(btn);
+            });
         }
 
-        function updateScoreboard() {
-            document.getElementById('card-num').textContent = currentIndex + 1;
-            document.getElementById('card-total').textContent = ACRONYMS.length;
-            document.getElementById('score-correct').textContent = scoreCorrect;
-            document.getElementById('score-wrong').textContent = scoreWrong;
+        function selectQuizOption(selectedBtn, isCorrect) {
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(b => {
+                b.disabled = true;
+                if(b.textContent === quizQuestions[quizCurrentIndex].def) {
+                    b.classList.add('correct');
+                }
+            });
+
+            if(isCorrect) {
+                quizScore++;
+                document.getElementById('q-score').textContent = quizScore;
+            } else {
+                selectedBtn.classList.add('wrong');
+            }
+
+            document.getElementById('next-q-btn').style.display = 'inline-block';
         }
 
-        function updateProgress() {
-            const pct = ((currentIndex + 1) / ACRONYMS.length * 100).toFixed(0);
-            document.getElementById('progress-fill').style.width = pct + '%';
+        function nextQuestion() {
+            quizCurrentIndex++;
+            if(quizCurrentIndex < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                document.getElementById('quiz-play-screen').style.display = 'none';
+                document.getElementById('quiz-result-screen').style.display = 'block';
+                document.getElementById('final-score').textContent = `${quizScore} / ${quizQuestions.length}`;
+            }
         }
 
-        // Initialize on load
-        renderCard();
+        function resetQuizSetup() {
+            document.getElementById('quiz-result-screen').style.display = 'none';
+            document.getElementById('quiz-setup-screen').style.display = 'block';
+        }
+
+        // Initialize flashcard view on load
+        updateFlashcard();
     </script>
 </body>
 </html>
