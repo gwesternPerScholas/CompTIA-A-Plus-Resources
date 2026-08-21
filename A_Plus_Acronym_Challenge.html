@@ -3,167 +3,367 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CompTIA A+ Resources</title>
+    <title>CompTIA A+ Acronym Challenge</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-blue: #38bdf8;
-            --accent-purple: #a855f7;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --ps-navy: #002855;
+            --ps-gold: #f7dd63;
+            --ps-blue: #0062a3;
+            --ps-light: #f0f4f8;
+            --correct: #2e7d32;
+            --wrong: #c62828;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--ps-navy);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: space-between;
-            min-height: 100vh;
         }
 
-        .container {
-            width: 90%;
-            max-width: 800px;
-            padding: 2.5rem 1rem;
+        header {
             text-align: center;
+            padding: 20px 10px 10px;
         }
 
-        .credit-badge {
+        header h1 {
+            font-size: 1.8rem;
+            color: var(--ps-gold);
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        .badge {
             display: inline-block;
-            background-color: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            color: var(--accent-blue);
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
+            background: var(--ps-gold);
+            color: var(--ps-navy);
+            font-weight: bold;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin: 4px 3px;
+        }
+
+        /* ── NAVIGATION BAR ── */
+        .nav-bar {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .home-link {
+            display: inline-block;
+            padding: 8px 18px;
+            border: 2px solid var(--ps-gold);
+            background: transparent;
+            color: var(--ps-gold);
+            border-radius: 8px;
+            text-decoration: none;
             font-size: 0.85rem;
-            margin-bottom: 1.5rem;
+            font-weight: bold;
+            transition: all 0.2s;
         }
 
-        .credit-badge a {
-            color: var(--accent-blue);
-            text-decoration: underline;
-            font-weight: 600;
+        .home-link:hover {
+            background: var(--ps-gold);
+            color: var(--ps-navy);
         }
 
-        .credit-badge a:hover {
-            color: var(--accent-purple);
+        /* ── SCOREBOARD ── */
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            color: #ccc;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p.subtitle {
-            color: var(--text-muted);
+        .scoreboard span {
+            color: var(--ps-gold);
+            font-weight: bold;
             font-size: 1.1rem;
-            margin-bottom: 2.5rem;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
+        /* ── PROGRESS BAR ── */
+        .progress-wrap {
+            max-width: 700px;
+            margin: 0 auto 16px;
+            background: #1a3a5c;
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--ps-gold);
+            transition: width 0.4s ease;
+            border-radius: 8px;
+        }
+
+        /* ── CARD ── */
+        .card-wrap {
+            max-width: 700px;
+            margin: 0 auto;
+            perspective: 1200px;
         }
 
         .card {
-            background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-decoration: none;
-            color: var(--text-main);
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            width: 100%;
+            min-height: 260px;
+            transform-style: preserve-3d;
+            transition: transform 0.55s ease;
+            cursor: pointer;
+            border-radius: 16px;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            min-height: 260px;
+            border-radius: 16px;
+            backface-visibility: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-blue);
-            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.15);
-        }
-
-        .card h2 {
-            font-size: 1.3rem;
-            margin-top: 0;
-            margin-bottom: 0.75rem;
-            color: var(--accent-blue);
-        }
-
-        .card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.4;
-            margin: 0;
-        }
-
-        .btn-text {
-            margin-top: 1.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--accent-purple);
-        }
-
-        footer {
-            padding: 1.5rem;
-            color: var(--text-muted);
-            font-size: 0.85rem;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 28px;
             text-align: center;
         }
 
-        footer a {
-            color: var(--text-muted);
-            text-decoration: underline;
+        .card-front {
+            background: #0d2a4a;
+            border: 2px solid var(--ps-gold);
         }
 
-        footer a:hover {
-            color: var(--text-main);
+        .card-back {
+            background: #0a3d1f;
+            border: 2px solid #4caf50;
+            transform: rotateY(180deg);
+        }
+
+        .acronym-text {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--ps-gold);
+            margin-bottom: 10px;
+        }
+
+        .card-hint {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 10px;
+        }
+
+        .answer-title {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .answer-text {
+            font-size: 1.25rem;
+            color: #fff;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* ── FLASHCARD CONTROLS ── */
+        .fc-controls {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .fc-btn {
+            padding: 10px 26px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+            color: #fff;
+        }
+
+        .fc-btn:hover { opacity: 0.85; }
+
+        .btn-prev { background: #444; }
+        .btn-next { background: var(--ps-blue); }
+        .btn-shuffle { background: #6a1b9a; }
+        .btn-reset  { background: #37474f; }
+
+        footer {
+            text-align: center;
+            color: #777;
+            font-size: 0.75rem;
+            margin-top: 30px;
+            padding-bottom: 10px;
+        }
+
+        footer a {
+            color: #999;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="credit-badge">
-            📚 Source Material adapted from <strong>Charles Smith</strong> on <a href="https://www.gimkit.com/" target="_blank" rel="noopener noreferrer">Gimkit</a>
+    <header>
+        <h1>📖 CompTIA A+ Acronym Challenge</h1>
+        <p>Master essential hardware, networking, and security acronyms</p>
+        <div style="margin-top:10px;">
+            <span class="badge">Core 1 &amp; Core 2</span>
         </div>
+        <div class="nav-bar">
+            <a href="index.html" class="home-link">&larr; Back to Dashboard</a>
+        </div>
+    </header>
 
-        <h1>CompTIA A+ Resources</h1>
-        <p class="subtitle">Interactive practice tools and study guides to help you master A+ concepts.</p>
+    <!-- SCOREBOARD -->
+    <div class="scoreboard" id="scoreboard">
+        Card <span id="card-num">1</span> of <span id="card-total">1</span> &nbsp;|&nbsp; ✅ <span id="score-correct">0</span> &nbsp; ❌ <span id="score-wrong">0</span>
+    </div>
 
-        <div class="grid">
-            <a href="cli_command_challenge_a_plus.html" class="card">
-                <div>
-                    <h2>CLI Command Challenge</h2>
-                    <p>Test your knowledge of essential command-line tools and terminal syntax for the A+ exam.</p>
-                </div>
-                <div class="btn-text">Start Challenge &rarr;</div>
-            </a>
+    <!-- PROGRESS BAR -->
+    <div class="progress-wrap"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
 
-            <a href="A_Plus_Acronym_Challenge.html" class="card">
-                <div>
-                    <h2>A+ Acronym Challenge</h2>
-                    <p>Master the crucial hardware, networking, and security acronyms required for certification.</p>
-                </div>
-                <div class="btn-text">Start Challenge &rarr;</div>
-            </a>
+    <!-- FLASHCARD CONTAINER -->
+    <div class="card-wrap">
+        <div class="card" id="main-card" onclick="flipCard()">
+            <div class="card-face card-front">
+                <div class="acronym-text" id="acronym-term">BIOS</div>
+                <div class="card-hint">Click to reveal definition →</div>
+            </div>
+            <div class="card-face card-back">
+                <div class="answer-title">Definition</div>
+                <div class="answer-text" id="acronym-def">Basic Input/Output System</div>
+            </div>
         </div>
     </div>
 
+    <div class="fc-controls">
+        <button class="fc-btn btn-prev" onclick="prevCard()">◀ Prev</button>
+        <button class="fc-btn btn-shuffle" onclick="shuffleCards()">🔀 Shuffle</button>
+        <button class="fc-btn btn-next" onclick="nextCard()">Next ▶</button>
+        <button class="fc-btn btn-reset" onclick="resetScores()">↺ Reset</button>
+    </div>
+
+    <div style="display:flex;justify-content:center;gap:14px;margin-top:14px;">
+        <button class="fc-btn" style="background:#c62828;" onclick="markCard(false)">❌ Still Learning</button>
+        <button class="fc-btn" style="background:#2e7d32;" onclick="markCard(true)">✅ Got It</button>
+    </div>
+
     <footer>
-        Source questions and flashcards originally authored by Charles Smith on <a href="https://www.gimkit.com/" target="_blank" rel="noopener noreferrer">Gimkit</a>.
+        Source material adapted from <strong>Charles Smith</strong> on <a href="https://www.gimkit.com/" target="_blank" rel="noopener noreferrer">Gimkit</a> | Per Scholas IT Support
     </footer>
 
+    <script>
+        // Sample acronym dataset — replace/expand with your actual list
+        const ACRONYMS = [
+            { term: "BIOS", def: "Basic Input/Output System" },
+            { term: "UEFI", def: "Unified Extensible Firmware Interface" },
+            { term: "DHCP", def: "Dynamic Host Configuration Protocol" },
+            { term: "DNS", def: "Domain Name System" },
+            { term: "APIPA", def: "Automatic Private IP Addressing" },
+            { term: "RAID", def: "Redundant Array of Independent Disks" },
+            { term: "SMART", def: "Self-Monitoring, Analysis, and Reporting Technology" },
+            { term: "TCP", def: "Transmission Control Protocol" },
+            { term: "UDP", def: "User Datagram Protocol" },
+            { term: "NAT", def: "Network Address Translation" }
+        ];
+
+        let currentIndex = 0;
+        let isFlipped = false;
+        let scoreCorrect = 0;
+        let scoreWrong = 0;
+
+        function renderCard() {
+            const c = ACRONYMS[currentIndex];
+            const card = document.getElementById('main-card');
+            card.classList.remove('flipped');
+            isFlipped = false;
+
+            document.getElementById('acronym-term').textContent = c.term;
+            document.getElementById('acronym-def').textContent = c.def;
+
+            updateScoreboard();
+            updateProgress();
+        }
+
+        function flipCard() {
+            const card = document.getElementById('main-card');
+            isFlipped = !isFlipped;
+            card.classList.toggle('flipped', isFlipped);
+        }
+
+        function nextCard() {
+            currentIndex = (currentIndex + 1) % ACRONYMS.length;
+            renderCard();
+        }
+
+        function prevCard() {
+            currentIndex = (currentIndex - 1 + ACRONYMS.length) % ACRONYMS.length;
+            renderCard();
+        }
+
+        function shuffleCards() {
+            for (let i = ACRONYMS.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [ACRONYMS[i], ACRONYMS[j]] = [ACRONYMS[j], ACRONYMS[i]];
+            }
+            currentIndex = 0;
+            renderCard();
+        }
+
+        function markCard(correct) {
+            if (correct) scoreCorrect++;
+            else scoreWrong++;
+            updateScoreboard();
+            nextCard();
+        }
+
+        function resetScores() {
+            scoreCorrect = 0;
+            scoreWrong = 0;
+            currentIndex = 0;
+            renderCard();
+        }
+
+        function updateScoreboard() {
+            document.getElementById('card-num').textContent = currentIndex + 1;
+            document.getElementById('card-total').textContent = ACRONYMS.length;
+            document.getElementById('score-correct').textContent = scoreCorrect;
+            document.getElementById('score-wrong').textContent = scoreWrong;
+        }
+
+        function updateProgress() {
+            const pct = ((currentIndex + 1) / ACRONYMS.length * 100).toFixed(0);
+            document.getElementById('progress-fill').style.width = pct + '%';
+        }
+
+        // Initialize on load
+        renderCard();
+    </script>
 </body>
 </html>
