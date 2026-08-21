@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CompTIA A+ Acronym Master Drill</title>
+  <style>
+    :root {
+      --primary: #002855;
+      --secondary: #0062A3;
+      --accent: #F7DD63;
+      --bg: #F4F7FA;
+      --card-bg: #FFFFFF;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --correct: #16A34A;
+      --wrong: #DC2626;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+    header { text-align: center; margin-bottom: 24px; max-width: 800px; width: 100%; }
+    header h1 { color: var(--primary); font-size: 2rem; margin-bottom: 8px; }
+    header p { color: var(--text-muted); font-size: 1rem; }
+
+    nav { display: flex; gap: 10px; margin-bottom: 24px; background: #E2E8F0; padding: 6px; border-radius: 30px; }
+    nav button { border: none; background: transparent; padding: 10px 20px; font-weight: 600; border-radius: 20px; cursor: pointer; color: var(--text-muted); transition: all 0.2s ease; }
+    nav button.active { background: var(--primary); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+    .container { max-width: 700px; width: 100%; background: var(--card-bg); border-radius: var(--radius); padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+    /* Flashcard Styles */
+    .flashcard-wrapper { perspective: 1000px; height: 260px; margin-bottom: 20px; cursor: pointer; }
+    .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s ease; border-radius: var(--radius); border: 2px solid #E2E8F0; }
+    .flashcard.flipped { transform: rotateY(180deg); }
+    .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; border-radius: var(--radius); }
+    .card-front { background: #FFFFFF; color: var(--primary); }
+    .card-back { background: var(--primary); color: #FFFFFF; transform: rotateY(180deg); }
+    .card-front h2 { font-size: 2.5rem; font-weight: 700; }
+    .card-back h3 { font-size: 1.5rem; color: var(--accent); font-weight: 600; }
+
+    .controls { display: flex; justify-content: space-between; align-items: center; }
+    .btn { background: var(--secondary); color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: var(--primary); }
+    .btn-outline { background: transparent; color: var(--secondary); border: 2px solid var(--secondary); }
+    .btn-outline:hover { background: var(--secondary); color: white; }
+
+    /* Quiz Styles */
+    .quiz-question { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 20px; }
+    .options-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+    .option-btn { background: #F8FAFC; border: 2px solid #E2E8F0; padding: 14px; border-radius: 8px; text-align: left; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .option-btn:hover { border-color: var(--secondary); background: #EFF6FF; }
+    .option-btn.correct { background: #DCFCE7; border-color: var(--correct); color: #14532D; }
+    .option-btn.wrong { background: #FEE2E2; border-color: var(--wrong); color: #7F1D1D; }
+
+    /* Speed Drill Styles */
+    .drill-input { width: 100%; padding: 14px; font-size: 1.1rem; border: 2px solid #CBD5E1; border-radius: 8px; margin-bottom: 16px; outline: none; }
+    .drill-input:focus { border-color: var(--secondary); }
+    .feedback { font-weight: 600; margin-bottom: 16px; min-height: 24px; }
+    .feedback.correct { color: var(--correct); }
+    .feedback.wrong { color: var(--wrong); }
+
+    .hidden { display: none !important; }
+    .score-board { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>CompTIA A+ Acronym Master Drill</h1>
+    <p>Practice and master essential hardware, networking, and security acronyms.</p>
+  </header>
+
+  <nav>
+    <button id="nav-flashcards" class="active" onclick="switchMode('flashcards')">Flashcards</button>
+    <button id="nav-quiz" onclick="switchMode('quiz')">Multiple Choice Quiz</button>
+    <button id="nav-drill" onclick="switchMode('drill')">Speed Drill</button>
+  </nav>
+
+  <main class="container">
+    <!-- FLASHCARD MODE -->
+    <section id="mode-flashcards">
+      <div class="flashcard-wrapper" onclick="flipCard()">
+        <div class="flashcard" id="card">
+          <div class="card-face card-front">
+            <h2 id="card-acronym">IOPS</h2>
+            <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);">(Click to flip)</p>
+          </div>
+          <div class="card-face card-back">
+            <h3 id="card-expansion">Input/Output Operations Per Second</h3>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn btn-outline" onclick="prevCard()">Previous</button>
+        <span class="score-board" id="card-counter">1 / 150</span>
+        <button class="btn btn-outline" onclick="shuffleCards()">Shuffle</button>
+        <button class="btn" onclick="nextCard()">Next</button>
+      </div>
+    </section>
+
+    <!-- QUIZ MODE -->
+    <section id="mode-quiz" class="hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span class="score-board" id="quiz-progress">Question 1 of 10</span>
+        <span class="score-board" id="quiz-score">Score: 0</span>
+      </div>
+      <div class="quiz-question" id="quiz-question">What does IOPS stand for?</div>
+      <div class="options-grid" id="quiz-options"></div>
+      <div class="controls">
+        <button class="btn" id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden">Next Question</button>
+      </div>
+    </section>
+
+    <!-- SPEED DRILL MODE -->
+    <section id="mode-drill" class="hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span class="score-board" id="drill-streak">Streak: 0 🔥</span>
+      </div>
+      <h2 style="color: var(--primary); margin-bottom: 12px;" id="drill-acronym">IOPS</h2>
+      <p style="margin-bottom: 16px; color: var(--text-muted);">Type the full term and press Enter:</p>
+      <input type="text" class="drill-input" id="drill-input" placeholder="e.g. Input/Output Operations Per Second" autocomplete="off" onkeydown="checkDrillAnswer(event)">
+      <div class="feedback" id="drill-feedback"></div>
+      <div class="controls">
+        <button class="btn btn-outline" onclick="skipDrill()">Skip</button>
+        <button class="btn" onclick="submitDrill()">Submit Answer</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const data = [
+      { q: "IOPS", a: "Input/Output Operations Per Second" },
+      { q: "IR", a: "Infrared" },
+      { q: "ISO", a: "International Organization for Standardization" },
+      { q: "HTTPS", a: "Hypertext Transfer Protocol Secure" },
+      { q: "LAN", a: "Local Area Network" },
+      { q: "IP", a: "Internet Protocol" },
+      { q: "LC", a: "Lucent Connector" },
+      { q: "IPS (Display)", a: "In-Plane Switching" },
+      { q: "ITX", a: "Information Technology Extended" },
+      { q: "ISP", a: "Internet Service Provider" },
+      { q: "LTE", a: "Long-Term Evolution" },
+      { q: "LED", a: "Light-Emitting Diode" },
+      { q: "IoT", a: "Internet of Things" },
+      { q: "KVM", a: "Keyboard, Video, and Mouse" },
+      { q: "IAM", a: "Identity and Access Management" },
+      { q: "IMAP", a: "Internet Message Access Protocol" },
+      { q: "HD", a: "High Definition" },
+      { q: "IaaS", a: "Infrastructure as a Service" },
+      { q: "MAC", a: "Media Access Control" },
+      { q: "ESD", a: "Electrostatic Discharge" },
+      { q: "GPU", a: "Graphics Processing Unit" },
+      { q: "LCD", a: "Liquid Crystal Display" },
+      { q: "eSIM", a: "Embedded Subscriber Identity Module" },
+      { q: "LDAP", a: "Lightweight Directory Access Protocol" },
+      { q: "exFAT", a: "Extensible File Allocation Table" },
+      { q: "FRT", a: "Facial Recognition Technology" },
+      { q: "AP", a: "Access Point" },
+      { q: "GFS", a: "Grandfather-Father-Son" },
+      { q: "CAC", a: "Common Access Card" },
+      { q: "CMDB", a: "Configuration Management Database" },
+      { q: "FAT32", a: "32-bit File Allocation Table" },
+      { q: "GUI", a: "Graphical User Interface" },
+      { q: "ACL", a: "Access Control List" },
+      { q: "BYOD", a: "Bring Your Own Device" },
+      { q: "eSATA", a: "External Serial Advanced Technology Attachment" },
+      { q: "ARM", a: "Advanced RISC Machine" },
+      { q: "BSOD", a: "Blue Screen of Death" },
+      { q: "FaaS", a: "Function as a Service" },
+      { q: "APIPA", a: "Automatic Private Internet Protocol Addressing" },
+      { q: "FTP", a: "File Transfer Protocol" },
+      { q: "ATX", a: "Advanced Technology Extended" },
+      { q: "AMD", a: "Advanced Micro Devices" },
+      { q: "HDMI", a: "High-Definition Multimedia Interface" },
+      { q: "AUP", a: "Acceptable Use Policy" },
+      { q: "CAS", a: "Column Address Strobe" },
+      { q: "GUID", a: "Globally Unique Identifier" },
+      { q: "AES", a: "Advanced Encryption Standard" },
+      { q: "EULA", a: "End-User License Agreement" },
+      { q: "APFS", a: "Apple File System" },
+      { q: "HTTP", a: "Hypertext Transfer Protocol" },
+      { q: "BIOS", a: "Basic Input/Output System" },
+      { q: "HDD", a: "Hard Disk Drive" },
+      { q: "BNC", a: "Bayonet Neill-Concelman" },
+      { q: "GPT", a: "GUID Partition Table" },
+      { q: "CIFS", a: "Common Internet File System" },
+      { q: "GPS", a: "Global Positioning System" },
+      { q: "ADF", a: "Automatic Document Feeder" },
+      { q: "EDR", a: "Endpoint Detection and Response" },
+      { q: "HSM", a: "Hardware Security Module" },
+      { q: "BEC", a: "Business Email Compromise" },
+      { q: "CPU", a: "Central Processing Unit" },
+      { q: "DVI", a: "Digital Visual Interface" },
+      { q: "AAA", a: "Authentication, Authorization, and Accounting" },
+      { q: "DNS", a: "Domain Name System" },
+      { q: "DDR", a: "Double Data Rate" },
+      { q: "CNAME", a: "Canonical Name" },
+      { q: "DSL", a: "Digital Subscriber Line" },
+      { q: "DHCP", a: "Dynamic Host Configuration Protocol" },
+      { q: "DB-9", a: "D-subminiature 9-pin connector" },
+      { q: "DKIM", a: "DomainKeys Identified Mail" },
+      { q: "EOL", a: "End of Life" },
+      { q: "DoS", a: "Denial of Service" },
+      { q: "EFS", a: "Encrypting File System" },
+      { q: "CMOS", a: "Complementary Metal-Oxide Semiconductor" },
+      { q: "DMARC", a: "Domain-based Message Authentication, Reporting, and Conformance" },
+      { q: "DDoS", a: "Distributed Denial of Service" },
+      { q: "ECC", a: "Error-Correcting Code" },
+      { q: "DLP", a: "Data Loss Prevention" },
+      { q: "DRM", a: "Digital Rights Management" },
+      { q: "DIMM", a: "Dual In-line Memory Module" },
+      { q: "RDP", a: "Remote Desktop Protocol" },
+      { q: "RPM", a: "Revolutions Per Minute" },
+      { q: "RJ11", a: "Registered Jack 11" },
+      { q: "RAID", a: "Redundant Array of Independent Disks" },
+      { q: "ReFS", a: "Resilient File System" },
+      { q: "SaaS", a: "Software as a Service" },
+      { q: "RISC", a: "Reduced Instruction Set Computer" },
+      { q: "RAM", a: "Random-Access Memory" },
+      { q: "RADIUS", a: "Remote Authentication Dial-In User Service" },
+      { q: "UDP", a: "User Datagram Protocol" },
+      { q: "PXE", a: "Preboot Execution Environment" },
+      { q: "VA (Display)", a: "Vertical Alignment" },
+      { q: "SAN", a: "Storage Area Network" },
+      { q: "VDI", a: "Virtual Desktop Infrastructure" },
+      { q: "MBR", a: "Master Boot Record" },
+      { q: "QoS", a: "Quality of Service" },
+      { q: "MAN", a: "Metropolitan Area Network" },
+      { q: "UEFI", a: "Unified Extensible Firmware Interface" },
+      { q: "VRAM", a: "Video Random-Access Memory" },
+      { q: "ST (Fiber)", a: "Straight Tip" },
+      { q: "WWAN", a: "Wireless Wide Area Network" },
+      { q: "NAS", a: "Network-Attached Storage" },
+      { q: "mSATA", a: "Mini-Serial Advanced Technology Attachment" },
+      { q: "UTM", a: "Unified Threat Management" },
+      { q: "WinRM", a: "Windows Remote Management" },
+      { q: "NTFS", a: "New Technology File System" },
+      { q: "SSH", a: "Secure Shell" },
+      { q: "NTP", a: "Network Time Protocol" },
+      { q: "WAN", a: "Wide Area Network" },
+      { q: "TXT", a: "Text" },
+      { q: "ONT", a: "Optical Network Terminal" },
+      { q: "MNDA", a: "Mutual Non-Disclosure Agreement" },
+      { q: "RMM", a: "Remote Monitoring and Management" },
+      { q: "WEP", a: "Wired Equivalent Privacy" },
+      { q: "TPM", a: "Trusted Platform Module" },
+      { q: "SAS", a: "Serial Attached SCSI" },
+      { q: "OTP", a: "One-Time Password or Passcode" },
+      { q: "WPA", a: "Wi-Fi Protected Access" },
+      { q: "MX", a: "Mail Exchange" },
+      { q: "UAC", a: "User Account Control" },
+      { q: "PUP", a: "Potentially Unwanted Program" },
+      { q: "SAML", a: "Security Assertion Markup Language" },
+      { q: "NDA", a: "Non-Disclosure Agreement" },
+      { q: "VM", a: "Virtual Machine" },
+      { q: "TN (Display)", a: "Twisted Nematic" },
+      { q: "SD", a: "Secure Digital" },
+      { q: "MFA", a: "Multifactor Authentication" },
+      { q: "VoIP", a: "Voice over Internet Protocol" },
+      { q: "SSO", a: "Single Sign-On" },
+      { q: "PIN", a: "Personal Identification Number" },
+      { q: "RSR", a: "Rapid Security Response" },
+      { q: "MDR", a: "Managed Detection and Response" },
+      { q: "UPnP", a: "Universal Plug and Play" },
+      { q: "OLED", a: "Organic Light-Emitting Diode" },
+      { q: "SDS", a: "Safety Data Sheet" },
+      { q: "SSID", a: "Service Set Identifier" },
+      { q: "NIC", a: "Network Interface Card" },
+      { q: "WLAN", a: "Wireless Local Area Network" },
+      { q: "RJ45", a: "Registered Jack 45" },
+      { q: "PIV", a: "Personal Identity Verification" },
+      { q: "VNC", a: "Virtual Network Computing" },
+      { q: "USB-C", a: "Universal Serial Bus Type-C" },
+      { q: "RFID", a: "Radio-Frequency Identification" },
+      { q: "MDM", a: "Mobile Device Management" },
+      { q: "S.M.A.R.T.", a: "Self-Monitoring, Analysis, and Reporting Technology" },
+      { q: "PaaS", a: "Platform as a Service" },
+      { q: "NFC", a: "Near-Field Communication" },
+      { q: "XSS", a: "Cross-Site Scripting" },
+      { q: "TOTP", a: "Time-Based One-Time Password" },
+      { q: "SPICE", a: "Simple Protocol for Independent Computing Environments" },
+      { q: "NAT", a: "Network Address Translation" },
+      { q: "TCP", a: "Transmission Control Protocol" },
+      { q: "PCIe", a: "Peripheral Component Interconnect Express" },
+      { q: "XFS", a: "X File System" },
+      { q: "NVMe", a: "Non-Volatile Memory Express" },
+      { q: "RGB", a: "Red, Green, and Blue" },
+      { q: "SLA", a: "Service-Level Agreement" },
+      { q: "TKIP", a: "Temporal Key Integrity Protocol" },
+      { q: "MMC", a: "Microsoft Management Console" },
+      { q: "SATA", a: "Serial Advanced Technology Attachment" },
+      { q: "OS", a: "Operating System" },
+      { q: "SOHO", a: "Small Office/Home Office" },
+      { q: "MFP", a: "Multifunction Printer" },
+      { q: "WAP", a: "Wireless Access Point" },
+      { q: "POST", a: "Power-On Self-Test" },
+      { q: "USB", a: "Universal Serial Bus" },
+      { q: "NetBIOS", a: "Network Basic Input/Output System" },
+      { q: "SPF", a: "Sender Policy Framework" },
+      { q: "UPS", a: "Uninterruptible Power Supply" },
+      { q: "WISP", a: "Wireless Internet Service Provider" },
+      { q: "PCL", a: "Printer Command Language" },
+      { q: "SSD", a: "Solid-State Drive" },
+      { q: "NAC", a: "Network Access Control" },
+      { q: "VPN", a: "Virtual Private Network" },
+      { q: "PC", a: "Personal Computer" },
+      { q: "TACACS", a: "Terminal Access Controller Access-Control System" },
+      { q: "SIM", a: "Subscriber Identity Module" },
+      { q: "PAN", a: "Personal Area Network" },
+      { q: "VGA", a: "Video Graphics Array" },
+      { q: "XDR", a: "Extended Detection and Response" },
+      { q: "SFTP", a: "SSH File Transfer Protocol" },
+      { q: "POP", a: "Post Office Protocol" },
+      { q: "SCADA", a: "Supervisory Control and Data Acquisition" },
+      { q: "PAM", a: "Privileged Access Management" },
+      { q: "XaaS", a: "Anything as a Service" },
+      { q: "SMB", a: "Server Message Block" },
+      { q: "PCI", a: "Peripheral Component Interconnect" },
+      { q: "SC (Fiber)", a: "Subscriber Connector" },
+      { q: "OEM", a: "Original Equipment Manufacturer" },
+      { q: "SOP", a: "Standard Operating Procedure" },
+      { q: "PSU", a: "Power Supply Unit" },
+      { q: "SCSI", a: "Small Computer System Interface" },
+      { q: "PoE", a: "Power over Ethernet" },
+      { q: "VLAN", a: "Virtual Local Area Network" },
+      { q: "SNMP", a: "Simple Network Management Protocol" },
+      { q: "SMTP", a: "Simple Mail Transfer Protocol" },
+      { q: "PII", a: "Personally Identifiable Information" },
+      { q: "SODIMM", a: "Small Outline Dual In-line Memory Module" },
+      { q: "SMS", a: "Short Message Service" },
+      { q: "SQL", a: "Structured Query Language" }
+    ];
+
+    let currentCardIndex = 0;
+    let cardList = [...data];
+
+    // Mode Switcher
+    function switchMode(mode) {
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(`nav-${mode}`).classList.add('active');
+      document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(`mode-${mode}`).classList.remove('hidden');
+
+      if (mode === 'quiz') startQuiz();
+      if (mode === 'drill') startDrill();
+    }
+
+    // Flashcard Logic
+    function renderCard() {
+      const cardEl = document.getElementById('card');
+      cardEl.classList.remove('flipped');
+      setTimeout(() => {
+        document.getElementById('card-acronym').innerText = cardList[currentCardIndex].q;
+        document.getElementById('card-expansion').innerText = cardList[currentCardIndex].a;
+        document.getElementById('card-counter').innerText = `${currentCardIndex + 1} / ${cardList.length}`;
+      }, 150);
+    }
+
+    function flipCard() {
+      document.getElementById('card').classList.toggle('flipped');
+    }
+
+    function nextCard() {
+      currentCardIndex = (currentCardIndex + 1) % cardList.length;
+      renderCard();
+    }
+
+    function prevCard() {
+      currentCardIndex = (currentCardIndex - 1 + cardList.length) % cardList.length;
+      renderCard();
+    }
+
+    function shuffleCards() {
+      cardList.sort(() => Math.random() - 0.5);
+      currentCardIndex = 0;
+      renderCard();
+    }
+
+    // Quiz Logic
+    let quizIndex = 0;
+    let quizScore = 0;
+    let quizItems = [];
+
+    function startQuiz() {
+      quizItems = [...data].sort(() => Math.random() - 0.5).slice(0, 10);
+      quizIndex = 0;
+      quizScore = 0;
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const current = quizItems[quizIndex];
+      document.getElementById('quiz-progress').innerText = `Question ${quizIndex + 1} of ${quizItems.length}`;
+      document.getElementById('quiz-score').innerText = `Score: ${quizScore}`;
+      document.getElementById('quiz-question').innerText = `What does ${current.q} stand for?`;
+
+      // Generate Options
+      const distractors = data.filter(d => d.a !== current.a).sort(() => Math.random() - 0.5).slice(0, 3);
+      const options = [...distractors, current].sort(() => Math.random() - 0.5);
+
+      const optionsContainer = document.getElementById('quiz-options');
+      optionsContainer.innerHTML = '';
+
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt.a;
+        btn.onclick = () => checkQuizAnswer(btn, opt.a === current.a);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(btn, isCorrect) {
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btn.classList.add('correct');
+        quizScore++;
+      } else {
+        btn.classList.add('wrong');
+      }
+
+      setTimeout(() => {
+        quizIndex++;
+        if (quizIndex < quizItems.length) {
+          renderQuizQuestion();
+        } else {
+          alert(`Quiz complete! Your final score is ${quizScore} / ${quizItems.length}`);
+          startQuiz();
+        }
+      }, 1200);
+    }
+
+    // Speed Drill Logic
+    let currentDrillItem = null;
+    let drillStreak = 0;
+
+    function startDrill() {
+      drillStreak = 0;
+      nextDrillQuestion();
+    }
+
+    function nextDrillQuestion() {
+      currentDrillItem = data[Math.floor(Math.random() * data.length)];
+      document.getElementById('drill-acronym').innerText = currentDrillItem.q;
+      document.getElementById('drill-input').value = '';
+      document.getElementById('drill-feedback').innerText = '';
+      document.getElementById('drill-streak').innerText = `Streak: ${drillStreak} 🔥`;
+      document.getElementById('drill-input').focus();
+    }
+
+    function checkDrillAnswer(e) {
+      if (e.key === 'Enter') submitDrill();
+    }
+
+    function submitDrill() {
+      const input = document.getElementById('drill-input').value.trim().toLowerCase();
+      const target = currentDrillItem.a.toLowerCase();
+      const feedback = document.getElementById('drill-feedback');
+
+      if (input === target) {
+        feedback.innerText = "Correct!";
+        feedback.className = "feedback correct";
+        drillStreak++;
+        setTimeout(nextDrillQuestion, 1000);
+      } else {
+        feedback.innerText = `Incorrect. Correct answer: ${currentDrillItem.a}`;
+        feedback.className = "feedback wrong";
+        drillStreak = 0;
+        document.getElementById('drill-streak').innerText = `Streak: 0 🔥`;
+      }
+    }
+
+    function skipDrill() {
+      drillStreak = 0;
+      nextDrillQuestion();
+    }
+
+    // Initialize
+    renderCard();
+  </script>
+</body>
+</html>
