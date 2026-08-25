@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA A+ Core 2 Study Guide</title>
+    <link rel="stylesheet" href="/platform-libs/tailwind@4.3.3/tailwind.min.css" integrity="sha384-FAeNA0LKWGfDBZK2YiqGtL1zjFsU4YKyHilW/IA189Ipk+IkYftdMfEUPWxTRQ4i" crossorigin="anonymous" />
+    <style>
+        :root {
+            --primary: #0062A3;
+            --accent: #F7DD63;
+            --dark: #002855;
+            --light: #FFFFFF;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, #003d7a 100%);
+            color: var(--light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .header {
+            background: var(--primary);
+            border-bottom: 4px solid var(--accent);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.95;
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            padding: 2rem 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .mode-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .mode-btn:hover {
+            background: var(--accent);
+            color: var(--dark);
+            transform: scale(1.05);
+        }
+        
+        .mode-btn.active {
+            background: var(--accent);
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .mode-content {
+            display: none;
+        }
+        
+        .mode-content.active {
+            display: block;
+        }
+        
+        /* Flashcard Styles */
+        .domain-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .domain-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            color: var(--light);
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .domain-tab:hover {
+            background: rgba(247, 221, 99, 0.2);
+            border-color: var(--accent);
+        }
+        
+        .domain-tab.active {
+            background: var(--accent);
+            color: var(--dark);
+            border-color: var(--accent);
+        }
+        
+        .flashcard {
+            perspective: 1000px;
+            height: 300px;
+            margin: 2rem auto;
+            max-width: 500px;
+        }
+        
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flashcard-inner.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, var(--primary), #004a8a);
+            border: 3px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .flashcard-back {
+            background: linear-gradient(135deg, #1a5f9f, var(--primary));
+            border: 3px solid var(--accent);
+            color: var(--light);
+            transform: rotateY(180deg);
+        }
+        
+        .card-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent);
+            color: var(--dark);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .card-counter {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        /* Quiz Styles */
+        .quiz-question {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--primary);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-question h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .quiz-option {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(247, 221, 99, 0.3);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--light);
+            font-weight: 500;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(247, 221, 99, 0.1);
+            border-color: var(--accent);
+        }
+        
+        .quiz-option.selected {
+            background: rgba(247, 221, 99, 0.2);
+            border-color: var(--accent);
+        }
+        
+        .quiz-option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .quiz-option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #F44336;
+            color: #F44336;
+        }
+        
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .quiz-feedback.show {
+            display: block;
+        }
+        
+        .quiz-feedback.correct {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .quiz-feedback.incorrect {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+            border-left: 4px solid #F44336;
+        }
+        
+        .quiz-score {
+            background: var(--primary);
+            border: 2px solid var(--accent);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-score h3 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .quiz-score p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .quiz-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: var(--accent);
+            color: var(--dark);
+        }
+        
+        /* Instructor Mode Styles */
+        .instructor-display {
+            background: linear-gradient(135deg, var(--primary), #004a8a);
+            border: 4px solid var(--accent);
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            margin: 2rem 0;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .instructor-term {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            word-wrap: break-word;
+        }
+        
+        .instructor-definition {
+            font-size: 1.5rem;
+            color: var(--light);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .instructor-definition.revealed {
+            opacity: 1;
+        }
+        
+        .instructor-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .instructor-btn {
+            padding: 1rem 2rem;
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .instructor-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(247, 221, 99, 0.3);
+        }
+        
+        .instructor-counter {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .mode-selector {
+                flex-direction: column;
+            }
+            
+            .mode-btn {
+                width: 100%;
+            }
+            
+            .instructor-term {
+                font-size: 1.75rem;
+            }
+            
+            .instructor-definition {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚙️ CompTIA A+ Core 2 Study Guide</h1>
+        <p>Master the 220-1202 exam domains with flashcards, quizzes, and instructor mode</p>
+    </div>
+    
+    <div class="mode-selector">
+        <button class="mode-btn active" onclick="switchMode('flashcard')">🃏 Flashcards</button>
+        <button class="mode-btn" onclick="switchMode('quiz')">📝 Quiz</button>
+        <button class="mode-btn" onclick="switchMode('instructor')">🎯 Instructor Mode</button>
+    </div>
+    
+    <div class="container">
+        <!-- FLASHCARD MODE -->
+        <div id="flashcard" class="mode-content active">
+            <div class="domain-tabs">
+                <button class="domain-tab active" onclick="switchDomain('os')">1.0 Operating Systems</button>
+                <button class="domain-tab" onclick="switchDomain('security')">2.0 Security</button>
+                <button class="domain-tab" onclick="switchDomain('troubleshooting')">3.0 Software Troubleshooting</button>
+                <button class="domain-tab" onclick="switchDomain('operations')">4.0 Operational Procedures</button>
+            </div>
+            
+            <div class="flashcard">
+                <div class="flashcard-inner" id="flashcardInner" onclick="flipCard()">
+                    <div class="flashcard-face flashcard-front">
+                        <div id="flashcardTerm">Click to start</div>
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div id="flashcardDef">Definition appears here</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-nav">
+                <button class="nav-btn" onclick="prevCard()" id="prevBtn">← Previous</button>
+                <button class="nav-btn" onclick="nextCard()" id="nextBtn">Next →</button>
+            </div>
+            
+            <div class="card-counter">
+                <span id="cardCounter">Card 0 of 0</span>
+            </div>
+        </div>
+        
+        <!-- QUIZ MODE -->
+        <div id="quiz" class="mode-content">
+            <div class="quiz-score">
+                <h3>Your Score</h3>
+                <p id="quizScore">0 / 0</p>
+            </div>
+            
+            <div id="quizContainer"></div>
+            
+            <div class="quiz-controls">
+                <button class="control-btn" onclick="startQuiz()">Start Quiz</button>
+                <button class="control-btn" onclick="resetQuiz()">Reset</button>
+            </div>
+        </div>
+        
+        <!-- INSTRUCTOR MODE -->
+        <div id="instructor" class="mode-content">
+            <div class="instructor-display">
+                <div class="instructor-term" id="instructorTerm">Ready to teach</div>
+                <div class="instructor-definition" id="instructorDef">Click "Reveal" when ready</div>
+            </div>
+            
+            <div class="instructor-controls">
+                <button class="instructor-btn" onclick="revealDefinition()">Reveal Definition</button>
+                <button class="instructor-btn" onclick="nextInstructorCard()">Next Term</button>
+                <button class="instructor-btn" onclick="resetInstructor()">Reset</button>
+            </div>
+            
+            <div class="instructor-counter">
+                <span id="instructorCounter">Term 0 of 0</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // VOCABULARY DATABASE
+        const vocabularyData = {
+            os: [
+                { term: "NTFS", def: "New Technology File System - modern Windows filesystem with permissions, compression, and encryption support" },
+                { term: "FAT32", def: "File Allocation Table 32-bit - legacy filesystem with 4GB file size limit, used for USB drives and older systems" },
+                { term: "ext4", def: "Fourth extended filesystem - Linux filesystem with journaling, large file support, and improved performance" },
+                { term: "Task Manager", def: "Windows utility for monitoring processes, performance, startup programs, and system resources" },
+                { term: "Device Manager", def: "Windows tool for viewing, updating, and troubleshooting hardware drivers and devices" },
+                { term: "Control Panel", def: "Windows settings interface for system configuration, user accounts, and hardware settings" },
+                { term: "Windows 10", def: "Microsoft OS released 2015, mainstream support until Oct 2025, supports modern hardware and features" },
+                { term: "Windows 11", def: "Microsoft OS released 2021, requires TPM 2.0 and UEFI, improved security and performance" },
+                { term: "macOS", def: "Apple's Unix-based operating system for Mac computers, known for security and integration with Apple devices" },
+                { term: "Linux", def: "Free, open-source Unix-like OS used in servers, desktops, and embedded systems; many distributions available" },
+                { term: "Chrome OS", def: "Google's lightweight OS for Chromebooks, cloud-based with limited local storage, fast boot times" },
+                { term: "iOS", def: "Apple's mobile OS for iPhones and iPads, closed ecosystem with strict app store controls" },
+                { term: "Android", def: "Google's open-source mobile OS used by multiple manufacturers, customizable and flexible" },
+                { term: "Swap File", def: "Virtual memory on disk used when RAM is full, slower than physical RAM but prevents system crashes" },
+                { term: "BIOS", def: "Basic Input/Output System - firmware that initializes hardware before OS loads, being replaced by UEFI" },
+                { term: "UEFI", def: "Unified Extensible Firmware Interface - modern firmware replacement for BIOS with better security and features" }
+            ],
+            security: [
+                { term: "Windows Defender", def: "Microsoft's built-in antivirus and antimalware protection for Windows systems" },
+                { term: "Windows Firewall", def: "Built-in Windows firewall that controls inbound and outbound network traffic" },
+                { term: "BitLocker", def: "Windows full-disk encryption technology that protects data on lost or stolen devices" },
+                { term: "WPA2", def: "Wi-Fi Protected Access 2 - wireless security protocol using AES encryption, standard for modern networks" },
+                { term: "WPA3", def: "Wi-Fi Protected Access 3 - latest wireless security protocol with improved encryption and protection against brute-force attacks" },
+                { term: "TKIP", def: "Temporal Key Integrity Protocol - older wireless encryption, less secure than AES, deprecated in WPA3" },
+                { term: "AES", def: "Advanced Encryption Standard - strong symmetric encryption algorithm used in WPA2/WPA3 and BitLocker" },
+                { term: "Malware", def: "Malicious software including viruses, worms, trojans, ransomware, and spyware designed to harm systems" },
+                { term: "Ransomware", def: "Malware that encrypts user files and demands payment for decryption key" },
+                { term: "Phishing", def: "Social engineering attack using fake emails or websites to trick users into revealing credentials" },
+                { term: "MFA", def: "Multi-Factor Authentication - requires two or more verification methods (password + code, biometric, etc.)" },
+                { term: "NTFS Permissions", def: "File-level access controls on Windows (Read, Modify, Full Control) that restrict who can access files" },
+                { term: "Active Directory", def: "Microsoft's centralized user and computer management system for enterprise networks" },
+                { term: "UAC", def: "User Account Control - Windows security feature that prompts for admin approval before system changes" },
+                { term: "Windows Hello", def: "Biometric authentication for Windows using facial recognition or fingerprint" },
+                { term: "Group Policy", def: "Windows tool for enforcing security settings and configurations across multiple computers" }
+            ],
+            troubleshooting: [
+                { term: "BSOD", def: "Blue Screen of Death - critical Windows error requiring restart, often caused by driver or hardware issues" },
+                { term: "Boot Loop", def: "System repeatedly restarts without fully loading OS, usually caused by corrupted files or failed updates" },
+                { term: "Safe Mode", def: "Windows diagnostic mode that loads minimal drivers and services for troubleshooting startup issues" },
+                { term: "Event Viewer", def: "Windows tool that logs system, security, and application events for troubleshooting" },
+                { term: "System Restore", def: "Windows feature that reverts system files to a previous checkpoint without affecting user data" },
+                { term: "Disk Check", def: "Windows utility (chkdsk) that scans and repairs filesystem errors on hard drives" },
+                { term: "Performance Monitor", def: "Windows tool for tracking CPU, memory, disk, and network performance in real-time" },
+                { term: "Resource Monitor", def: "Windows utility showing detailed resource usage by processes and services" },
+                { term: "Services", def: "Background processes running on Windows that provide system functionality" },
+                { term: "Startup Programs", def: "Applications configured to run automatically when Windows boots" },
+                { term: "Driver Update", def: "Installing newer hardware driver software to fix compatibility or performance issues" },
+                { term: "Windows Update", def: "Microsoft's system for distributing security patches, bug fixes, and feature updates" },
+                { term: "Clean Boot", def: "Starting Windows with minimal services and startup programs to isolate software conflicts" },
+                { term: "Malware Scan", def: "Using antivirus/antimalware tools to detect and remove malicious software" },
+                { term: "Application Crash", def: "Unexpected program termination, often logged in Event Viewer with error codes" },
+                { term: "Slow Performance", def: "System running sluggishly due to high CPU/memory usage, malware, or hardware issues" }
+            ],
+            operations: [
+                { term: "Ticketing System", def: "Software for tracking, prioritizing, and managing support requests and incidents" },
+                { term: "Asset Management", def: "Tracking and maintaining inventory of hardware, software, and IT resources" },
+                { term: "Change Management", def: "Formal process for planning, testing, and implementing system changes to minimize disruption" },
+                { term: "Backup", def: "Copy of data stored separately from original for recovery in case of loss or corruption" },
+                { term: "Full Backup", def: "Complete copy of all data, largest but fastest to restore" },
+                { term: "Incremental Backup", def: "Backup of only data changed since last backup, smaller but requires multiple backups to restore" },
+                { term: "Differential Backup", def: "Backup of data changed since last full backup, balance between full and incremental" },
+                { term: "Recovery Point Objective", def: "RPO - maximum acceptable data loss measured in time (e.g., 1 hour of data)" },
+                { term: "Recovery Time Objective", def: "RTO - maximum acceptable downtime for system recovery (e.g., 4 hours)" },
+                { term: "ESD", def: "Electrostatic Discharge - static electricity that can damage sensitive computer components" },
+                { term: "Documentation", def: "Written records of systems, procedures, configurations, and troubleshooting steps" },
+                { term: "Incident Report", def: "Formal documentation of a security breach or system failure with details and resolution" },
+                { term: "PowerShell", def: "Microsoft's command-line shell and scripting language for Windows automation" },
+                { term: "Bash", def: "Bourne Again Shell - standard command-line shell for Linux and macOS" },
+                { term: "Remote Access", def: "Connecting to and controlling computers over a network (RDP, SSH, VPN)" },
+                { term: "VPN", def: "Virtual Private Network - encrypted connection over public internet for secure remote access" }
+            ]
+        };
+        
+        // STATE MANAGEMENT
+        let currentMode = 'flashcard';
+        let currentDomain = 'os';
+        let currentCardIndex = 0;
+        let isFlipped = false;
+        let quizActive = false;
+        let quizScore = 0;
+        let quizTotal = 0;
+        let instructorIndex = 0;
+        let definitionRevealed = false;
+        
+        // MODE SWITCHING
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(mode).classList.add('active');
+            document.querySelectorAll('.mode-btn').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (mode === 'flashcard') {
+                loadFlashcard();
+            } else if (mode === 'quiz') {
+                initQuiz();
+            } else if (mode === 'instructor') {
+                loadInstructorCard();
+            }
+        }
+        
+        // FLASHCARD FUNCTIONS
+        function switchDomain(domain) {
+            currentDomain = domain;
+            currentCardIndex = 0;
+            isFlipped = false;
+            document.querySelectorAll('.domain-tab').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            loadFlashcard();
+        }
+        
+        function loadFlashcard() {
+            const cards = vocabularyData[currentDomain];
+            const card = cards[currentCardIndex];
+            document.getElementById('flashcardTerm').textContent = card.term;
+            document.getElementById('flashcardDef').textContent = card.def;
+            document.getElementById('flashcardInner').classList.remove('flipped');
+            isFlipped = false;
+            updateCardCounter();
+            updateNavButtons();
+        }
+        
+        function flipCard() {
+            document.getElementById('flashcardInner').classList.toggle('flipped');
+            isFlipped = !isFlipped;
+        }
+        
+        function nextCard() {
+            const cards = vocabularyData[currentDomain];
+            if (currentCardIndex < cards.length - 1) {
+                currentCardIndex++;
+                loadFlashcard();
+            }
+        }
+        
+        function prevCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                loadFlashcard();
+            }
+        }
+        
+        function updateCardCounter() {
+            const total = vocabularyData[currentDomain].length;
+            document.getElementById('cardCounter').textContent = `Card ${currentCardIndex + 1} of ${total}`;
+        }
+        
+        function updateNavButtons() {
+            const total = vocabularyData[currentDomain].length;
+            document.getElementById('prevBtn').disabled = currentCardIndex === 0;
+            document.getElementById('nextBtn').disabled = currentCardIndex === total - 1;
+        }
+        
+        // QUIZ FUNCTIONS
+        function initQuiz() {
+            quizScore = 0;
+            quizTotal = 0;
+            document.getElementById('quizScore').textContent = '0 / 0';
+        }
+        
+        function startQuiz() {
+            quizActive = true;
+            quizScore = 0;
+            quizTotal = 0;
+            const allCards = Object.values(vocabularyData).flat();
+            renderQuizQuestion(0, allCards);
+        }
+        
+        function renderQuizQuestion(index, allCards) {
+            if (index >= allCards.length) {
+                showQuizResults(allCards);
+                return;
+            }
+            
+            const card = allCards[index];
+            const options = generateQuizOptions(card, allCards);
+            
+            const html = `
+                <div class="quiz-question">
+                    <h3>Question ${index + 1} of ${allCards.length}</h3>
+                    <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">What is <strong>${card.term}</strong>?</p>
+                    <div class="quiz-options">
+                        ${options.map((opt, i) => `
+                            <div class="quiz-option" onclick="selectAnswer(${i}, '${opt === card.def}', ${index}, ${allCards.length})">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="quiz-feedback" id="feedback-${index}"></div>
+                </div>
+            `;
+            
+            document.getElementById('quizContainer').innerHTML = html;
+        }
+        
+        function generateQuizOptions(card, allCards) {
+            const correct = card.def;
+            const incorrect = allCards
+                .filter(c => c.def !== correct)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3)
+                .map(c => c.def);
+            
+            return [correct, ...incorrect].sort(() => Math.random() - 0.5);
+        }
+        
+        function selectAnswer(optionIndex, isCorrect, questionIndex, total) {
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach((opt, i) => {
+                opt.classList.add(i === optionIndex ? (isCorrect ? 'correct' : 'incorrect') : '');
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (isCorrect) {
+                quizScore++;
+            }
+            quizTotal++;
+            
+            document.getElementById('quizScore').textContent = `${quizScore} / ${quizTotal}`;
+            
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            feedback.textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect';
+            
+            setTimeout(() => {
+                const allCards = Object.values(vocabularyData).flat();
+                renderQuizQuestion(questionIndex + 1, allCards);
+            }, 1500);
+        }
+        
+        function showQuizResults(allCards) {
+            const percentage = Math.round((quizScore / allCards.length) * 100);
+            document.getElementById('quizContainer').innerHTML = `
+                <div class="quiz-score">
+                    <h3>Quiz Complete!</h3>
+                    <p>${quizScore} / ${allCards.length}</p>
+                    <p style="font-size: 1.5rem; margin-top: 1rem;">${percentage}%</p>
+                </div>
+            `;
+        }
+        
+        function resetQuiz() {
+            quizScore = 0;
+            quizTotal = 0;
+            document.getElementById('quizScore').textContent = '0 / 0';
+            document.getElementById('quizContainer').innerHTML = '';
+        }
+        
+        // INSTRUCTOR MODE FUNCTIONS
+        function loadInstructorCard() {
+            const allCards = Object.values(vocabularyData).flat();
+            const card = allCards[instructorIndex];
+            document.getElementById('instructorTerm').textContent = card.term;
+            document.getElementById('instructorDef').textContent = card.def;
+            document.getElementById('instructorDef').classList.remove('revealed');
+            definitionRevealed = false;
+            updateInstructorCounter(allCards.length);
+        }
+        
+        function revealDefinition() {
+            document.getElementById('instructorDef').classList.add('revealed');
+            definitionRevealed = true;
+        }
+        
+        function nextInstructorCard() {
+            const allCards = Object.values(vocabularyData).flat();
+            if (instructorIndex < allCards.length - 1) {
+                instructorIndex++;
+                loadInstructorCard();
+            }
+        }
+        
+        function resetInstructor() {
+            instructorIndex = 0;
+            loadInstructorCard();
+        }
+        
+        function updateInstructorCounter(total) {
+            document.getElementById('instructorCounter').textContent = `Term ${instructorIndex + 1} of ${total}`;
+        }
+        
+        // INITIALIZE
+        window.addEventListener('load', () => {
+            loadFlashcard();
+        });
+    </script>
+</body>
+</html>
