@@ -276,15 +276,15 @@
         }
         
         .quiz-option.correct {
-            background: rgba(76, 175, 80, 0.3);
-            border-color: #4CAF50;
-            color: #4CAF50;
+            background: rgba(76, 175, 80, 0.3) !important;
+            border-color: #4CAF50 !important;
+            color: #4CAF50 !important;
         }
         
         .quiz-option.incorrect {
-            background: rgba(244, 67, 54, 0.3);
-            border-color: #F44336;
-            color: #F44336;
+            background: rgba(244, 67, 54, 0.3) !important;
+            border-color: #F44336 !important;
+            color: #F44336 !important;
         }
         
         .quiz-feedback {
@@ -510,7 +510,11 @@
                 <p id="quizScore">0 / 0</p>
             </div>
             
-            <div id="quizContainer"></div>
+            <div id="quizContainer">
+                <div style="text-align: center; padding: 2rem; color: var(--accent); font-size: 1.2rem;">
+                    Click "Start Quiz" below to begin!
+                </div>
+            </div>
             
             <div class="quiz-controls">
                 <button class="control-btn" onclick="startQuiz()">Start Quiz</button>
@@ -712,16 +716,24 @@
         function initQuiz() {
             quizScore = 0;
             quizTotal = 0;
+            quizActive = false;
             document.getElementById('quizScore').textContent = '0 / 0';
-            document.getElementById('quizContainer').innerHTML = '';
+            document.getElementById('quizContainer').innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--accent); font-size: 1.2rem;">
+                    Click "Start Quiz" below to begin!
+                </div>
+            `;
         }
         
         function startQuiz() {
             quizActive = true;
             quizScore = 0;
             quizTotal = 0;
+            document.getElementById('quizScore').textContent = '0 / 0';
             const allCards = Object.values(vocabularyData).flat();
-            renderQuizQuestion(0, allCards);
+            // Shuffle the question pool for a random quiz experience
+            const shuffledCards = [...allCards].sort(() => Math.random() - 0.5);
+            renderQuizQuestion(0, shuffledCards);
         }
         
         function renderQuizQuestion(index, allCards) {
@@ -731,15 +743,15 @@
             }
             
             const card = allCards[index];
-            const options = generateQuizOptions(card, allCards);
+            const options = generateQuizOptions(card, Object.values(vocabularyData).flat());
             
             const html = `
                 <div class="quiz-question">
                     <h3>Question ${index + 1} of ${allCards.length}</h3>
                     <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">What is <strong>${card.term}</strong>?</p>
                     <div class="quiz-options">
-                        ${options.map((opt, i) => `
-                            <div class="quiz-option" onclick="selectAnswer(${i}, '${opt === card.def}', ${index}, ${allCards.length})">
+                        ${options.map((opt) => `
+                            <div class="quiz-option" onclick="selectAnswer(this, ${opt === card.def}, ${index}, ${allCards.length}, ${escapeQuotes(JSON.stringify(allCards))})">
                                 ${opt}
                             </div>
                         `).join('')}
@@ -749,6 +761,11 @@
             `;
             
             document.getElementById('quizContainer').innerHTML = html;
+        }
+
+        // Helper to safely pass card array strings inside inline handlers
+        function escapeQuotes(str) {
+            return str.replace(/"/g, '&quot;');
         }
         
         function generateQuizOptions(card, allCards) {
@@ -762,15 +779,17 @@
             return [correct, ...incorrect].sort(() => Math.random() - 0.5);
         }
         
-        function selectAnswer(optionIndex, isCorrect, questionIndex, total) {
+        function selectAnswer(element, isCorrect, questionIndex, total, allCards) {
             const options = document.querySelectorAll('.quiz-option');
-            options.forEach((opt, i) => {
-                opt.classList.add(i === optionIndex ? (isCorrect === 'true' || isCorrect === true ? 'correct' : 'incorrect') : '');
+            options.forEach((opt) => {
                 opt.style.pointerEvents = 'none';
+                // Highlight correct and incorrect options
+                if (opt.textContent.trim() === element.textContent.trim()) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
             });
             
-            const realIsCorrect = (isCorrect === 'true' || isCorrect === true);
-            if (realIsCorrect) {
+            if (isCorrect) {
                 quizScore++;
             }
             quizTotal++;
@@ -778,11 +797,10 @@
             document.getElementById('quizScore').textContent = `${quizScore} / ${quizTotal}`;
             
             const feedback = document.getElementById(`feedback-${questionIndex}`);
-            feedback.classList.add('show', realIsCorrect ? 'correct' : 'incorrect');
-            feedback.textContent = realIsCorrect ? '✓ Correct!' : '✗ Incorrect';
+            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+            feedback.textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect';
             
             setTimeout(() => {
-                const allCards = Object.values(vocabularyData).flat();
                 renderQuizQuestion(questionIndex + 1, allCards);
             }, 1500);
         }
@@ -799,10 +817,7 @@
         }
         
         function resetQuiz() {
-            quizScore = 0;
-            quizTotal = 0;
-            document.getElementById('quizScore').textContent = '0 / 0';
-            document.getElementById('quizContainer').innerHTML = '';
+            initQuiz();
         }
         
         // INSTRUCTOR MODE FUNCTIONS
