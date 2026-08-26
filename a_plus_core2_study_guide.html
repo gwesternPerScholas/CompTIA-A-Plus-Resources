@@ -17,6 +17,8 @@
             background: linear-gradient(135deg, var(--dark) 0%, #003d7a 100%);
             color: var(--light);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding-bottom: 3rem;
         }
         
         .header {
@@ -24,6 +26,27 @@
             border-bottom: 4px solid var(--accent);
             padding: 1.5rem;
             text-align: center;
+            position: relative;
+        }
+
+        .return-btn {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .return-btn:hover {
+            background: var(--accent);
+            color: var(--dark);
         }
         
         .header h1 {
@@ -41,8 +64,11 @@
             display: flex;
             gap: 1rem;
             justify-content: center;
-            padding: 2rem 1rem;
+            align-items: center;
+            padding: 1.5rem 1rem;
             flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
         }
         
         .mode-btn {
@@ -71,7 +97,7 @@
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 1rem;
         }
         
         .mode-content {
@@ -88,6 +114,7 @@
             gap: 0.5rem;
             margin-bottom: 2rem;
             flex-wrap: wrap;
+            justify-content: center;
         }
         
         .domain-tab {
@@ -388,7 +415,16 @@
         
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 1.25rem;
+                margin-top: 1.5rem;
+            }
+
+            .return-btn {
+                position: relative;
+                top: auto;
+                left: auto;
+                display: inline-block;
+                margin-bottom: 0.75rem;
             }
             
             .mode-selector {
@@ -411,24 +447,25 @@
 </head>
 <body>
     <div class="header">
+        <a href="index.html" class="return-btn">← Main Page</a>
         <h1>⚙️ CompTIA A+ Core 2 Study Guide</h1>
         <p>Master the 220-1202 exam domains with flashcards, quizzes, and instructor mode</p>
     </div>
     
     <div class="mode-selector">
-        <button class="mode-btn active" onclick="switchMode('flashcard')">🃏 Flashcards</button>
-        <button class="mode-btn" onclick="switchMode('quiz')">📝 Quiz</button>
-        <button class="mode-btn" onclick="switchMode('instructor')">🎯 Instructor Mode</button>
+        <button class="mode-btn active" onclick="switchMode('flashcard', event)">🃏 Flashcards</button>
+        <button class="mode-btn" onclick="switchMode('quiz', event)">📝 Quiz</button>
+        <button class="mode-btn" onclick="switchMode('instructor', event)">🎯 Instructor Mode</button>
     </div>
     
     <div class="container">
         <!-- FLASHCARD MODE -->
         <div id="flashcard" class="mode-content active">
             <div class="domain-tabs">
-                <button class="domain-tab active" onclick="switchDomain('os')">1.0 Operating Systems</button>
-                <button class="domain-tab" onclick="switchDomain('security')">2.0 Security</button>
-                <button class="domain-tab" onclick="switchDomain('troubleshooting')">3.0 Software Troubleshooting</button>
-                <button class="domain-tab" onclick="switchDomain('operations')">4.0 Operational Procedures</button>
+                <button class="domain-tab active" onclick="switchDomain('os', event)">1.0 Operating Systems</button>
+                <button class="domain-tab" onclick="switchDomain('security', event)">2.0 Security</button>
+                <button class="domain-tab" onclick="switchDomain('troubleshooting', event)">3.0 Software Troubleshooting</button>
+                <button class="domain-tab" onclick="switchDomain('operations', event)">4.0 Operational Procedures</button>
             </div>
             
             <div class="flashcard">
@@ -485,7 +522,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         // VOCABULARY DATABASE
         const vocabularyData = {
@@ -575,12 +612,14 @@
         let definitionRevealed = false;
         
         // MODE SWITCHING
-        function switchMode(mode) {
+        function switchMode(mode, event) {
             currentMode = mode;
             document.querySelectorAll('.mode-content').forEach(el => el.classList.remove('active'));
             document.getElementById(mode).classList.add('active');
             document.querySelectorAll('.mode-btn').forEach(el => el.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             if (mode === 'flashcard') {
                 loadFlashcard();
@@ -592,12 +631,14 @@
         }
         
         // FLASHCARD FUNCTIONS
-        function switchDomain(domain) {
+        function switchDomain(domain, event) {
             currentDomain = domain;
             currentCardIndex = 0;
             isFlipped = false;
             document.querySelectorAll('.domain-tab').forEach(el => el.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             loadFlashcard();
         }
         
@@ -648,6 +689,7 @@
             quizScore = 0;
             quizTotal = 0;
             document.getElementById('quizScore').textContent = '0 / 0';
+            document.getElementById('quizContainer').innerHTML = '';
         }
         
         function startQuiz() {
@@ -692,18 +734,19 @@
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 3)
                 .map(c => c.def);
-            
+                
             return [correct, ...incorrect].sort(() => Math.random() - 0.5);
         }
         
         function selectAnswer(optionIndex, isCorrect, questionIndex, total) {
             const options = document.querySelectorAll('.quiz-option');
             options.forEach((opt, i) => {
-                opt.classList.add(i === optionIndex ? (isCorrect ? 'correct' : 'incorrect') : '');
+                opt.classList.add(i === optionIndex ? (isCorrect === 'true' || isCorrect === true ? 'correct' : 'incorrect') : '');
                 opt.style.pointerEvents = 'none';
             });
             
-            if (isCorrect) {
+            const realIsCorrect = (isCorrect === 'true' || isCorrect === true);
+            if (realIsCorrect) {
                 quizScore++;
             }
             quizTotal++;
@@ -711,8 +754,8 @@
             document.getElementById('quizScore').textContent = `${quizScore} / ${quizTotal}`;
             
             const feedback = document.getElementById(`feedback-${questionIndex}`);
-            feedback.classList.add('show', isCorrect ? 'correct' : 'incorrect');
-            feedback.textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect';
+            feedback.classList.add('show', realIsCorrect ? 'correct' : 'incorrect');
+            feedback.textContent = realIsCorrect ? '✓ Correct!' : '✗ Incorrect';
             
             setTimeout(() => {
                 const allCards = Object.values(vocabularyData).flat();
