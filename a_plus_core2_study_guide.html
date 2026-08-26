@@ -112,7 +112,7 @@
         .domain-tabs {
             display: flex;
             gap: 0.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -139,11 +139,19 @@
             border-color: var(--accent);
         }
         
+        .flashcard-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
         .flashcard {
             perspective: 1000px;
-            height: 300px;
-            margin: 2rem auto;
+            width: 100%;
             max-width: 500px;
+            height: 280px;
+            margin: 1rem auto;
         }
         
         .flashcard-inner {
@@ -172,6 +180,7 @@
             cursor: pointer;
             font-size: 1.25rem;
             font-weight: 600;
+            box-sizing: border-box;
         }
         
         .flashcard-front {
@@ -190,8 +199,10 @@
         .card-nav {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 1rem;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
         }
         
         .nav-btn {
@@ -468,24 +479,27 @@
                 <button class="domain-tab" onclick="switchDomain('operations', event)">4.0 Operational Procedures</button>
             </div>
             
-            <div class="flashcard">
-                <div class="flashcard-inner" id="flashcardInner" onclick="flipCard()">
-                    <div class="flashcard-face flashcard-front">
-                        <div id="flashcardTerm">Click to start</div>
-                    </div>
-                    <div class="flashcard-face flashcard-back">
-                        <div id="flashcardDef">Definition appears here</div>
+            <div class="flashcard-wrapper">
+                <div class="flashcard">
+                    <div class="flashcard-inner" id="flashcardInner" onclick="flipCard()">
+                        <div class="flashcard-face flashcard-front">
+                            <div id="flashcardTerm">Click to start</div>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            <div id="flashcardDef">Definition appears here</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="card-nav">
-                <button class="nav-btn" onclick="prevCard()" id="prevBtn">← Previous</button>
-                <button class="nav-btn" onclick="nextCard()" id="nextBtn">Next →</button>
-            </div>
-            
-            <div class="card-counter">
-                <span id="cardCounter">Card 0 of 0</span>
+                
+                <div class="card-nav">
+                    <button class="nav-btn" onclick="prevCard()" id="prevBtn">← Previous</button>
+                    <button class="nav-btn" onclick="shuffleCards()">🔀 Shuffle</button>
+                    <button class="nav-btn" onclick="nextCard()" id="nextBtn">Next →</button>
+                </div>
+                
+                <div class="card-counter">
+                    <span id="cardCounter">Card 0 of 0</span>
+                </div>
             </div>
         </div>
         
@@ -671,6 +685,16 @@
                 currentCardIndex--;
                 loadFlashcard();
             }
+        }
+
+        function shuffleCards() {
+            const cards = vocabularyData[currentDomain];
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            currentCardIndex = 0;
+            loadFlashcard();
         }
         
         function updateCardCounter() {
