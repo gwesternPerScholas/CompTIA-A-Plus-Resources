@@ -64,6 +64,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            text-align: left;
         }
 
         .card:hover {
@@ -102,9 +103,13 @@
 
         <div class="grid">
             <a href="a_plus_core2_study_guide.html" class="card">
-        <h2>Core 2 Study Guide</h2>
-        <p>Resources and materials for the CompTIA A+ Core 2 exam.</p>
-    </a>
+                <div>
+                    <h2>Core 2 Study Guide</h2>
+                    <p>Resources and materials for the CompTIA A+ Core 2 exam.</p>
+                </div>
+                <div class="btn-text">View Guide &rarr;</div>
+            </a>
+
             <a href="cli_command_challenge_a_plus.html" class="card">
                 <div>
                     <h2>CLI Command Challenge</h2>
@@ -119,6 +124,15 @@
                     <p>Master the crucial hardware, networking, and security acronyms required for certification.</p>
                 </div>
                 <div class="btn-text">Start Challenge &rarr;</div>
+            </a>
+
+            <!-- NEW CARD ADDED BELOW -->
+            <a href="module_132_review.html" class="card">
+                <div>
+                    <h2>Module 132 Review</h2>
+                    <p>Interactive flashcards, term matching game, and knowledge check quiz for Module 132.</p>
+                </div>
+                <div class="btn-text">Start Review &rarr;</div>
             </a>
         </div>
     </div>
