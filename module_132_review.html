@@ -444,7 +444,213 @@
       def: "Dedicated motherboard power header supplying dedicated +12V power directly to the CPU.",
       distractors: ["Main 24-pin connector powering the entire board.", "Molex connector supplying power to case fans.", "Front panel header pin for the HDD LED."]
     },
-    {
+  {
       id: 13,
       term: "Front Panel Header",
-      def: "Set of small pins on the motherboard connecting
+      def: "Set of small pins on the motherboard connecting the case's power button, reset button, status LEDs, and front audio/USB.",
+      distractors: ["High-speed connector for graphics cards.", "Internal header supplying power to the liquid cooling pump.", "Serial port header used for legacy terminal connections."]
+    },
+    {
+      id: 14,
+      term: "TPM (Trusted Platform Module)",
+      def: "A dedicated microchip on the motherboard providing hardware-based cryptographic key storage and drive encryption (e.g., BitLocker).",
+      distractors: ["Volatile memory chip that stores BIOS setting changes.", "Primary graphics processing chip integrated into motherboard chipsets.", "Power regulation module delivering steady voltage to RAM."]
+    },
+    {
+      id: 15,
+      term: "CMOS Battery (CR2032)",
+      def: "Coin-cell battery that powers the motherboard's Real-Time Clock (RTC) and maintains system clock settings when powered off.",
+      distractors: ["Rechargeable battery supplying emergency shutdown power to RAM.", "Primary power source for the motherboard in standby mode.", "Capacitor maintaining CPU overclocking profiles."]
+    },
+    {
+      id: 16,
+      term: "Clear CMOS Jumper",
+      def: "A 3-pin motherboard jumper used to reset BIOS/UEFI settings back to factory defaults.",
+      distractors: ["Header used to enable PCIe x16 lane splitting.", "Switch that toggles motherboard RGB lighting modes.", "Diagnostic header for connecting a POST card."]
+    },
+    {
+      id: 17,
+      term: "ZIF (Zero Insertion Force) Socket",
+      def: "A CPU socket mechanism equipped with a locking lever that allows processor installation with no physical resistance.",
+      distractors: ["RAM slot latch mechanism requiring firm pressure.", "SATA cable connector with a metal locking latch.", "PCIe slot retention clip that automatically snaps shut."]
+    },
+    {
+      id: 18,
+      term: "Bus Width / Speed",
+      def: "The number of bits of data a bus can transmit simultaneously (e.g., 32-bit or 64-bit) and the frequency (clock rate) at which it transfers.",
+      distractors: ["The physical length of PCIe slots measured in millimeters.", "The total wattage consumed by all expansion cards.", "The voltage rating supplied to the CPU socket."]
+    },
+    {
+      id: 19,
+      term: "USB 3.2 Gen 2 Header",
+      def: "Internal motherboard pin header capable of supporting front-panel USB ports with transfer speeds up to 10 Gbps.",
+      distractors: ["Legacy 9-pin header supporting max speeds of 480 Mbps.", "Dedicated display header routing HDMI audio.", "Internal fan header with PWM speed regulation."]
+    },
+    {
+      id: 20,
+      term: "I/O Shield",
+      def: "Metal plate snapped into the rear of the computer case to block dust, ground ports, and align external motherboard connectors.",
+      distractors: ["Plastic cover protecting the CPU socket pins during shipping.", "Metal bracket mounting an M.2 drive to the board.", "Heat sink covering the motherboard power MOSFETs."]
+    }
+  ];
+
+  /* Tab Navigation */
+  function switchTab(tabName, event) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  /* 1. Slideshow Logic */
+  let currentSlide = 0;
+
+  function renderSlide() {
+    const item = resourceData[currentSlide];
+    document.getElementById('slide-term').innerText = item.term;
+    document.getElementById('slide-def').innerText = item.def;
+    document.getElementById('slide-counter').innerText = `${currentSlide + 1} / ${resourceData.length}`;
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % resourceData.length;
+    renderSlide();
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + resourceData.length) % resourceData.length;
+    renderSlide();
+  }
+
+  /* 2. Matching Game Logic */
+  let selectedTerm = null;
+  let selectedDef = null;
+
+  function initMatchingGame() {
+    const termsCol = document.getElementById('terms-column');
+    const defsCol = document.getElementById('defs-column');
+    termsCol.innerHTML = '';
+    defsCol.innerHTML = '';
+
+    // Pick 5 random items per round for a manageable matching session
+    const gameSet = [...resourceData].sort(() => Math.random() - 0.5).slice(0, 5);
+
+    const shuffledTerms = [...gameSet].sort(() => Math.random() - 0.5);
+    const shuffledDefs = [...gameSet].sort(() => Math.random() - 0.5);
+
+    shuffledTerms.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'match-item';
+      el.innerText = item.term;
+      el.dataset.id = item.id;
+      el.onclick = () => selectMatchItem(el, 'term');
+      termsCol.appendChild(el);
+    });
+
+    shuffledDefs.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'match-item';
+      el.innerText = item.def;
+      el.dataset.id = item.id;
+      el.onclick = () => selectMatchItem(el, 'def');
+      defsCol.appendChild(el);
+    });
+  }
+
+  function selectMatchItem(el, type) {
+    if (el.classList.contains('matched')) return;
+
+    if (type === 'term') {
+      document.querySelectorAll('#terms-column .match-item').forEach(i => i.classList.remove('selected'));
+      selectedTerm = el;
+    } else {
+      document.querySelectorAll('#defs-column .match-item').forEach(i => i.classList.remove('selected'));
+      selectedDef = el;
+    }
+    el.classList.add('selected');
+
+    if (selectedTerm && selectedDef) {
+      if (selectedTerm.dataset.id === selectedDef.dataset.id) {
+        selectedTerm.classList.add('matched');
+        selectedDef.classList.add('matched');
+        selectedTerm.classList.remove('selected');
+        selectedDef.classList.remove('selected');
+      } else {
+        setTimeout(() => {
+          if (selectedTerm) selectedTerm.classList.remove('selected');
+          if (selectedDef) selectedDef.classList.remove('selected');
+        }, 400);
+      }
+      selectedTerm = null;
+      selectedDef = null;
+    }
+  }
+
+  /* 3. Quiz Logic */
+  let currentQuizIndex = 0;
+  let score = 0;
+  let totalAttempted = 0;
+
+  function renderQuizQuestion() {
+    const q = resourceData[currentQuizIndex];
+    document.getElementById('quiz-question').innerText = `Question ${currentQuizIndex + 1} of ${resourceData.length}: What is the primary function or definition of "${q.term}"?`;
+    
+    const feedbackEl = document.getElementById('quiz-feedback');
+    feedbackEl.innerText = '';
+    feedbackEl.style.background = 'none';
+
+    const optionsContainer = document.getElementById('quiz-options');
+    optionsContainer.innerHTML = '';
+
+    const allOptions = [q.def, ...q.distractors].sort(() => Math.random() - 0.5);
+
+    allOptions.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option-btn';
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(btn, opt, q.def);
+      optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('quiz-score').innerText = `Score: ${score} / ${totalAttempted}`;
+  }
+
+  function checkAnswer(selectedBtn, selectedText, correctText) {
+    const buttons = document.querySelectorAll('.quiz-option-btn');
+    buttons.forEach(btn => btn.disabled = true);
+
+    totalAttempted++;
+    const feedbackEl = document.getElementById('quiz-feedback');
+
+    if (selectedText === correctText) {
+      selectedBtn.classList.add('correct');
+      feedbackEl.innerText = "✓ Correct!";
+      feedbackEl.style.color = "#86efac";
+      feedbackEl.style.background = "rgba(34, 197, 94, 0.15)";
+      score++;
+    } else {
+      selectedBtn.classList.add('incorrect');
+      feedbackEl.innerText = `✕ Incorrect. The correct answer is: ${correctText}`;
+      feedbackEl.style.color = "#fca5a5";
+      feedbackEl.style.background = "rgba(239, 68, 68, 0.15)";
+      buttons.forEach(btn => {
+        if (btn.innerText === correctText) btn.classList.add('correct');
+      });
+    }
+
+    document.getElementById('quiz-score').innerText = `Score: ${score} / ${totalAttempted}`;
+  }
+
+  function nextQuestion() {
+    currentQuizIndex = (currentQuizIndex + 1) % resourceData.length;
+    renderQuizQuestion();
+  }
+
+  // Initial load
+  renderSlide();
+  initMatchingGame();
+  renderQuizQuestion();
+</script>
+</body>
+</html>
