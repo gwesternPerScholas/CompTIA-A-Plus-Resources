@@ -1,0 +1,776 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary & Hexadecimal Practice - CompTIA A+</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success-green: #22c55e;
+      --error-red: #ef4444;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 850px;
+      margin: 20px auto;
+      padding: 2.5rem;
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    /* Header */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background-color: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .badge {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      background-color: rgba(56, 189, 248, 0.1);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 10px 0;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-size: 1rem;
+    }
+
+    /* Tabs */
+    .nav-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 25px;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 3px solid transparent;
+      border-radius: 6px 6px 0 0;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Displays */
+    .value-display-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .display-box {
+      text-align: center;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .display-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .display-value {
+      font-size: 2.8rem;
+      font-weight: 800;
+      font-family: monospace;
+    }
+
+    .bit-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+      margin-bottom: 25px;
+    }
+
+    .bit-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .arrow-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--accent-blue);
+      font-size: 1.2rem;
+      width: 100%;
+      padding: 6px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .arrow-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-blue);
+    }
+
+    .bit-box {
+      width: 100%;
+      height: 60px;
+      background: var(--bg-color);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      font-family: monospace;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+    }
+
+    .bit-box.active {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .bit-weight {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .math-breakdown {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Hex Nibble Highlight Bar */
+    .nibble-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .nibble-box {
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid var(--accent-purple);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .nibble-title {
+      font-size: 0.8rem;
+      color: var(--accent-purple);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .nibble-val {
+      font-size: 1.5rem;
+      font-weight: bold;
+      font-family: monospace;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    /* Challenge Mode */
+    .challenge-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 25px;
+    }
+
+    .prompt-box {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .prompt-type {
+      font-size: 0.9rem;
+      color: var(--accent-purple);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .prompt-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      font-family: monospace;
+      color: var(--text-main);
+      margin: 10px 0;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      max-width: 400px;
+      margin: 0 auto 20px auto;
+    }
+
+    .challenge-input {
+      flex: 1;
+      padding: 12px;
+      font-size: 1.2rem;
+      font-family: monospace;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    .challenge-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--accent-blue), #0284c7);
+      color: #0f172a;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .feedback-box {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback-box.correct {
+      display: block;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid var(--success-green);
+      color: #86efac;
+    }
+
+    .feedback-box.incorrect {
+      display: block;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--error-red);
+      color: #fca5a5;
+    }
+
+    .challenge-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* Hex Reference Table */
+    .hex-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+
+    .hex-table th, .hex-table td {
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      text-align: center;
+    }
+
+    .hex-table th {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--accent-purple);
+    }
+
+    @media (max-width: 600px) {
+      .bit-grid {
+        gap: 4px;
+      }
+      .bit-box {
+        height: 45px;
+        font-size: 1.3rem;
+      }
+      .arrow-btn {
+        font-size: 1rem;
+        padding: 4px 0;
+      }
+      .display-value {
+        font-size: 2rem;
+      }
+      .value-display-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Navigation Header -->
+  <div class="top-header">
+    <a href="index.html" class="back-btn">
+      &larr; Return to Main Page
+    </a>
+    <span class="badge">CompTIA A+ Core 1 & Core 2</span>
+  </div>
+
+  <h1>Binary & Hexadecimal Practice</h1>
+  <p class="subtitle">Master bit manipulation, 8-bit conversions, and 2-digit Hexadecimal numbers (MAC/IPv6 prep).</p>
+
+  <!-- Nav Tabs -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('manipulator', event)">1. Bit Manipulator</button>
+    <button class="tab-btn" onclick="switchTab('hex-explorer', event)">2. Hex Nibble Explorer</button>
+    <button class="tab-btn" onclick="switchTab('challenge', event)">3. 10-Q Conversion Challenge</button>
+  </div>
+
+  <!-- TAB 1: Bit Manipulator -->
+  <div id="tab-manipulator" class="tab-content active">
+    <div class="value-display-grid">
+      <div class="display-box">
+        <div class="display-label">Decimal Value</div>
+        <div id="decimal-value" class="display-value" style="color: var(--accent-blue);">0</div>
+      </div>
+      <div class="display-box">
+        <div class="display-label">Hexadecimal (0x)</div>
+        <div id="hex-value-1" class="display-value" style="color: var(--accent-purple);">0x00</div>
+      </div>
+    </div>
+
+    <div class="bit-grid" id="bit-grid">
+      <!-- 8 Bit Columns dynamically generated -->
+    </div>
+
+    <div id="math-breakdown" class="math-breakdown">
+      Math Breakdown: All bits are OFF = 0
+    </div>
+  </div>
+
+  <!-- TAB 2: Hex Nibble Explorer -->
+  <div id="tab-hex-explorer" class="tab-content">
+    <p style="color: var(--text-muted); margin-top: 0;">An 8-bit byte is split into two 4-bit <strong>nibbles</strong>. Each nibble directly converts to a single Hexadecimal digit ($0\text{--}\text{F}$).</p>
+    
+    <div class="nibble-container">
+      <div class="nibble-box">
+        <div class="nibble-title">High Nibble (Bits 7 - 4)</div>
+        <div id="high-nibble-bits" class="nibble-val" style="color: var(--accent-blue);">0000</div>
+        <div id="high-nibble-hex" style="color: var(--accent-purple); font-weight: bold; margin-top: 4px;">Hex Digit: 0</div>
+      </div>
+      <div class="nibble-box">
+        <div class="nibble-title">Low Nibble (Bits 3 - 0)</div>
+        <div id="low-nibble-bits" class="nibble-val" style="color: var(--accent-blue);">0000</div>
+        <div id="low-nibble-hex" style="color: var(--accent-purple); font-weight: bold; margin-top: 4px;">Hex Digit: 0</div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+      <span style="font-size: 1.2rem; font-weight: bold;">Combined Hex Result: <code id="combined-hex-display" style="color: var(--accent-purple); background: var(--bg-color); padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border-color);">0x00</code></span>
+    </div>
+
+    <!-- Quick Reference Cheat Sheet -->
+    <h3 style="color: var(--accent-purple); margin-bottom: 10px;">Hexadecimal Nibble Quick Reference</h3>
+    <table class="hex-table">
+      <thead>
+        <tr>
+          <th>Decimal</th>
+          <th>Binary</th>
+          <th>Hex</th>
+          <th>Decimal</th>
+          <th>Binary</th>
+          <th>Hex</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0</td><td>0000</td><td>0</td><td>8</td><td>1000</td><td>8</td></tr>
+        <tr><td>1</td><td>0001</td><td>1</td><td>9</td><td>1001</td><td>9</td></tr>
+        <tr><td>2</td><td>0010</td><td>2</td><td>10</td><td>1010</td><td>A</td></tr>
+        <tr><td>3</td><td>0011</td><td>3</td><td>11</td><td>1011</td><td>B</td></tr>
+        <tr><td>4</td><td>0100</td><td>4</td><td>12</td><td>1100</td><td>C</td></tr>
+        <tr><td>5</td><td>0101</td><td>5</td><td>13</td><td>1101</td><td>D</td></tr>
+        <tr><td>6</td><td>0110</td><td>6</td><td>14</td><td>1110</td><td>E</td></tr>
+        <tr><td>7</td><td>0111</td><td>7</td><td>15</td><td>1111</td><td>F</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TAB 3: Challenge Mode -->
+  <div id="tab-challenge" class="tab-content">
+    <div class="challenge-card">
+      <div class="prompt-box">
+        <div id="prompt-type" class="prompt-type">Question 1 of 10</div>
+        <div id="prompt-instruction" style="color: var(--text-muted); margin-top: 5px;">Convert the following number:</div>
+        <div id="prompt-value" class="prompt-value">---</div>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="challenge-input" class="challenge-input" placeholder="Enter answer..." autocomplete="off">
+        <button class="btn" id="submit-btn" onclick="checkChallengeAnswer()">Submit</button>
+      </div>
+
+      <div id="feedback-box" class="feedback-box"></div>
+
+      <div class="challenge-footer">
+        <span id="challenge-score" style="font-weight: 600; color: var(--text-muted);">Score: 0 / 0</span>
+        <button class="btn" id="next-btn" onclick="nextChallengeQuestion()" style="display: none;">Next Question &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ---------------- Tab Navigation ---------------- */
+  function switchTab(tabName, event) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  /* ---------------- 1. Bit Manipulator & Hex Explorer Logic ---------------- */
+  const weights = [128, 64, 32, 16, 8, 4, 2, 1];
+  let bitStates = [0, 0, 0, 0, 0, 0, 0, 0];
+
+  function buildBitGrid() {
+    const grid = document.getElementById('bit-grid');
+    grid.innerHTML = '';
+
+    weights.forEach((weight, index) => {
+      const col = document.createElement('div');
+      col.className = 'bit-column';
+
+      // Up Arrow
+      const upBtn = document.createElement('button');
+      upBtn.className = 'arrow-btn';
+      upBtn.innerHTML = '&#9650;';
+      upBtn.title = "Toggle Bit On/Off";
+      upBtn.onclick = () => toggleBit(index);
+
+      // Bit Box
+      const bitBox = document.createElement('div');
+      bitBox.className = `bit-box ${bitStates[index] ? 'active' : ''}`;
+      bitBox.id = `bit-${index}`;
+      bitBox.innerText = bitStates[index];
+      bitBox.onclick = () => toggleBit(index);
+
+      // Down Arrow
+      const downBtn = document.createElement('button');
+      downBtn.className = 'arrow-btn';
+      downBtn.innerHTML = '&#9660;';
+      downBtn.title = "Toggle Bit On/Off";
+      downBtn.onclick = () => toggleBit(index);
+
+      // Weight Label
+      const weightLabel = document.createElement('div');
+      weightLabel.className = 'bit-weight';
+      weightLabel.innerText = weight;
+
+      col.appendChild(upBtn);
+      col.appendChild(bitBox);
+      col.appendChild(downBtn);
+      col.appendChild(weightLabel);
+
+      grid.appendChild(col);
+    });
+  }
+
+  function toggleBit(index) {
+    bitStates[index] = bitStates[index] === 0 ? 1 : 0;
+    updateManipulatorUI();
+  }
+
+  function updateManipulatorUI() {
+    let totalDecimal = 0;
+    let activeTerms = [];
+
+    bitStates.forEach((state, i) => {
+      const bitEl = document.getElementById(`bit-${i}`);
+      if (state === 1) {
+        bitEl.classList.add('active');
+        bitEl.innerText = '1';
+        totalDecimal += weights[i];
+        activeTerms.push(weights[i]);
+      } else {
+        bitEl.classList.remove('active');
+        bitEl.innerText = '0';
+      }
+    });
+
+    // Decimal & Hex String
+    document.getElementById('decimal-value').innerText = totalDecimal;
+    const hexStr = '0x' + totalDecimal.toString(16).toUpperCase().padStart(2, '0');
+    document.getElementById('hex-value-1').innerText = hexStr;
+    document.getElementById('combined-hex-display').innerText = hexStr;
+
+    // Breakdown Math text
+    const breakdownEl = document.getElementById('math-breakdown');
+    if (activeTerms.length === 0) {
+      breakdownEl.innerText = "Math Breakdown: All bits are OFF = 0";
+    } else {
+      breakdownEl.innerText = `Math Breakdown: ${activeTerms.join(' + ')} = ${totalDecimal}`;
+    }
+
+    // Nibble Logic
+    const highBits = bitStates.slice(0, 4).join('');
+    const lowBits = bitStates.slice(4, 8).join('');
+    const highHexDigit = parseInt(highBits, 2).toString(16).toUpperCase();
+    const lowHexDigit = parseInt(lowBits, 2).toString(16).toUpperCase();
+
+    document.getElementById('high-nibble-bits').innerText = highBits;
+    document.getElementById('high-nibble-hex').innerText = `Hex Digit: ${highHexDigit}`;
+    document.getElementById('low-nibble-bits').innerText = lowBits;
+    document.getElementById('low-nibble-hex').innerText = `Hex Digit: ${lowHexDigit}`;
+  }
+
+  /* ---------------- 2. Challenge Mode Logic (Multi-Format) ---------------- */
+  let challengeQuestions = [];
+  let currentQIndex = 0;
+  let challengeScore = 0;
+  let answerSubmitted = false;
+
+  function generateChallengeQuestions() {
+    challengeQuestions = [];
+    const modes = ['decToBin', 'binToDec', 'hexToDec', 'decToHex'];
+
+    for (let i = 0; i < 10; i++) {
+      const targetVal = Math.floor(Math.random() * 256); // 0-255
+      const mode = modes[Math.floor(Math.random() * modes.length)];
+      const binaryStr = targetVal.toString(2).padStart(8, '0');
+      const hexStr = targetVal.toString(16).toUpperCase().padStart(2, '0');
+
+      challengeQuestions.push({
+        targetVal: targetVal,
+        binaryStr: binaryStr,
+        hexStr: hexStr,
+        mode: mode
+      });
+    }
+  }
+
+  function renderChallengeQuestion() {
+    answerSubmitted = false;
+    const q = challengeQuestions[currentQIndex];
+    
+    document.getElementById('prompt-type').innerText = `Question ${currentQIndex + 1} of 10`;
+    document.getElementById('challenge-input').value = '';
+    document.getElementById('challenge-input').disabled = false;
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('next-btn').style.display = 'none';
+
+    const feedbackEl = document.getElementById('feedback-box');
+    feedbackEl.className = 'feedback-box';
+    feedbackEl.style.display = 'none';
+
+    const promptValEl = document.getElementById('prompt-value');
+    const instructionEl = document.getElementById('prompt-instruction');
+
+    if (q.mode === 'decToBin') {
+      instructionEl.innerText = "Convert DECIMAL to 8-bit BINARY:";
+      promptValEl.innerText = `${q.targetVal} (Decimal)`;
+      document.getElementById('challenge-input').placeholder = "e.g. 10101000";
+    } else if (q.mode === 'binToDec') {
+      instructionEl.innerText = "Convert BINARY byte to DECIMAL:";
+      promptValEl.innerText = `${q.binaryStr} (Binary)`;
+      document.getElementById('challenge-input').placeholder = "e.g. 168";
+    } else if (q.mode === 'hexToDec') {
+      instructionEl.innerText = "Convert HEXADECIMAL to DECIMAL:";
+      promptValEl.innerText = `0x${q.hexStr} (Hex)`;
+      document.getElementById('challenge-input').placeholder = "e.g. 255";
+    } else {
+      instructionEl.innerText = "Convert DECIMAL to HEXADECIMAL (2 Digits):";
+      promptValEl.innerText = `${q.targetVal} (Decimal)`;
+      document.getElementById('challenge-input').placeholder = "e.g. FF or 0xA0";
+    }
+
+    document.getElementById('challenge-score').innerText = `Score: ${challengeScore} / ${currentQIndex}`;
+  }
+
+  function checkChallengeAnswer() {
+    if (answerSubmitted) return;
+    
+    const q = challengeQuestions[currentQIndex];
+    const userInput = document.getElementById('challenge-input').value.trim();
+    const feedbackEl = document.getElementById('feedback-box');
+    
+    if (!userInput) return;
+    
+    answerSubmitted = true;
+    document.getElementById('challenge-input').disabled = true;
+    document.getElementById('submit-btn').disabled = true;
+
+    let isCorrect = false;
+
+    if (q.mode === 'decToBin') {
+      const sanitized = userInput.replace(/\s+/g, '').padStart(8, '0');
+      if (sanitized === q.binaryStr) isCorrect = true;
+    } else if (q.mode === 'binToDec' || q.mode === 'hexToDec') {
+      if (parseInt(userInput, 10) === q.targetVal) isCorrect = true;
+    } else if (q.mode === 'decToHex') {
+      const sanitizedHex = userInput.replace(/0x/i, '').toUpperCase().padStart(2, '0');
+      if (sanitizedHex === q.hexStr) isCorrect = true;
+    }
+
+    if (isCorrect) {
+      challengeScore++;
+      feedbackEl.className = 'feedback-box correct';
+      feedbackEl.innerHTML = `<strong>✓ Correct!</strong><br>Decimal: <code>${q.targetVal}</code> | Binary: <code>${q.binaryStr}</code> | Hex: <code>0x${q.hexStr}</code>`;
+    } else {
+      feedbackEl.className = 'feedback-box incorrect';
+      let correctAnsText = q.targetVal;
+      if (q.mode === 'decToBin') correctAnsText = q.binaryStr;
+      if (q.mode === 'decToHex') correctAnsText = `0x${q.hexStr}`;
+
+      feedbackEl.innerHTML = `<strong>✕ Incorrect.</strong><br>Correct Answer: <code>${correctAnsText}</code><br><small>Full Equivalence: Decimal ${q.targetVal} = Binary ${q.binaryStr} = Hex 0x${q.hexStr}</small>`;
+    }
+
+    document.getElementById('next-btn').style.display = 'inline-block';
+    document.getElementById('challenge-score').innerText = `Score: ${challengeScore} / ${currentQIndex + 1}`;
+  }
+
+  function nextChallengeQuestion() {
+    if (currentQIndex < 9) {
+      currentQIndex++;
+      renderChallengeQuestion();
+    } else {
+      const card = document.querySelector('.challenge-card');
+      card.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+          <h2 style="color: var(--accent-blue); margin-bottom: 10px;">Challenge Complete!</h2>
+          <p style="font-size: 1.3rem; margin-bottom: 20px;">Final Score: <strong>${challengeScore} / 10</strong></p>
+          <button class="btn" onclick="resetChallenge()">Try Another Challenge</button>
+        </div>
+      `;
+    }
+  }
+
+  function resetChallenge() {
+    location.reload();
+  }
+
+  // Submit on 'Enter' key
+  document.getElementById('challenge-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      checkChallengeAnswer();
+    }
+  });
+
+  // Initialize
+  buildBitGrid();
+  updateManipulatorUI();
+  generateChallengeQuestions();
+  renderChallengeQuestion();
+</script>
+</body>
+</html>
