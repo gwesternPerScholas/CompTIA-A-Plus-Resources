@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Module 132 Review - CompTIA A+</title>
+  <title>Module 132: Motherboards & Connectors Review</title>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -317,11 +317,11 @@
     <a href="index.html" class="back-btn">
       &larr; Return to Main Page
     </a>
-    <span class="badge">CompTIA A+ (220-1201 / 220-1202)</span>
+    <span class="badge">CompTIA A+ 220-1101 Domain 2.0</span>
   </div>
 
-  <h1>Module 132: Technical Review</h1>
-  <p class="subtitle">Review core concepts, practice matching terms, and test your knowledge before moving on.</p>
+  <h1>Module 132: Installing Motherboards & Connectors</h1>
+  <p class="subtitle">Review motherboards, form factors, bus architectures, CPU sockets, and expansion connectors.</p>
 
   <!-- Tab Navigation -->
   <div class="nav-tabs">
@@ -338,20 +338,20 @@
     </div>
     <div class="slide-controls">
       <button class="btn" onclick="prevSlide()">Previous</button>
-      <span id="slide-counter" class="slide-counter">1 / 5</span>
+      <span id="slide-counter" class="slide-counter">1 / 20</span>
       <button class="btn" onclick="nextSlide()">Next</button>
     </div>
   </div>
 
   <!-- Tab 2: Matching Game -->
   <div id="tab-matching" class="tab-content">
-    <p style="margin-top: 0; color: var(--text-muted);">Select a term on the left, then select its matching definition on the right.</p>
+    <p style="margin-top: 0; color: var(--text-muted);">Select a term on the left, then select its matching definition on the right (shows 5 random pairs per round).</p>
     <div class="matching-board">
       <div class="match-column" id="terms-column"></div>
       <div class="match-column" id="defs-column"></div>
     </div>
     <div style="margin-top: 20px; text-align: right;">
-      <button class="btn" onclick="initMatchingGame()">Reset Game</button>
+      <button class="btn" onclick="initMatchingGame()">Shuffle / Reset Game</button>
     </div>
   </div>
 
@@ -370,194 +370,81 @@
 </div>
 
 <script>
-  // Core CompTIA A+ Dataset for Module 132
+  // 20 Questions/Terms covering CompTIA A+ Installing Motherboards and Connectors
   const resourceData = [
     {
       id: 1,
-      term: "DHCP (Ports 67/68)",
-      def: "Dynamically assigns IP addresses, subnet masks, default gateways, and DNS server details to network clients.",
-      distractors: ["Translates domain names into IP addresses.", "Encrypts web traffic using SSL/TLS.", "Provides secure command-line remote access."]
+      term: "ATX Form Factor",
+      def: "Standard PC motherboard form factor measuring 12 x 9.6 inches, typically using a 24-pin main power connector.",
+      distractors: ["Compact form factor measuring 9.6 x 9.6 inches.", "Small form factor measuring 6.7 x 6.7 inches used for low-power HTPCs.", "Proprietary motherboard design used in server racks."]
     },
     {
       id: 2,
-      term: "DNS (Port 53)",
-      def: "Resolves human-readable domain names (e.g., perscholas.org) into IP addresses.",
-      distractors: ["Automatically assigns IP address settings.", "Transfers files over an unencrypted network.", "Monitors network devices using SNMP."]
+      term: "Micro-ATX (mATX)",
+      def: "A 9.6 x 9.6 inch motherboard form factor that offers fewer expansion slots while fitting standard ATX cases.",
+      distractors: ["12 x 9.6 inch full-size desktop board.", "Square 6.7 x 6.7 inch motherboard format.", "Legacy form factor with no PCI slots."]
     },
     {
       id: 3,
-      term: "APIPA Address",
-      def: "A self-assigned IP address in the 169.254.0.0/16 range used when a DHCP server is unreachable.",
-      distractors: ["A public IP address assigned directly by an ISP.", "A loopback address (127.0.0.1) used for testing.", "A private IPv6 link-local address starting with fe80::."]
+      term: "Mini-ITX",
+      def: "A small 6.7 x 6.7 inch motherboard form factor commonly used in low-power, small-form-factor (SFF) builds.",
+      distractors: ["12 x 9.6 inch standard desktop board.", "Dual-processor server motherboard format.", "9.6 x 9.6 inch square board with 4 PCIe slots."]
     },
     {
       id: 4,
-      term: "Port 3389 (RDP)",
-      def: "Remote Desktop Protocol - allows graphical interface access to a remote Windows system.",
-      distractors: ["Secure Shell (SSH) protocol for remote command-line access.", "Encrypted web browsing port.", "Server Message Block (SMB) for file sharing."]
+      term: "Standoffs",
+      def: "Brass or plastic spacers installed between the motherboard and case to prevent short circuits.",
+      distractors: ["Screws used to lock the CPU cooler heat sink to the socket.", "Clips that hold RAM modules in place on the motherboard.", "Jumpers used to reset the CMOS settings."]
     },
     {
       id: 5,
-      term: "SATA III Speed",
-      def: "Provides a maximum theoretical throughput of 6.0 Gbps (approx. 600 MB/s).",
-      distractors: ["Maximum throughput of 1.5 Gbps.", "Maximum throughput of 10.0 Gbps.", "Maximum throughput of 3.0 Gbps."]
-    }
-  ];
-
-  /* Tab Navigation */
-  function switchTab(tabName, event) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-    document.getElementById(`tab-${tabName}`).classList.add('active');
-    event.currentTarget.classList.add('active');
-  }
-
-  /* 1. Slideshow Logic */
-  let currentSlide = 0;
-
-  function renderSlide() {
-    const item = resourceData[currentSlide];
-    document.getElementById('slide-term').innerText = item.term;
-    document.getElementById('slide-def').innerText = item.def;
-    document.getElementById('slide-counter').innerText = `${currentSlide + 1} / ${resourceData.length}`;
-  }
-
-  function nextSlide() {
-    currentSlide = (currentSlide + 1) % resourceData.length;
-    renderSlide();
-  }
-
-  function prevSlide() {
-    currentSlide = (currentSlide - 1 + resourceData.length) % resourceData.length;
-    renderSlide();
-  }
-
-  /* 2. Matching Game Logic */
-  let selectedTerm = null;
-  let selectedDef = null;
-
-  function initMatchingGame() {
-    const termsCol = document.getElementById('terms-column');
-    const defsCol = document.getElementById('defs-column');
-    termsCol.innerHTML = '';
-    defsCol.innerHTML = '';
-
-    const shuffledTerms = [...resourceData].sort(() => Math.random() - 0.5);
-    const shuffledDefs = [...resourceData].sort(() => Math.random() - 0.5);
-
-    shuffledTerms.forEach(item => {
-      const el = document.createElement('div');
-      el.className = 'match-item';
-      el.innerText = item.term;
-      el.dataset.id = item.id;
-      el.onclick = () => selectMatchItem(el, 'term');
-      termsCol.appendChild(el);
-    });
-
-    shuffledDefs.forEach(item => {
-      const el = document.createElement('div');
-      el.className = 'match-item';
-      el.innerText = item.def;
-      el.dataset.id = item.id;
-      el.onclick = () => selectMatchItem(el, 'def');
-      defsCol.appendChild(el);
-    });
-  }
-
-  function selectMatchItem(el, type) {
-    if (el.classList.contains('matched')) return;
-
-    if (type === 'term') {
-      document.querySelectorAll('#terms-column .match-item').forEach(i => i.classList.remove('selected'));
-      selectedTerm = el;
-    } else {
-      document.querySelectorAll('#defs-column .match-item').forEach(i => i.classList.remove('selected'));
-      selectedDef = el;
-    }
-    el.classList.add('selected');
-
-    if (selectedTerm && selectedDef) {
-      if (selectedTerm.dataset.id === selectedDef.dataset.id) {
-        selectedTerm.classList.add('matched');
-        selectedDef.classList.add('matched');
-        selectedTerm.classList.remove('selected');
-        selectedDef.classList.remove('selected');
-      } else {
-        setTimeout(() => {
-          if (selectedTerm) selectedTerm.classList.remove('selected');
-          if (selectedDef) selectedDef.classList.remove('selected');
-        }, 400);
-      }
-      selectedTerm = null;
-      selectedDef = null;
-    }
-  }
-
-  /* 3. Quiz Logic */
-  let currentQuizIndex = 0;
-  let score = 0;
-  let totalAttempted = 0;
-
-  function renderQuizQuestion() {
-    const q = resourceData[currentQuizIndex];
-    document.getElementById('quiz-question').innerText = `Question ${currentQuizIndex + 1}: What is the primary function or definition of "${q.term}"?`;
-    
-    const feedbackEl = document.getElementById('quiz-feedback');
-    feedbackEl.innerText = '';
-    feedbackEl.style.background = 'none';
-
-    const optionsContainer = document.getElementById('quiz-options');
-    optionsContainer.innerHTML = '';
-
-    const allOptions = [q.def, ...q.distractors].sort(() => Math.random() - 0.5);
-
-    allOptions.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'quiz-option-btn';
-      btn.innerText = opt;
-      btn.onclick = () => checkAnswer(btn, opt, q.def);
-      optionsContainer.appendChild(btn);
-    });
-
-    document.getElementById('quiz-score').innerText = `Score: ${score} / ${totalAttempted}`;
-  }
-
-  function checkAnswer(selectedBtn, selectedText, correctText) {
-    const buttons = document.querySelectorAll('.quiz-option-btn');
-    buttons.forEach(btn => btn.disabled = true);
-
-    totalAttempted++;
-    const feedbackEl = document.getElementById('quiz-feedback');
-
-    if (selectedText === correctText) {
-      selectedBtn.classList.add('correct');
-      feedbackEl.innerText = "✓ Correct!";
-      feedbackEl.style.color = "#86efac";
-      feedbackEl.style.background = "rgba(34, 197, 94, 0.15)";
-      score++;
-    } else {
-      selectedBtn.classList.add('incorrect');
-      feedbackEl.innerText = `✕ Incorrect. The correct answer is: ${correctText}`;
-      feedbackEl.style.color = "#fca5a5";
-      feedbackEl.style.background = "rgba(239, 68, 68, 0.15)";
-      buttons.forEach(btn => {
-        if (btn.innerText === correctText) btn.classList.add('correct');
-      });
-    }
-
-    document.getElementById('quiz-score').innerText = `Score: ${score} / ${totalAttempted}`;
-  }
-
-  function nextQuestion() {
-    currentQuizIndex = (currentQuizIndex + 1) % resourceData.length;
-    renderQuizQuestion();
-  }
-
-  // Initial load
-  renderSlide();
-  initMatchingGame();
-  renderQuizQuestion();
-</script>
-</body>
-</html>
+      term: "LGA (Land Grid Array)",
+      def: "A CPU socket style where the contact pins are located on the socket rather than the processor (common with Intel).",
+      distractors: ["Socket design where pins are on the CPU chip itself.", "Socket type with no locking lever mechanism.", "Soldered CPU design found exclusively in mobile devices."]
+    },
+    {
+      id: 6,
+      term: "PGA (Pin Grid Array)",
+      def: "A CPU socket style where the pins are on the underside of the processor chip (historically common with AMD).",
+      distractors: ["Socket design where pins are located inside the motherboard socket.", "BGA CPU mounting method permanently soldered to the board.", "Expansion slot standard for graphics cards."]
+    },
+    {
+      id: 7,
+      term: "PCIe x16 Slot",
+      def: "High-speed expansion slot providing 16 full-duplex lanes, primarily used for dedicated graphics cards.",
+      distractors: ["Legacy expansion bus limited to 133 MB/s.", "Single-lane slot used for audio or Wi-Fi cards.", "Power connector supplying +12V directly to the CPU."]
+    },
+    {
+      id: 8,
+      term: "PCIe x1 Slot",
+      def: "A short expansion slot utilizing a single PCIe lane, used for sound cards, NICs, and USB expansion cards.",
+      distractors: ["Primary slot used for high-end dedicated GPUs.", "Legacy 32-bit parallel expansion slot.", "Slot dedicated exclusively to M.2 NVMe drives."]
+    },
+    {
+      id: 9,
+      term: "PCI (Peripheral Component Interconnect)",
+      def: "Legacy 32-bit parallel expansion bus running at 33 MHz or 66 MHz, replaced by serial PCIe.",
+      distractors: ["Modern point-to-point serial expansion bus.", "CPU socket standard used for server boards.", "Power delivery rail supplying +5V to drive bays."]
+    },
+    {
+      id: 10,
+      term: "M.2 Slot",
+      def: "Compact, high-speed expansion slot used for NVMe SSDs and Wi-Fi modules, connecting via PCIe or SATA.",
+      distractors: ["External port used for hot-swappable backup drives.", "24-pin motherboard power header.", "Legacy slot used for dial-up modems."]
+    },
+    {
+      id: 11,
+      term: "24-Pin ATX Connector",
+      def: "Primary power connector from the PSU that supplies +3.3V, +5V, and +12V power to the motherboard.",
+      distractors: ["Auxiliary 4-pin or 8-pin connector supplying power exclusively to the CPU.", "6-pin PCIe connector for video cards.", "SATA power cable for internal hard drives."]
+    },
+    {
+      id: 12,
+      term: "4-pin/8-pin EPS12V Connector",
+      def: "Dedicated motherboard power header supplying dedicated +12V power directly to the CPU.",
+      distractors: ["Main 24-pin connector powering the entire board.", "Molex connector supplying power to case fans.", "Front panel header pin for the HDD LED."]
+    },
+    {
+      id: 13,
+      term: "Front Panel Header",
+      def: "Set of small pins on the motherboard connecting
