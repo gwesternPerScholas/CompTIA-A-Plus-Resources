@@ -1,0 +1,537 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CompTIA A+ Module 132 Review & Practice</title>
+  <style>
+    :root {
+      --primary-color: #0056b3;
+      --secondary-color: #28a745;
+      --accent-color: #dc3545;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #e0e0e0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      color: var(--text-color);
+    }
+
+    .aplus-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 25px;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Top Navigation Header */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background-color: #6c757d;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .badge {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-color);
+      background-color: #e3f2fd;
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+
+    h1 {
+      margin: 0 0 20px 0;
+      font-size: 26px;
+      color: #1a1a1a;
+    }
+
+    /* Tab Navigation */
+    .nav-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 25px;
+      gap: 5px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 3px solid transparent;
+      border-radius: 6px 6px 0 0;
+    }
+
+    .tab-btn:hover {
+      background-color: #f1f3f5;
+    }
+
+    .tab-btn.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+      background: rgba(0, 86, 179, 0.05);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      transition: background 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #004085;
+    }
+
+    /* Section 1: Slideshow / Review Deck */
+    .slide-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.02);
+    }
+
+    .slide-term {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    .slide-def {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text-color);
+    }
+
+    .slide-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .slide-counter {
+      font-weight: 600;
+      color: #666;
+    }
+
+    /* Section 2: Matching Game */
+    .matching-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .match-column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .match-item {
+      padding: 15px;
+      background: var(--bg-color);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      font-size: 15px;
+    }
+
+    .match-item:hover {
+      border-color: var(--primary-color);
+    }
+
+    .match-item.selected {
+      border-color: var(--primary-color);
+      background: #e3f2fd;
+      font-weight: 600;
+    }
+
+    .match-item.matched {
+      border-color: var(--secondary-color);
+      background: #e8f5e9;
+      color: #2e7d32;
+      cursor: default;
+      opacity: 0.85;
+    }
+
+    /* Section 3: Quiz */
+    .quiz-question {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-option-btn {
+      padding: 14px;
+      text-align: left;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.2s ease;
+    }
+
+    .quiz-option-btn:hover:not(:disabled) {
+      background: #e9ecef;
+    }
+
+    .quiz-option-btn.correct {
+      background: #d4edda !important;
+      border-color: var(--secondary-color) !important;
+      color: #155724;
+      font-weight: bold;
+    }
+
+    .quiz-option-btn.incorrect {
+      background: #f8d7da !important;
+      border-color: var(--accent-color) !important;
+      color: #721c24;
+    }
+
+    .quiz-feedback {
+      margin-top: 15px;
+      font-weight: 600;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    .quiz-footer {
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .quiz-score {
+      font-weight: 600;
+      font-size: 16px;
+      color: #495057;
+    }
+
+    @media (max-width: 600px) {
+      .matching-board {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="aplus-container">
+  <!-- Return Link & Exam Badge -->
+  <div class="top-header">
+    <a href="https://perscholas.instructure.com/courses/3655/pages/module-132" class="back-btn">
+      &#8592; Back to Canvas Module
+    </a>
+    <span class="badge">CompTIA A+ Core (220-1201 / 220-1202)</span>
+  </div>
+
+  <h1>Module 132: Technical Review & Knowledge Check</h1>
+
+  <!-- Tab Navigation -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('review', event)">1. Flashcard Deck</button>
+    <button class="tab-btn" onclick="switchTab('matching', event)">2. Matching Game</button>
+    <button class="tab-btn" onclick="switchTab('quiz', event)">3. Module Quiz</button>
+  </div>
+
+  <!-- Tab 1: Slideshow Review -->
+  <div id="tab-review" class="tab-content active">
+    <div class="slide-card">
+      <div id="slide-term" class="slide-term">Loading...</div>
+      <div id="slide-def" class="slide-def"></div>
+    </div>
+    <div class="slide-controls">
+      <button class="btn" onclick="prevSlide()">Previous</button>
+      <span id="slide-counter" class="slide-counter">1 / 5</span>
+      <button class="btn" onclick="nextSlide()">Next</button>
+    </div>
+  </div>
+
+  <!-- Tab 2: Matching Game -->
+  <div id="tab-matching" class="tab-content">
+    <p style="margin-top: 0; color: #555;">Select a term on the left, then select its matching definition on the right.</p>
+    <div class="matching-board">
+      <div class="match-column" id="terms-column"></div>
+      <div class="match-column" id="defs-column"></div>
+    </div>
+    <div style="margin-top: 20px; text-align: right;">
+      <button class="btn" onclick="initMatchingGame()">Reset Game</button>
+    </div>
+  </div>
+
+  <!-- Tab 3: Quiz -->
+  <div id="tab-quiz" class="tab-content">
+    <div id="quiz-container">
+      <div id="quiz-question" class="quiz-question"></div>
+      <div id="quiz-options" class="quiz-options"></div>
+      <div id="quiz-feedback" class="quiz-feedback"></div>
+      <div class="quiz-footer">
+        <span id="quiz-score" class="quiz-score">Score: 0 / 0</span>
+        <button class="btn" onclick="nextQuestion()">Next Question</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Core CompTIA A+ Resource Dataset
+  const resourceData = [
+    {
+      id: 1,
+      term: "DHCP (Ports 67/68)",
+      def: "Dynamically assigns IP addresses, subnet masks, default gateways, and DNS server details to clients on a network.",
+      distractors: ["Translates human-readable domain names into IP addresses.", "Encrypts web traffic using SSL/TLS protocols.", "Provides secure, encrypted command-line remote access."]
+    },
+    {
+      id: 2,
+      term: "DNS (Port 53)",
+      def: "Resolves human-readable domain names (e.g., perscholas.org) into numerical IP addresses.",
+      distractors: ["Automatically assigns IP address settings to network hosts.", "Transfers files between client and server without encryption.", "Monitors and manages network devices using SNMP."]
+    },
+    {
+      id: 3,
+      term: "APIPA Address",
+      def: "A self-assigned IP address in the 169.254.0.0/16 range used when a DHCP server is unreachable.",
+      distractors: ["A public IP address assigned directly by an ISP.", "A loopback address (127.0.0.1) used for local testing.", "A private IPv6 link-local address starting with fe80::."]
+    },
+    {
+      id: 4,
+      term: "Port 3389 (RDP)",
+      def: "Remote Desktop Protocol - allows graphical interface access to a remote Windows computer.",
+      distractors: ["Secure Shell (SSH) protocol for remote CLI management.", "Hypertext Transfer Protocol Secure for encrypted web traffic.", "Server Message Block (SMB) protocol for network file sharing."]
+    },
+    {
+      id: 5,
+      term: "SATA III Speed",
+      def: "Provides a maximum theoretical throughput of 6.0 Gbps (approx. 600 MB/s).",
+      distractors: ["Provides a maximum theoretical throughput of 1.5 Gbps.", "Provides a maximum theoretical throughput of 10.0 Gbps.", "Provides a maximum theoretical throughput of 3.0 Gbps."]
+    }
+  ];
+
+  /* Tab Navigation */
+  function switchTab(tabName, event) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  /* 1. Slideshow Logic */
+  let currentSlide = 0;
+
+  function renderSlide() {
+    const item = resourceData[currentSlide];
+    document.getElementById('slide-term').innerText = item.term;
+    document.getElementById('slide-def').innerText = item.def;
+    document.getElementById('slide-counter').innerText = `${currentSlide + 1} / ${resourceData.length}`;
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % resourceData.length;
+    renderSlide();
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + resourceData.length) % resourceData.length;
+    renderSlide();
+  }
+
+  /* 2. Matching Game Logic */
+  let selectedTerm = null;
+  let selectedDef = null;
+
+  function initMatchingGame() {
+    const termsCol = document.getElementById('terms-column');
+    const defsCol = document.getElementById('defs-column');
+    termsCol.innerHTML = '';
+    defsCol.innerHTML = '';
+
+    const shuffledTerms = [...resourceData].sort(() => Math.random() - 0.5);
+    const shuffledDefs = [...resourceData].sort(() => Math.random() - 0.5);
+
+    shuffledTerms.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'match-item';
+      el.innerText = item.term;
+      el.dataset.id = item.id;
+      el.onclick = () => selectMatchItem(el, 'term');
+      termsCol.appendChild(el);
+    });
+
+    shuffledDefs.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'match-item';
+      el.innerText = item.def;
+      el.dataset.id = item.id;
+      el.onclick = () => selectMatchItem(el, 'def');
+      defsCol.appendChild(el);
+    });
+  }
+
+  function selectMatchItem(el, type) {
+    if (el.classList.contains('matched')) return;
+
+    if (type === 'term') {
+      document.querySelectorAll('#terms-column .match-item').forEach(i => i.classList.remove('selected'));
+      selectedTerm = el;
+    } else {
+      document.querySelectorAll('#defs-column .match-item').forEach(i => i.classList.remove('selected'));
+      selectedDef = el;
+    }
+    el.classList.add('selected');
+
+    if (selectedTerm && selectedDef) {
+      if (selectedTerm.dataset.id === selectedDef.dataset.id) {
+        selectedTerm.classList.add('matched');
+        selectedDef.classList.add('matched');
+        selectedTerm.classList.remove('selected');
+        selectedDef.classList.remove('selected');
+      } else {
+        setTimeout(() => {
+          if (selectedTerm) selectedTerm.classList.remove('selected');
+          if (selectedDef) selectedDef.classList.remove('selected');
+        }, 400);
+      }
+      selectedTerm = null;
+      selectedDef = null;
+    }
+  }
+
+  /* 3. Quiz Logic */
+  let currentQuizIndex = 0;
+  let score = 0;
+  let totalAttempted = 0;
+
+  function renderQuizQuestion() {
+    const q = resourceData[currentQuizIndex];
+    document.getElementById('quiz-question').innerText = `Question ${currentQuizIndex + 1}: What is the primary function or definition of "${q.term}"?`;
+    
+    const feedbackEl = document.getElementById('quiz-feedback');
+    feedbackEl.innerText = '';
+    feedbackEl.style.background = 'none';
+
+    const optionsContainer = document.getElementById('quiz-options');
+    optionsContainer.innerHTML = '';
+
+    const allOptions = [q.def, ...q.distractors].sort(() => Math.random() - 0.5);
+
+    allOptions.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option-btn';
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(btn, opt, q.def);
+      optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('quiz-score').innerText = `Score: ${score} / ${totalAttempted}`;
+  }
+
+  function checkAnswer(selectedBtn, selectedText, correctText) {
+    const buttons = document.querySelectorAll('.quiz-option-btn');
+    buttons.forEach(btn => btn.disabled = true);
+
+    totalAttempted++;
+    const feedbackEl = document.getElementById('quiz-feedback');
+
+    if (selectedText === correctText) {
+      selectedBtn.classList.add('correct');
+      feedbackEl.innerText = "✓ Correct!";
+      feedbackEl.style.color = "var(--secondary-color)";
+      feedbackEl.style.background = "#e8f5e9";
+      score++;
+    } else {
+      selectedBtn.classList.add('incorrect');
+      feedbackEl.innerText = `✕ Incorrect. The correct answer is: ${correctText}`;
+      feedbackEl.style.color = "var(--accent-color)";
+      feedbackEl.style.background = "#f8d7da";
+      buttons.forEach(btn => {
+        if (btn.innerText === correctText) btn.classList.add('correct');
+      });
+    }
+
+    document.getElementById('quiz-score').innerText = `Score: ${score} / ${totalAttempted}`;
+  }
+
+  function nextQuestion() {
+    currentQuizIndex = (currentQuizIndex + 1) % resourceData.length;
+    renderQuizQuestion();
+  }
+
+  // Initial load
+  renderSlide();
+  initMatchingGame();
+  renderQuizQuestion();
+</script>
+</body>
+</html>
