@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 132 Jeopardy | CompTIA A+ Core 1 Hardware</title>
+<style>
+  :root {
+    --navy: #002855;
+    --blue: #0062A3;
+    --gold: #F7DD63;
+    --ink: #ffffff;
+    --good: #2e9e5b;
+    --bad: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    background: #001a38;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  header {
+    background: var(--navy);
+    border-bottom: 4px solid var(--blue);
+    padding: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  header h1 { margin: 0; font-size: 1.4rem; color: var(--gold); letter-spacing: .5px; }
+  header small { color: #cfe3f5; display: block; font-weight: normal; font-size: .8rem; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: 2px solid var(--gold);
+    background: var(--blue);
+    color: var(--gold);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  button:hover:not(:disabled) { background: var(--gold); color: var(--navy); }
+  button:focus-visible, .cell:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  button:disabled { cursor: default; }
+  main { padding: 16px; max-width: 1200px; margin: 0 auto; }
+
+  /* Scoreboard (single player) */
+  #scoreboard {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+  }
+  .stat {
+    flex: 1 1 160px;
+    background: var(--navy);
+    border: 3px solid var(--blue);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .stat.main { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(247,221,99,.25); }
+  .stat .label { color: #9fc4e6; font-size: .8rem; text-transform: uppercase; letter-spacing: 1px; }
+  .stat .val { font-size: 1.9rem; font-weight: 700; color: var(--gold); margin-top: 2px; }
+
+  /* Board */
+  #board { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .cat {
+    background: var(--blue);
+    color: var(--gold);
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 14px 6px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 74px;
+    font-size: clamp(.7rem, 1.5vw, 1rem);
+    border: 3px solid var(--navy);
+    border-radius: 4px;
+  }
+  .cell {
+    background: var(--navy);
+    color: var(--gold);
+    border: 3px solid var(--blue);
+    border-radius: 4px;
+    font-size: clamp(1.1rem, 3vw, 2rem);
+    font-weight: 800;
+    min-height: 84px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cell:hover:not(:disabled) { background: var(--blue); color: var(--gold); }
+  .cell.used { background: #00122a; border-color: #0a2a4d; color: transparent; }
+  .cell.used:hover { background: #00122a; }
+  .cell.hit { box-shadow: inset 0 0 0 3px var(--good); }
+  .cell.miss { box-shadow: inset 0 0 0 3px var(--bad); }
+
+  /* Clue overlay */
+  #overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 12, 30, .94);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 10;
+  }
+  #overlay.show { display: flex; }
+  .card {
+    background: var(--navy);
+    border: 4px solid var(--gold);
+    border-radius: 10px;
+    width: min(900px, 100%);
+    padding: 28px;
+    text-align: center;
+    max-height: 95vh;
+    overflow: auto;
+  }
+  .card .meta { color: #9fc4e6; font-size: .95rem; text-transform: uppercase; letter-spacing: 1px; }
+  .card .clue { font-size: clamp(1.2rem, 3vw, 2rem); line-height: 1.35; margin: 18px 0; text-transform: uppercase; }
+  #timerBar { height: 8px; background: #0a2a4d; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  #timerFill { height: 100%; width: 100%; background: var(--gold); transition: width 1s linear; }
+  #timerFill.low { background: var(--bad); }
+  #timerText { color: #cfe3f5; font-size: .85rem; margin-top: 4px; }
+
+  #choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 14px; }
+  .choice {
+    text-align: left;
+    padding: 14px 16px;
+    font-size: clamp(.95rem, 2vw, 1.15rem);
+    background: var(--blue);
+    border: 2px solid var(--gold);
+    color: #fff;
+    display: flex; gap: 10px; align-items: baseline;
+  }
+  .choice .letter { color: var(--gold); font-weight: 800; }
+  .choice:hover:not(:disabled) { background: var(--gold); color: var(--navy); }
+  .choice:hover:not(:disabled) .letter { color: var(--navy); }
+  .choice:disabled { opacity: 1; }
+  .choice.correct { background: var(--good); border-color: #bff0d1; color: #fff; }
+  .choice.correct .letter { color: #fff; }
+  .choice.wrong { background: var(--bad); border-color: #ffc9c2; color: #fff; }
+  .choice.wrong .letter { color: #fff; }
+  .choice.dim { opacity: .45; }
+
+  #feedback { min-height: 1.6em; font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+  #feedback.good { color: #bff0d1; }
+  #feedback.bad { color: #ffc9c2; }
+  #answerText {
+    display: none;
+    font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+    color: var(--gold);
+    background: rgba(0,98,163,.35);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  #answerText.show { display: block; }
+  #continueBtn { display: none; }
+  #continueBtn.show { display: inline-block; }
+
+  /* End screen */
+  #endScreen {
+    display: none;
+    text-align: center;
+    background: var(--navy);
+    border: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 14px;
+  }
+  #endScreen.show { display: block; }
+  #endScreen h2 { margin: 0 0 10px; color: var(--gold); font-size: 1.8rem; }
+  #endScreen .big { font-size: 2.6rem; font-weight: 800; color: var(--gold); }
+  #endScreen p { margin: 6px 0; color: #cfe3f5; }
+  #endScreen .newrec { color: #bff0d1; font-weight: 700; }
+  #endScreen button { margin-top: 14px; font-size: 1.1rem; padding: 10px 22px; }
+
+  footer { text-align: center; color: #7fa6c9; font-size: .8rem; padding: 18px; }
+
+  @media (max-width: 720px) {
+    #board { gap: 4px; }
+    .cell { min-height: 60px; }
+    .cat { min-height: 60px; padding: 8px 3px; }
+    #choices { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { #timerFill { transition: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Module 132 Jeopardy
+    <small>CompTIA A+ Core 1 (220-1201) &middot; Hardware Break/Fix</small>
+  </h1>
+  <div class="controls">
+    <button id="resetBtn" type="button">New Game</button>
+  </div>
+</header>
+
+<main>
+  <section id="endScreen" role="status" aria-live="polite"></section>
+  <section id="scoreboard" aria-label="Scoreboard">
+    <div class="stat main"><div class="label">Score</div><div class="val" id="scoreVal">$0</div></div>
+    <div class="stat"><div class="label">High Score (this session)</div><div class="val" id="highVal">$0</div></div>
+    <div class="stat"><div class="label">Clues Left</div><div class="val" id="leftVal">30</div></div>
+  </section>
+  <section id="board" aria-label="Jeopardy board"></section>
+</main>
+
+<div id="overlay" role="dialog" aria-modal="true" aria-labelledby="clueText">
+  <div class="card">
+    <div class="meta" id="clueMeta"></div>
+    <div id="timerBar" aria-hidden="true"><div id="timerFill"></div></div>
+    <div id="timerText" aria-live="off"></div>
+    <div class="clue" id="clueText"></div>
+    <div id="choices" role="group" aria-label="Answer choices"></div>
+    <div id="feedback" role="status" aria-live="assertive"></div>
+    <div id="answerText"></div>
+    <button id="continueBtn" type="button">Back to Board</button>
+  </div>
+</div>
+
+<footer>Clues sourced from the Module 132 lesson set. Click a tile, then click your answer. The high score resets when the page reloads.</footer>
+
+<script>
+/* ---------- Clue data (from module132_jeopardy_board.csv) ---------- */
+const CLUES = [
+  {"c":"Troubleshooting Methodology","v":100,"q":"This is the first step of the CompTIA troubleshooting methodology.","a":"What is identify the problem?","l":"132.1"},
+  {"c":"Troubleshooting Methodology","v":200,"q":"After identifying the problem, you do this before testing anything: ask what could be causing it.","a":"What is establish a theory of probable cause?","l":"132.1"},
+  {"c":"Troubleshooting Methodology","v":300,"q":"If your first theory fails the test, you do this next.","a":"What is establish a new theory or escalate?","l":"132.1"},
+  {"c":"Troubleshooting Methodology","v":400,"q":"This step comes right after implementing the solution and verifying full system functionality.","a":"What is document the findings, actions, and outcomes?","l":"132.1"},
+  {"c":"Troubleshooting Methodology","v":500,"q":"Before touching a user's machine, you should do this to guard against data loss, as part of identifying the problem.","a":"What is back up the data (and question the user / check for recent changes)?","l":"132.1"},
+  {"c":"Cables & Motherboards","v":100,"q":"This motherboard form factor is the most common full-size standard for desktop PCs.","a":"What is ATX?","l":"132.2"},
+  {"c":"Cables & Motherboards","v":200,"q":"This video connector is digital-only, carries audio and video, and is found on most TVs and monitors.","a":"What is HDMI?","l":"132.2"},
+  {"c":"Cables & Motherboards","v":300,"q":"This legacy analog video connector is 15-pin and blue, and it is largely obsolete.","a":"What is VGA?","l":"132.2"},
+  {"c":"Cables & Motherboards","v":400,"q":"This smaller form factor board measures 170 mm x 170 mm and is popular for compact builds.","a":"What is Mini-ITX?","l":"132.2"},
+  {"c":"Cables & Motherboards","v":500,"q":"This expansion slot type, found on modern motherboards, is used for graphics cards and comes in x1, x4, x8 and x16 lane widths.","a":"What is PCIe (PCI Express)?","l":"132.2"},
+  {"c":"Power & Storage","v":100,"q":"This type of storage has no moving parts and uses flash memory.","a":"What is an SSD (solid-state drive)?","l":"132.3"},
+  {"c":"Power & Storage","v":200,"q":"This component converts AC wall power to the DC voltages a PC needs.","a":"What is the power supply unit (PSU)?","l":"132.3"},
+  {"c":"Power & Storage","v":300,"q":"This RAID level mirrors data across two drives for redundancy.","a":"What is RAID 1?","l":"132.3"},
+  {"c":"Power & Storage","v":400,"q":"This SSD form factor plugs directly into the motherboard, with no cables, and often uses NVMe.","a":"What is M.2?","l":"132.3"},
+  {"c":"Power & Storage","v":500,"q":"A hard drive spinning at this common speed (in RPM) is typical for desktop HDDs.","a":"What is 7200 RPM?","l":"132.3"},
+  {"c":"Memory & CPUs","v":100,"q":"This type of memory is volatile and holds data the CPU is actively using.","a":"What is RAM?","l":"132.3"},
+  {"c":"Memory & CPUs","v":200,"q":"This memory type can detect and correct single-bit errors and is common in servers.","a":"What is ECC RAM?","l":"132.3"},
+  {"c":"Memory & CPUs","v":300,"q":"This is the term for installing matched RAM modules in paired slots to increase memory bandwidth.","a":"What is dual-channel memory?","l":"132.3"},
+  {"c":"Memory & CPUs","v":400,"q":"This CPU architecture is used in most smartphones and tablets and is known for power efficiency.","a":"What is ARM?","l":"132.3"},
+  {"c":"Memory & CPUs","v":500,"q":"Applying this to a CPU before seating the heat sink improves heat transfer.","a":"What is thermal paste (thermal compound)?","l":"132.3"},
+  {"c":"BIOS/UEFI & Hardware Issues","v":100,"q":"This firmware interface replaced legacy BIOS on modern systems.","a":"What is UEFI?","l":"132.4"},
+  {"c":"BIOS/UEFI & Hardware Issues","v":200,"q":"This UEFI feature prevents unsigned bootloaders and operating systems from loading.","a":"What is Secure Boot?","l":"132.4"},
+  {"c":"BIOS/UEFI & Hardware Issues","v":300,"q":"This chip stores cryptographic keys and is required for BitLocker with full hardware protection and Windows 11.","a":"What is the TPM (Trusted Platform Module)?","l":"132.4"},
+  {"c":"BIOS/UEFI & Hardware Issues","v":400,"q":"A system that powers on but shows no display, with a continuous beep pattern, often points to a failure in this component.","a":"What is RAM (or the video card)?","l":"132.4"},
+  {"c":"BIOS/UEFI & Hardware Issues","v":500,"q":"This drive monitoring technology predicts disk failure, and a warning from it means back up immediately.","a":"What is S.M.A.R.T.?","l":"132.4"},
+  {"c":"Hardware with AI","v":100,"q":"This type of AI tool, such as ChatGPT, Gemini, Claude or Copilot, can generate text answers to hardware questions.","a":"What is Generative AI?","l":"132.5"},
+  {"c":"Hardware with AI","v":200,"q":"When an AI tool suggests a diagnosis for a failing PC, the best practice is to treat it as this and then confirm it.","a":"What is a lead (a starting point, not a final answer)?","l":"132.5"},
+  {"c":"Hardware with AI","v":300,"q":"AI can help technicians improve this, such as notes, ticket summaries and parts lists, but it does not replace hands-on inspection.","a":"What is hardware documentation?","l":"132.5"},
+  {"c":"Hardware with AI","v":400,"q":"A technician must keep this key limitation in mind: AI cannot physically do this to the hardware, so its diagnosis must be verified.","a":"What is inspect (see, touch, or test) the hardware?","l":"132.5"},
+  {"c":"Hardware with AI","v":500,"q":"Lesson 132.5 concludes that AI is a useful assistant for troubleshooting but does this to hands-on technical skill and verification.","a":"What is complement it (not replace it)?","l":"132.5"}
+];
+
+/* ---------- State ---------- */
+const TIMER_SECONDS = 30;
+const CHOICE_COUNT = 4;
+const LETTERS = ["A", "B", "C", "D"];
+const state = {
+  score: 0,
+  high: 0,          /* session-only: lives in memory, never written to storage */
+  used: new Set(),
+  current: null,    /* { cl, cell, locked } */
+  timer: null,
+  left: TIMER_SECONDS
+};
+
+const $ = id => document.getElementById(id);
+const categories = [...new Set(CLUES.map(x => x.c))];
+const values = [...new Set(CLUES.map(x => x.v))].sort((a, b) => a - b);
+
+function clueFor(cat, val) { return CLUES.find(x => x.c === cat && x.v === val); }
+function keyOf(cl) { return cl.c + "|" + cl.v; }
+function fmt(n) { return "$" + n.toLocaleString(); }
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+/* "What is the TPM (Trusted Platform Module)?" -> "The TPM (Trusted Platform Module)" */
+function cleanAnswer(a) {
+  let t = a.replace(/^What (is|are)\s+/i, "").replace(/\?$/, "").trim();
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+/* Distractors: other answers from the same category first, then the rest of the pool. */
+function buildChoices(cl) {
+  const correct = cleanAnswer(cl.a);
+  const seen = new Set([correct.toLowerCase()]);
+  const pick = [];
+  const take = list => {
+    for (const x of shuffle(list)) {
+      if (pick.length >= CHOICE_COUNT - 1) return;
+      const t = cleanAnswer(x.a);
+      if (!seen.has(t.toLowerCase())) { seen.add(t.toLowerCase()); pick.push(t); }
+    }
+  };
+  take(CLUES.filter(x => x.c === cl.c && x !== cl));
+  take(CLUES.filter(x => x.c !== cl.c));
+  return shuffle([{ text: correct, ok: true }, ...pick.map(t => ({ text: t, ok: false }))]);
+}
+
+/* ---------- Scoreboard ---------- */
+function renderStats() {
+  $("scoreVal").textContent = fmt(state.score);
+  $("highVal").textContent = fmt(state.high);
+  $("leftVal").textContent = String(CLUES.length - state.used.size);
+}
+
+/* ---------- Board ---------- */
+function buildBoard() {
+  const b = $("board");
+  b.innerHTML = "";
+  b.style.gridTemplateColumns = "repeat(" + categories.length + ", 1fr)";
+  categories.forEach(c => {
+    const h = document.createElement("div");
+    h.className = "cat"; h.textContent = c; h.setAttribute("role", "columnheader");
+    b.appendChild(h);
+  });
+  values.forEach(v => {
+    categories.forEach(c => {
+      const cl = clueFor(c, v);
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "cell";
+      cell.dataset.key = keyOf(cl);
+      cell.textContent = "$" + v;
+      cell.setAttribute("aria-label", c + " for " + v + " dollars");
+      cell.addEventListener("click", () => openClue(cl, cell));
+      b.appendChild(cell);
+    });
+  });
+}
+
+/* ---------- Clue overlay ---------- */
+function openClue(cl, cell) {
+  if (state.used.has(keyOf(cl)) || state.current) return;
+  state.current = { cl, cell, locked: false };
+  $("clueMeta").textContent = cl.c + " \u2022 $" + cl.v + " \u2022 Lesson " + cl.l;
+  $("clueText").textContent = cl.q;
+  $("feedback").textContent = "";
+  $("feedback").className = "";
+  $("answerText").classList.remove("show");
+  $("continueBtn").classList.remove("show");
+
+  const box = $("choices");
+  box.innerHTML = "";
+  buildChoices(cl).forEach((ch, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "choice";
+    b.dataset.ok = ch.ok ? "1" : "0";
+    const l = document.createElement("span"); l.className = "letter"; l.textContent = LETTERS[i] + ".";
+    const t = document.createElement("span"); t.textContent = ch.text;
+    b.append(l, t);
+    b.addEventListener("click", () => choose(b));
+    box.appendChild(b);
+  });
+
+  $("overlay").classList.add("show");
+  startTimer();
+}
+
+function lockChoices(pickedBtn) {
+  [...$("choices").children].forEach(b => {
+    b.disabled = true;
+    if (b.dataset.ok === "1") b.classList.add("correct");
+    else if (b === pickedBtn) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+}
+
+function finishClue(result, pickedBtn) {
+  const cur = state.current;
+  if (!cur || cur.locked) return;
+  cur.locked = true;
+  stopTimer();
+  lockChoices(pickedBtn || null);
+
+  const fb = $("feedback");
+  if (result === "hit") {
+    state.score += cur.cl.v;
+    if (state.score > state.high) state.high = state.score;
+    fb.textContent = "Correct! +" + fmt(cur.cl.v);
+    fb.className = "good";
+    cur.cell.classList.add("hit");
+  } else if (result === "miss") {
+    fb.textContent = "Not quite. No points lost.";
+    fb.className = "bad";
+    cur.cell.classList.add("miss");
+  } else {
+    fb.textContent = "Time's up. No points lost.";
+    fb.className = "bad";
+    cur.cell.classList.add("miss");
+  }
+  $("answerText").textContent = cur.cl.a;
+  $("answerText").classList.add("show");
+  $("continueBtn").classList.add("show");
+  $("continueBtn").textContent = (state.used.size + 1 >= CLUES.length) ? "See Final Score" : "Back to Board";
+  $("continueBtn").focus();
+  renderStats();
+}
+
+function choose(btn) {
+  if (!state.current || state.current.locked) return;
+  finishClue(btn.dataset.ok === "1" ? "hit" : "miss", btn);
+}
+
+function closeClue() {
+  const cur = state.current;
+  if (!cur || !cur.locked) return;   /* a clue must be answered or time out */
+  stopTimer();
+  state.used.add(keyOf(cur.cl));
+  cur.cell.classList.add("used");
+  cur.cell.disabled = true;
+  cur.cell.setAttribute("aria-label", "Used");
+  state.current = null;
+  $("overlay").classList.remove("show");
+  renderStats();
+  checkEnd();
+}
+
+/* ---------- Timer ---------- */
+function startTimer() {
+  stopTimer();
+  state.left = TIMER_SECONDS;
+  paintTimer();
+  state.timer = setInterval(() => {
+    state.left--;
+    paintTimer();
+    if (state.left <= 0) { finishClue("timeout", null); }
+  }, 1000);
+}
+function stopTimer() { if (state.timer) { clearInterval(state.timer); state.timer = null; } }
+function paintTimer() {
+  const f = $("timerFill");
+  f.style.width = Math.max(0, (state.left / TIMER_SECONDS) * 100) + "%";
+  f.classList.toggle("low", state.left <= 8);
+  $("timerText").textContent = Math.max(0, state.left) + "s";
+}
+
+/* ---------- End of game ---------- */
+function checkEnd() {
+  if (state.used.size < CLUES.length) return;
+  const maxScore = CLUES.reduce((s, c) => s + c.v, 0);
+  const e = $("endScreen");
+  e.innerHTML = "";
+  const h = document.createElement("h2"); h.textContent = "Board Cleared!";
+  const big = document.createElement("div"); big.className = "big"; big.textContent = fmt(state.score);
+  const of = document.createElement("p"); of.textContent = "out of " + fmt(maxScore) + " possible";
+  const hi = document.createElement("p"); hi.textContent = "High score this session: " + fmt(state.high);
+  e.append(h, big, of, hi);
+  if (state.score > 0 && state.score === state.high) {
+    const rec = document.createElement("p"); rec.className = "newrec"; rec.textContent = "That's your best run this session.";
+    e.append(rec);
+  }
+  const again = document.createElement("button");
+  again.type = "button"; again.id = "playAgainBtn"; again.textContent = "New Game";
+  again.addEventListener("click", newGame);
+  e.append(again);
+  e.classList.add("show");
+  again.focus();
+}
+
+/* ---------- Wiring ---------- */
+function newGame() {
+  stopTimer();
+  state.score = 0;
+  state.used.clear();
+  state.current = null;
+  $("overlay").classList.remove("show");
+  $("endScreen").classList.remove("show");
+  buildBoard();
+  renderStats();
+}
+$("continueBtn").addEventListener("click", closeClue);
+$("resetBtn").addEventListener("click", () => {
+  if (state.used.size === 0 && !state.current) { newGame(); return; }
+  if (confirm("Start a new game? Your current score will reset (the session high score is kept).")) newGame();
+});
+
+newGame();
+</script>
+</body>
+</html>
