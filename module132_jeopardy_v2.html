@@ -333,4 +333,171 @@ function buildBoard() {
   categories.forEach(c => {
     const h = document.createElement("div");
     h.className = "cat"; h.textContent = c; h.setAttribute("role", "columnheader");
-    b.appendCh
+    b.appendChild(h);
+  });
+  values.forEach(v => {
+    categories.forEach(c => {
+      const cl = clueFor(c, v);
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "cell";
+      cell.dataset.key = keyOf(cl);
+      cell.textContent = "$" + v;
+      cell.setAttribute("aria-label", c + " for " + v + " dollars");
+      cell.addEventListener("click", () => openClue(cl, cell));
+      b.appendChild(cell);
+    });
+  });
+}
+
+/* ---------- Clue overlay ---------- */
+function openClue(cl, cell) {
+  if (state.used.has(keyOf(cl)) || state.current) return;
+  state.current = { cl, cell, locked: false };
+  $("clueMeta").textContent = cl.c + " \u2022 $" + cl.v + " \u2022 Lesson " + cl.l;
+  $("clueText").textContent = cl.q;
+  $("feedback").textContent = "";
+  $("feedback").className = "";
+  $("answerText").classList.remove("show");
+  $("continueBtn").classList.remove("show");
+
+  const box = $("choices");
+  box.innerHTML = "";
+  buildChoices(cl).forEach((ch, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "choice";
+    b.dataset.ok = ch.ok ? "1" : "0";
+    const l = document.createElement("span"); l.className = "letter"; l.textContent = LETTERS[i] + ".";
+    const t = document.createElement("span"); t.textContent = ch.text;
+    b.append(l, t);
+    b.addEventListener("click", () => choose(b));
+    box.appendChild(b);
+  });
+
+  $("overlay").classList.add("show");
+  startTimer();
+}
+
+function lockChoices(pickedBtn) {
+  [...$("choices").children].forEach(b => {
+    b.disabled = true;
+    if (b.dataset.ok === "1") b.classList.add("correct");
+    else if (b === pickedBtn) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+}
+
+function finishClue(result, pickedBtn) {
+  const cur = state.current;
+  if (!cur || cur.locked) return;
+  cur.locked = true;
+  stopTimer();
+  lockChoices(pickedBtn || null);
+
+  const fb = $("feedback");
+  if (result === "hit") {
+    state.score += cur.cl.v;
+    if (state.score > state.high) state.high = state.score;
+    fb.textContent = "Correct! +" + fmt(cur.cl.v);
+    fb.className = "good";
+    cur.cell.classList.add("hit");
+  } else if (result === "miss") {
+    fb.textContent = "Not quite. No points lost.";
+    fb.className = "bad";
+    cur.cell.classList.add("miss");
+  } else {
+    fb.textContent = "Time's up. No points lost.";
+    fb.className = "bad";
+    cur.cell.classList.add("miss");
+  }
+  $("answerText").textContent = cur.cl.a;
+  $("answerText").classList.add("show");
+  $("continueBtn").classList.add("show");
+  $("continueBtn").textContent = (state.used.size + 1 >= CLUES.length) ? "See Final Score" : "Back to Board";
+  $("continueBtn").focus();
+  renderStats();
+}
+
+function choose(btn) {
+  if (!state.current || state.current.locked) return;
+  finishClue(btn.dataset.ok === "1" ? "hit" : "miss", btn);
+}
+
+function closeClue() {
+  const cur = state.current;
+  if (!cur || !cur.locked) return;   /* a clue must be answered or time out */
+  stopTimer();
+  state.used.add(keyOf(cur.cl));
+  cur.cell.classList.add("used");
+  cur.cell.disabled = true;
+  cur.cell.setAttribute("aria-label", "Used");
+  state.current = null;
+  $("overlay").classList.remove("show");
+  renderStats();
+  checkEnd();
+}
+
+/* ---------- Timer ---------- */
+function startTimer() {
+  stopTimer();
+  state.left = TIMER_SECONDS;
+  paintTimer();
+  state.timer = setInterval(() => {
+    state.left--;
+    paintTimer();
+    if (state.left <= 0) { finishClue("timeout", null); }
+  }, 1000);
+}
+function stopTimer() { if (state.timer) { clearInterval(state.timer); state.timer = null; } }
+function paintTimer() {
+  const f = $("timerFill");
+  f.style.width = Math.max(0, (state.left / TIMER_SECONDS) * 100) + "%";
+  f.classList.toggle("low", state.left <= 8);
+  $("timerText").textContent = Math.max(0, state.left) + "s";
+}
+
+/* ---------- End of game ---------- */
+function checkEnd() {
+  if (state.used.size < CLUES.length) return;
+  const maxScore = CLUES.reduce((s, c) => s + c.v, 0);
+  const e = $("endScreen");
+  e.innerHTML = "";
+  const h = document.createElement("h2"); h.textContent = "Board Cleared!";
+  const big = document.createElement("div"); big.className = "big"; big.textContent = fmt(state.score);
+  const of = document.createElement("p"); of.textContent = "out of " + fmt(maxScore) + " possible";
+  const hi = document.createElement("p"); hi.textContent = "High score this session: " + fmt(state.high);
+  e.append(h, big, of, hi);
+  if (state.score > 0 && state.score === state.high) {
+    const rec = document.createElement("p"); rec.className = "newrec"; rec.textContent = "That's your best run this session.";
+    e.append(rec);
+  }
+  const again = document.createElement("button");
+  again.type = "button"; again.id = "playAgainBtn"; again.textContent = "New Game";
+  again.addEventListener("click", newGame);
+  e.append(again);
+  e.classList.add("show");
+  again.focus();
+}
+
+/* ---------- Wiring ---------- */
+function newGame() {
+  stopTimer();
+  state.score = 0;
+  state.used.clear();
+  state.current = null;
+  $("overlay").classList.remove("show");
+  $("endScreen").classList.remove("show");
+  buildBoard();
+  renderStats();
+}
+$("continueBtn").addEventListener("click", closeClue);
+$("resetBtn").addEventListener("click", () => {
+  if (state.used.size === 0 && !state.current) { newGame(); return; }
+  if (confirm("Start a new game? Your current score will reset (the session high score is kept).")) newGame();
+});
+
+newGame();
+</script>
+</body>
+</html>
