@@ -225,269 +225,45 @@
 <script>
 /* ---------- Clue data (from module132_jeopardy_board.csv) ---------- */
 const CLUES = [
+  /* ---------- CATEGORY 1: TROUBLESHOOTING METHODOLOGY ---------- */
   {"c":"Troubleshooting Methodology","v":100,"q":"This is the first step of the CompTIA troubleshooting methodology.","a":"What is identify the problem?","l":"132.1"},
-  {"c":"Troubleshooting Methodology","v":200,"q":"After identifying the problem, you do this before testing anything: ask what could be causing it.","a":"What is establish a theory of probable cause?","l":"132.1"},
-  {"c":"Troubleshooting Methodology","v":300,"q":"If your first theory fails the test, you do this next.","a":"What is establish a new theory or escalate?","l":"132.1"},
-  {"c":"Troubleshooting Methodology","v":400,"q":"This step comes right after implementing the solution and verifying full system functionality.","a":"What is document the findings, actions, and outcomes?","l":"132.1"},
-  {"c":"Troubleshooting Methodology","v":500,"q":"Before touching a user's machine, you should do this to guard against data loss, as part of identifying the problem.","a":"What is back up the data (and question the user / check for recent changes)?","l":"132.1"},
-  {"c":"Cables & Motherboards","v":100,"q":"This motherboard form factor is the most common full-size standard for desktop PCs.","a":"What is ATX?","l":"132.2"},
-  {"c":"Cables & Motherboards","v":200,"q":"This video connector is digital-only, carries audio and video, and is found on most TVs and monitors.","a":"What is HDMI?","l":"132.2"},
-  {"c":"Cables & Motherboards","v":300,"q":"This legacy analog video connector is 15-pin and blue, and it is largely obsolete.","a":"What is VGA?","l":"132.2"},
-  {"c":"Cables & Motherboards","v":400,"q":"This smaller form factor board measures 170 mm x 170 mm and is popular for compact builds.","a":"What is Mini-ITX?","l":"132.2"},
-  {"c":"Cables & Motherboards","v":500,"q":"This expansion slot type, found on modern motherboards, is used for graphics cards and comes in x1, x4, x8 and x16 lane widths.","a":"What is PCIe (PCI Express)?","l":"132.2"},
-  {"c":"Power & Storage","v":100,"q":"This type of storage has no moving parts and uses flash memory.","a":"What is an SSD (solid-state drive)?","l":"132.3"},
-  {"c":"Power & Storage","v":200,"q":"This component converts AC wall power to the DC voltages a PC needs.","a":"What is the power supply unit (PSU)?","l":"132.3"},
-  {"c":"Power & Storage","v":300,"q":"This RAID level mirrors data across two drives for redundancy.","a":"What is RAID 1?","l":"132.3"},
-  {"c":"Power & Storage","v":400,"q":"This SSD form factor plugs directly into the motherboard, with no cables, and often uses NVMe.","a":"What is M.2?","l":"132.3"},
-  {"c":"Power & Storage","v":500,"q":"A hard drive spinning at this common speed (in RPM) is typical for desktop HDDs.","a":"What is 7200 RPM?","l":"132.3"},
-  {"c":"Memory & CPUs","v":100,"q":"This type of memory is volatile and holds data the CPU is actively using.","a":"What is RAM?","l":"132.3"},
-  {"c":"Memory & CPUs","v":200,"q":"This memory type can detect and correct single-bit errors and is common in servers.","a":"What is ECC RAM?","l":"132.3"},
-  {"c":"Memory & CPUs","v":300,"q":"This is the term for installing matched RAM modules in paired slots to increase memory bandwidth.","a":"What is dual-channel memory?","l":"132.3"},
-  {"c":"Memory & CPUs","v":400,"q":"This CPU architecture is used in most smartphones and tablets and is known for power efficiency.","a":"What is ARM?","l":"132.3"},
-  {"c":"Memory & CPUs","v":500,"q":"Applying this to a CPU before seating the heat sink improves heat transfer.","a":"What is thermal paste (thermal compound)?","l":"132.3"},
-  {"c":"BIOS/UEFI & Hardware Issues","v":100,"q":"This firmware interface replaced legacy BIOS on modern systems.","a":"What is UEFI?","l":"132.4"},
-  {"c":"BIOS/UEFI & Hardware Issues","v":200,"q":"This UEFI feature prevents unsigned bootloaders and operating systems from loading.","a":"What is Secure Boot?","l":"132.4"},
-  {"c":"BIOS/UEFI & Hardware Issues","v":300,"q":"This chip stores cryptographic keys and is required for BitLocker with full hardware protection and Windows 11.","a":"What is the TPM (Trusted Platform Module)?","l":"132.4"},
-  {"c":"BIOS/UEFI & Hardware Issues","v":400,"q":"A system that powers on but shows no display, with a continuous beep pattern, often points to a failure in this component.","a":"What is RAM (or the video card)?","l":"132.4"},
-  {"c":"BIOS/UEFI & Hardware Issues","v":500,"q":"This drive monitoring technology predicts disk failure, and a warning from it means back up immediately.","a":"What is S.M.A.R.T.?","l":"132.4"},
-  {"c":"Hardware with AI","v":100,"q":"This type of AI tool, such as ChatGPT, Gemini, Claude or Copilot, can generate text answers to hardware questions.","a":"What is Generative AI?","l":"132.5"},
-  {"c":"Hardware with AI","v":200,"q":"When an AI tool suggests a diagnosis for a failing PC, the best practice is to treat it as this and then confirm it.","a":"What is a lead (a starting point, not a final answer)?","l":"132.5"},
-  {"c":"Hardware with AI","v":300,"q":"AI can help technicians improve this, such as notes, ticket summaries and parts lists, but it does not replace hands-on inspection.","a":"What is hardware documentation?","l":"132.5"},
-  {"c":"Hardware with AI","v":400,"q":"A technician must keep this key limitation in mind: AI cannot physically do this to the hardware, so its diagnosis must be verified.","a":"What is inspect (see, touch, or test) the hardware?","l":"132.5"},
-  {"c":"Hardware with AI","v":500,"q":"Lesson 132.5 concludes that AI is a useful assistant for troubleshooting but does this to hands-on technical skill and verification.","a":"What is complement it (not replace it)?","l":"132.5"}
+  {"c":"Troubleshooting Methodology","v":200,"q":"This is the second step of the CompTIA troubleshooting methodology, where you establish a working hypothesis.","a":"What is establish a theory of probable cause?","l":"132.1"},
+  {"c":"Troubleshooting Methodology","v":300,"q":"This is the third step of the CompTIA troubleshooting methodology, which involves validating your hypothesis.","a":"What is test the theory to determine cause?","l":"132.1"},
+  {"c":"Troubleshooting Methodology","v":400,"q":"This is the fourth step of the CompTIA troubleshooting methodology, where you execute the fix or escalate.","a":"What is establish a plan of action to resolve the problem and implement the solution?","l":"132.1"},
+  {"c":"Troubleshooting Methodology","v":500,"q":"This is the sixth and final step of the CompTIA troubleshooting methodology, crucial for future support references.","a":"What is document findings, actions, and outcomes?","l":"132.1"},
+
+  /* ---------- CATEGORY 2: PC COMPONENTS ---------- */
+  {"c":"PC Components","v":100,"q":"This high-end RAM feature prevents system crashes and data corruption by identifying and fixing single-bit errors.","a":"What is ECC (Error-Correcting Code) memory?","l":"132.2"},
+  {"c":"PC Components","v":200,"q":"This latest standard desktop RAM architecture uses 288 pins and integrates power management directly onto the module stick.","a":"What is DDR5?","l":"132.2"},
+  {"c":"PC Components","v":300,"q":"This baseline full-sized consumer motherboard form factor typically measures 12 by 9.6 inches.","a":"What is Standard ATX?","l":"132.2"},
+  {"c":"PC Components","v":400,"q":"This chemical compound must be reapplied cleanly in a pea-sized amount whenever a technician reseats a CPU heatsink.","a":"What is thermal paste (or thermal compound)?","l":"132.2"},
+  {"c":"PC Components","v":500,"q":"An unexpected system reboot or shutdown during heavy 3D rendering or gaming usually points to a deficit in this component.","a":"What is the PSU (Power Supply Unit)?","l":"132.2"},
+
+  /* ---------- CATEGORY 3: HARDWARE STORAGE ---------- */
+  {"c":"Hardware Storage","v":100,"q":"This small, flat form-factor SSD style communicates directly over the high-speed PCIe bus to bypass the legacy SATA bottleneck.","a":"What is M.2 NVMe?","l":"132.3"},
+  {"c":"Hardware Storage","v":200,"q":"This specific array tier requires at least 3 drives and balances fault tolerance with storage capacity using distributed parity.","a":"What is RAID 5?","l":"132.3"},
+  {"c":"Hardware Storage","v":300,"q":"This is the maximum theoretical interface speed limit of a standard third-generation SATA III connection cable.","a":"What is 6.0 Gbps?","l":"132.3"},
+  {"c":"Hardware Storage","v":400,"q":"This classic RAID tier mirrors data across an even number of disks, providing high fault tolerance but cutting net capacity by 50%.","a":"What is RAID 1?","l":"132.3"},
+  {"c":"Hardware Storage","v":500,"q":"This physical size standard is the most common form factor for mechanical laptop hard drives and baseline internal SATA SSDs.","a":"What is 2.5 inches?","l":"132.3"},
+
+  /* ---------- CATEGORY 4: NETWORKING HARDWARE ---------- */
+  {"c":"Networking Hardware","v":100,"q":"Operating at Layer 2 of the OSI model, this device forwards network traffic frames dynamically based on physical MAC addresses.","a":"What is an Ethernet Switch?","l":"132.4"},
+  {"c":"Networking Hardware","v":200,"q":"This legacy network infrastructure device operates at Layer 1 and blindly broadcasts incoming electrical data out to all active ports.","a":"What is a Hub?","l":"132.4"},
+  {"c":"Networking Hardware","v":300,"q":"This twisted-pair copper cable standard natively handles up to 10 Gbps speeds, but is limited to a maximum run distance of 55 meters.","a":"What is Category 6 (Cat6)?","l":"132.4"},
+  {"c":"Networking Hardware","v":400,"q":"This high-frequency wireless standard is known as Wi-Fi 6 and implements OFDMA for optimization across dense multi-device environments.","a":"What is 802.11ax?","l":"132.4"},
+  {"c":"Networking Hardware","v":500,"q":"This specific coaxial cable standard features a heavy copper core and is the common path for high-bandwidth commercial cable drops.","a":"What is RG-6?","l":"132.4"},
+
+  /* ---------- CATEGORY 5: MOBILE DEVICES ---------- */
+  {"c":"Mobile Devices","v":100,"q":"This emissive screen tech draws zero power for true black pixels because the individual organic diodes switch off completely.","a":"What is OLED?","l":"132.5"},
+  {"c":"Mobile Devices","v":200,"q":"A bulging mobile case accompanied by a screen separating from its chassis indicates a critical hazard with this component.","a":"What is a swollen Lithium-Ion battery?","l":"132.5"},
+  {"c":"Mobile Devices","v":300,"q":"This clear glass layer sits on top of modern mobile displays to read gestures and touch inputs, converting them to coordinate signals.","a":"What is the Digitizer?","l":"132.5"},
+  {"c":"Mobile Devices","v":400,"q":"This device uses micro-machined internal hardware structures to measure orientation, tilting, and physical rotation axis changes.","a":"What is a Gyroscope?","l":"132.5"},
+  {"c":"Mobile Devices","v":500,"q":"This older mobile display peripheral component is responsible for stepping up DC voltages to power legacy CCFL matrix backlights.","a":"What is a Display Inverter?","l":"132.5"},
+
+  /* ---------- CATEGORY 6: CORE DIAGNOSTICS ---------- */
+  {"c":"Core Diagnostics","v":100,"q":"When a system drops power before a display renders, these acoustic motherboard speaker patterns signal what internal component failed POST.","a":"What are Beep Codes?","l":"132.6"},
+  {"c":"Core Diagnostics","v":200,"q":"This integrated firmware interface handles raw hardware checks immediately after power-on sequence and passes off control to the OS loader.","a":"What is the POST (Power-On Self-Test)?","l":"132.6"},
+  {"c":"Core Diagnostics","v":300,"q":"If a motherboard repeatedly loses its custom system clock settings every time the computer is unplugged, this component needs swapping.","a":"What is the CMOS coin-cell battery?","l":"132.6"},
+  {"c":"Core Diagnostics","v":400,"q":"This physical looping adapter is used by network techs to test internal network ports by bouncing output lines straight back into input lines.","a":"What is a Loopback Plug?","l":"132.6"},
+  {"c":"Core Diagnostics","v":500,"q":"This multi-meter assessment mode checks if an electrical current can travel end-to-end along a single continuous path without breaks.","a":"What is a Continuity Test?","l":"132.6"}
 ];
-
-/* ---------- State ---------- */
-const TIMER_SECONDS = 30;
-const CHOICE_COUNT = 4;
-const LETTERS = ["A", "B", "C", "D"];
-const state = {
-  score: 0,
-  high: 0,          /* session-only: lives in memory, never written to storage */
-  used: new Set(),
-  current: null,    /* { cl, cell, locked } */
-  timer: null,
-  left: TIMER_SECONDS
-};
-
-const $ = id => document.getElementById(id);
-const categories = [...new Set(CLUES.map(x => x.c))];
-const values = [...new Set(CLUES.map(x => x.v))].sort((a, b) => a - b);
-
-function clueFor(cat, val) { return CLUES.find(x => x.c === cat && x.v === val); }
-function keyOf(cl) { return cl.c + "|" + cl.v; }
-function fmt(n) { return "$" + n.toLocaleString(); }
-function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-/* "What is the TPM (Trusted Platform Module)?" -> "The TPM (Trusted Platform Module)" */
-function cleanAnswer(a) {
-  let t = a.replace(/^What (is|are)\s+/i, "").replace(/\?$/, "").trim();
-  return t.charAt(0).toUpperCase() + t.slice(1);
-}
-
-/* Distractors: other answers from the same category first, then the rest of the pool. */
-function buildChoices(cl) {
-  const correct = cleanAnswer(cl.a);
-  const seen = new Set([correct.toLowerCase()]);
-  const pick = [];
-  const take = list => {
-    for (const x of shuffle(list)) {
-      if (pick.length >= CHOICE_COUNT - 1) return;
-      const t = cleanAnswer(x.a);
-      if (!seen.has(t.toLowerCase())) { seen.add(t.toLowerCase()); pick.push(t); }
-    }
-  };
-  take(CLUES.filter(x => x.c === cl.c && x !== cl));
-  take(CLUES.filter(x => x.c !== cl.c));
-  return shuffle([{ text: correct, ok: true }, ...pick.map(t => ({ text: t, ok: false }))]);
-}
-
-/* ---------- Scoreboard ---------- */
-function renderStats() {
-  $("scoreVal").textContent = fmt(state.score);
-  $("highVal").textContent = fmt(state.high);
-  $("leftVal").textContent = String(CLUES.length - state.used.size);
-}
-
-/* ---------- Board ---------- */
-function buildBoard() {
-  const b = $("board");
-  b.innerHTML = "";
-  b.style.gridTemplateColumns = "repeat(" + categories.length + ", 1fr)";
-  categories.forEach(c => {
-    const h = document.createElement("div");
-    h.className = "cat"; h.textContent = c; h.setAttribute("role", "columnheader");
-    b.appendChild(h);
-  });
-  values.forEach(v => {
-    categories.forEach(c => {
-      const cl = clueFor(c, v);
-      const cell = document.createElement("button");
-      cell.type = "button";
-      cell.className = "cell";
-      cell.dataset.key = keyOf(cl);
-      cell.textContent = "$" + v;
-      cell.setAttribute("aria-label", c + " for " + v + " dollars");
-      cell.addEventListener("click", () => openClue(cl, cell));
-      b.appendChild(cell);
-    });
-  });
-}
-
-/* ---------- Clue overlay ---------- */
-function openClue(cl, cell) {
-  if (state.used.has(keyOf(cl)) || state.current) return;
-  state.current = { cl, cell, locked: false };
-  $("clueMeta").textContent = cl.c + " \u2022 $" + cl.v + " \u2022 Lesson " + cl.l;
-  $("clueText").textContent = cl.q;
-  $("feedback").textContent = "";
-  $("feedback").className = "";
-  $("answerText").classList.remove("show");
-  $("continueBtn").classList.remove("show");
-
-  const box = $("choices");
-  box.innerHTML = "";
-  buildChoices(cl).forEach((ch, i) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "choice";
-    b.dataset.ok = ch.ok ? "1" : "0";
-    const l = document.createElement("span"); l.className = "letter"; l.textContent = LETTERS[i] + ".";
-    const t = document.createElement("span"); t.textContent = ch.text;
-    b.append(l, t);
-    b.addEventListener("click", () => choose(b));
-    box.appendChild(b);
-  });
-
-  $("overlay").classList.add("show");
-  startTimer();
-}
-
-function lockChoices(pickedBtn) {
-  [...$("choices").children].forEach(b => {
-    b.disabled = true;
-    if (b.dataset.ok === "1") b.classList.add("correct");
-    else if (b === pickedBtn) b.classList.add("wrong");
-    else b.classList.add("dim");
-  });
-}
-
-function finishClue(result, pickedBtn) {
-  const cur = state.current;
-  if (!cur || cur.locked) return;
-  cur.locked = true;
-  stopTimer();
-  lockChoices(pickedBtn || null);
-
-  const fb = $("feedback");
-  if (result === "hit") {
-    state.score += cur.cl.v;
-    if (state.score > state.high) state.high = state.score;
-    fb.textContent = "Correct! +" + fmt(cur.cl.v);
-    fb.className = "good";
-    cur.cell.classList.add("hit");
-  } else if (result === "miss") {
-    fb.textContent = "Not quite. No points lost.";
-    fb.className = "bad";
-    cur.cell.classList.add("miss");
-  } else {
-    fb.textContent = "Time's up. No points lost.";
-    fb.className = "bad";
-    cur.cell.classList.add("miss");
-  }
-  $("answerText").textContent = cur.cl.a;
-  $("answerText").classList.add("show");
-  $("continueBtn").classList.add("show");
-  $("continueBtn").textContent = (state.used.size + 1 >= CLUES.length) ? "See Final Score" : "Back to Board";
-  $("continueBtn").focus();
-  renderStats();
-}
-
-function choose(btn) {
-  if (!state.current || state.current.locked) return;
-  finishClue(btn.dataset.ok === "1" ? "hit" : "miss", btn);
-}
-
-function closeClue() {
-  const cur = state.current;
-  if (!cur || !cur.locked) return;   /* a clue must be answered or time out */
-  stopTimer();
-  state.used.add(keyOf(cur.cl));
-  cur.cell.classList.add("used");
-  cur.cell.disabled = true;
-  cur.cell.setAttribute("aria-label", "Used");
-  state.current = null;
-  $("overlay").classList.remove("show");
-  renderStats();
-  checkEnd();
-}
-
-/* ---------- Timer ---------- */
-function startTimer() {
-  stopTimer();
-  state.left = TIMER_SECONDS;
-  paintTimer();
-  state.timer = setInterval(() => {
-    state.left--;
-    paintTimer();
-    if (state.left <= 0) { finishClue("timeout", null); }
-  }, 1000);
-}
-function stopTimer() { if (state.timer) { clearInterval(state.timer); state.timer = null; } }
-function paintTimer() {
-  const f = $("timerFill");
-  f.style.width = Math.max(0, (state.left / TIMER_SECONDS) * 100) + "%";
-  f.classList.toggle("low", state.left <= 8);
-  $("timerText").textContent = Math.max(0, state.left) + "s";
-}
-
-/* ---------- End of game ---------- */
-function checkEnd() {
-  if (state.used.size < CLUES.length) return;
-  const maxScore = CLUES.reduce((s, c) => s + c.v, 0);
-  const e = $("endScreen");
-  e.innerHTML = "";
-  const h = document.createElement("h2"); h.textContent = "Board Cleared!";
-  const big = document.createElement("div"); big.className = "big"; big.textContent = fmt(state.score);
-  const of = document.createElement("p"); of.textContent = "out of " + fmt(maxScore) + " possible";
-  const hi = document.createElement("p"); hi.textContent = "High score this session: " + fmt(state.high);
-  e.append(h, big, of, hi);
-  if (state.score > 0 && state.score === state.high) {
-    const rec = document.createElement("p"); rec.className = "newrec"; rec.textContent = "That's your best run this session.";
-    e.append(rec);
-  }
-  const again = document.createElement("button");
-  again.type = "button"; again.id = "playAgainBtn"; again.textContent = "New Game";
-  again.addEventListener("click", newGame);
-  e.append(again);
-  e.classList.add("show");
-  again.focus();
-}
-
-/* ---------- Wiring ---------- */
-function newGame() {
-  stopTimer();
-  state.score = 0;
-  state.used.clear();
-  state.current = null;
-  $("overlay").classList.remove("show");
-  $("endScreen").classList.remove("show");
-  buildBoard();
-  renderStats();
-}
-$("continueBtn").addEventListener("click", closeClue);
-$("resetBtn").addEventListener("click", () => {
-  if (state.used.size === 0 && !state.current) { newGame(); return; }
-  if (confirm("Start a new game? Your current score will reset (the session high score is kept).")) newGame();
-});
-
-newGame();
-</script>
-</body>
-</html>
