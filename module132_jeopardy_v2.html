@@ -267,3 +267,70 @@ const CLUES = [
   {"c":"Core Diagnostics","v":400,"q":"This physical looping adapter is used by network techs to test internal network ports by bouncing output lines straight back into input lines.","a":"What is a Loopback Plug?","l":"132.6"},
   {"c":"Core Diagnostics","v":500,"q":"This multi-meter assessment mode checks if an electrical current can travel end-to-end along a single continuous path without breaks.","a":"What is a Continuity Test?","l":"132.6"}
 ];
+/* ---------- State ---------- */
+const TIMER_SECONDS = 30;
+const CHOICE_COUNT = 4;
+const LETTERS = ["A", "B", "C", "D"];
+const state = {
+  score: 0,
+  high: 0,          /* session-only: lives in memory, never written to storage */
+  used: new Set(),
+  current: null,    /* { cl, cell, locked } */
+  timer: null,
+  left: TIMER_SECONDS
+};
+
+const $ = id => document.getElementById(id);
+const categories = [...new Set(CLUES.map(x => x.c))];
+const values = [...new Set(CLUES.map(x => x.v))].sort((a, b) => a - b);
+
+function clueFor(cat, val) { return CLUES.find(x => x.c === cat && x.v === val); }
+function keyOf(cl) { return cl.c + "|" + cl.v; }
+function fmt(n) { return "$" + n.toLocaleString(); }
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+/* "What is the TPM (Trusted Platform Module)?" -> "The TPM (Trusted Platform Module)" */
+function cleanAnswer(a) {
+  let t = a.replace(/^What (is|are)\s+/i, "").replace(/\?$/, "").trim();
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+/* Distractors: other answers from the same category first, then the rest of the pool. */
+function buildChoices(cl) {
+  const correct = cleanAnswer(cl.a);
+  const seen = new Set([correct.toLowerCase()]);
+  const pick = [];
+  const take = list => {
+    for (const x of shuffle(list)) {
+      if (pick.length >= CHOICE_COUNT - 1) return;
+      const t = cleanAnswer(x.a);
+      if (!seen.has(t.toLowerCase())) { seen.add(t.toLowerCase()); pick.push(t); }
+    }
+  };
+  take(CLUES.filter(x => x.c === cl.c && x !== cl));
+  take(CLUES.filter(x => x.c !== cl.c));
+  return shuffle([{ text: correct, ok: true }, ...pick.map(t => ({ text: t, ok: false }))]);
+}
+
+/* ---------- Scoreboard ---------- */
+function renderStats() {
+  $("scoreVal").textContent = fmt(state.score);
+  $("highVal").textContent = fmt(state.high);
+  $("leftVal").textContent = String(CLUES.length - state.used.size);
+}
+
+/* ---------- Board ---------- */
+function buildBoard() {
+  const b = $("board");
+  b.innerHTML = "";
+  b.style.gridTemplateColumns = "repeat(" + categories.length + ", 1fr)";
+  categories.forEach(c => {
+    const h = document.createElement("div");
+    h.className = "cat"; h.textContent = c; h.setAttribute("role", "columnheader");
+    b.appendCh
