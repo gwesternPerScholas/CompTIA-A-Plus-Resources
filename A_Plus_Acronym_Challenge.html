@@ -3,694 +3,607 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CompTIA A+ Acronym Challenge</title>
+    <title>A+ Acronym Drill</title>
+    <link rel="stylesheet" href="/platform-libs/tailwind@4.3.3/tailwind.min.css" integrity="sha384-FAeNA0LKWGfDBZK2YiqGtL1zjFsU4YKyHilW/IA189Ipk+IkYftdMfEUPWxTRQ4i" crossorigin="anonymous">
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-blue: #38bdf8;
-            --accent-purple: #a855f7;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --correct-green: #22c55e;
-            --wrong-red: #ef4444;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-
-        .home-link {
-            display: inline-block;
-            margin-top: 1rem;
-            color: var(--accent-blue);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .home-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Mode Selection Tabs */
-        .mode-selector {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .mode-btn {
-            background-color: var(--card-bg);
-            color: var(--text-muted);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .mode-btn.active, .mode-btn:hover {
-            background-color: var(--accent-blue);
-            color: var(--bg-color);
-            border-color: var(--accent-blue);
-        }
-
-        /* Panels */
-        .game-panel {
-            display: none;
-            background-color: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .game-panel.active {
-            display: block;
-        }
-
-        /* Flashcard Styles */
-        .card-wrap {
-            perspective: 1200px;
-            margin-bottom: 1.5rem;
-        }
-
-        .flashcard {
-            position: relative;
-            width: 100%;
-            min-height: 220px;
-            transform-style: preserve-3d;
-            transition: transform 0.5s ease;
-            cursor: pointer;
-        }
-
-        .flashcard.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            min-height: 220px;
-            border-radius: 10px;
-            background: #0f172a;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            backface-visibility: hidden;
-            text-align: center;
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-            border-color: var(--correct-green);
-        }
-
-        .term-display {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--accent-blue);
-            margin-bottom: 0.5rem;
-        }
-
-        .def-display {
-            font-size: 1.2rem;
-            color: var(--text-main);
-            line-height: 1.4;
-        }
-
-        .hint-text {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 1rem;
-        }
-
-        /* Controls / Buttons */
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            background: var(--accent-blue);
-            color: var(--bg-color);
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn:hover { opacity: 0.9; }
-        .btn-secondary { background: #334155; color: var(--text-main); }
-        .btn-green { background: var(--correct-green); color: #fff; }
-        .btn-red { background: var(--wrong-red); color: #fff; }
-
-        /* Quiz Specifics */
-        .quiz-setup {
-            text-align: center;
-        }
-
-        .quiz-setup select {
-            background: #0f172a;
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            margin: 0 10px;
-            font-size: 1rem;
-        }
-
-        .quiz-question {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: var(--accent-blue);
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-bottom: 1.5rem;
-        }
-
-        .option-btn {
-            background: #0f172a;
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: left;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .option-btn:hover:not(:disabled) {
-            border-color: var(--accent-blue);
-            background: rgba(56, 189, 248, 0.05);
-        }
-
-        .option-btn.correct { background: rgba(34, 197, 94, 0.2); border-color: var(--correct-green); }
-        .option-btn.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--wrong-red); }
-
-        .score-board {
-            text-align: center;
-            margin-bottom: 1rem;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        footer {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 2rem;
-            padding: 1rem 0;
-        }
-
-        footer a {
-            color: var(--accent-blue);
-            text-decoration: underline;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .card-flip { perspective: 1000px; }
+        .card-inner { transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
+        .card-inner.flipped { transform: rotateY(180deg); }
+        .card-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .card-back { transform: rotateY(180deg); position: absolute; inset: 0; }
     </style>
 </head>
-<body>
-
-    <div class="container">
-        <header>
-            <h1>A+ Acronym Challenge</h1>
-            <p class="subtitle">Master crucial hardware, networking, and security acronyms</p>
-            <a href="index.html" class="home-link">&larr; Back to Dashboard</a>
-        </header>
-
-        <!-- Mode Selectors -->
-        <div class="mode-selector">
-            <button class="mode-btn active" onclick="switchMode('flashcards')">Flashcard Mode</button>
-            <button class="mode-btn" onclick="switchMode('quiz')">Multiple-Choice Quiz</button>
-            <button class="mode-btn" onclick="switchMode('arcade')">Arcade Game (Coming Soon)</button>
+<body class="bg-gray-900 text-white min-h-screen p-4">
+    <div class="max-w-2xl mx-auto">
+        <!-- Return link: change href to your main page URL -->
+        <div class="mb-4">
+            <a href="index.html" class="inline-block px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded text-blue-300">&larr; Back to Main Page</a>
         </div>
 
-        <!-- FLASHCARD PANEL -->
-        <div id="flashcard-panel" class="game-panel active">
-            <div class="score-board">Card <span id="fc-current">1</span> of <span id="fc-total">1</span></div>
-            <div class="card-wrap">
-                <div class="flashcard" id="flashcard" onclick="flipCard()">
-                    <div class="card-face">
-                        <div class="term-display" id="fc-term">BIOS</div>
-                        <div class="hint-text">Click card to flip definition &rarr;</div>
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">A+ Acronym Drill</h1>
+            <p class="text-gray-400">Master CompTIA A+ terminology &middot; <span id="termTotal">0</span> terms</p>
+        </div>
+
+        <!-- Mode Selector -->
+        <div class="flex gap-4 mb-8 justify-center flex-wrap">
+            <button id="flashcardBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded font-semibold">Flashcard</button>
+            <button id="quizBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-semibold">Quiz</button>
+            <button id="speedBtn" class="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-semibold">Speed Drill</button>
+            <button id="missedBtn" class="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 rounded font-semibold">Missed Terms (<span id="missedCount">0</span>)</button>
+        </div>
+
+        <!-- Flashcard Mode -->
+        <div id="flashcardMode" class="hidden">
+            <p id="deckLabel" class="text-center text-sm text-yellow-400 mb-2 min-h-5"></p>
+            <div class="card-flip mb-6">
+                <div class="card-inner" id="flashcard">
+                    <div class="card-face bg-blue-700 p-8 rounded-lg text-center cursor-pointer min-h-64 flex items-center justify-center">
+                        <div>
+                            <p class="text-sm text-gray-300 mb-2">Click to reveal</p>
+                            <p id="flashcardAcronym" class="text-5xl font-bold">BIOS</p>
+                        </div>
                     </div>
-                    <div class="card-face card-back">
-                        <div class="def-display" id="fc-def">Basic Input/Output System</div>
+                    <div class="card-face card-back bg-purple-700 p-8 rounded-lg text-center cursor-pointer min-h-64 flex items-center justify-center">
+                        <p id="flashcardDefinition" class="text-3xl font-semibold">Basic Input/Output System</p>
                     </div>
                 </div>
             </div>
-            <div class="controls">
-                <button class="btn btn-secondary" onclick="prevCard()">&#9664; Prev</button>
-                <button class="btn" onclick="shuffleFlashcards()">Shuffle</button>
-                <button class="btn btn-secondary" onclick="nextCard()">Next &#9654;</button>
+            <div class="flex gap-4 justify-center items-center flex-wrap">
+                <button id="prevBtn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">&larr; Previous</button>
+                <span id="cardCounter" class="px-4 py-2 bg-gray-800 rounded">1 / 1</span>
+                <button id="nextBtn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">Next &rarr;</button>
+                <button id="shuffleBtn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">Shuffle</button>
+                <button id="fullDeckBtn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded hidden">Full Deck</button>
             </div>
         </div>
 
-        <!-- QUIZ PANEL -->
-        <div id="quiz-panel" class="game-panel">
-            <div id="quiz-setup-screen" class="quiz-setup">
-                <p style="margin-bottom: 1.5rem;">Select your quiz length:</p>
-                <select id="quiz-length">
-                    <option value="10">10 Questions</option>
-                    <option value="25">25 Questions</option>
-                    <option value="50">50 Questions</option>
-                </select>
-                <button class="btn" onclick="startQuiz()">Start Quiz</button>
-            </div>
-
-            <div id="quiz-play-screen" style="display: none;">
-                <div class="score-board">Question <span id="q-current">1</span> of <span id="q-total">10</span> | Score: <span id="q-score">0</span></div>
-                <div class="quiz-question" id="quiz-question-text">What does BIOS stand for?</div>
-                <div class="options-grid" id="quiz-options">
-                    <!-- Options injected via JS -->
+        <!-- Quiz Mode -->
+        <div id="quizMode" class="hidden">
+            <div class="bg-gray-800 p-6 rounded-lg mb-6">
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <p class="text-sm text-gray-400">Question <span id="quizCounter">1</span> of <span id="quizTotal">10</span></p>
+                    <label class="text-sm text-gray-400">Length:
+                        <select id="quizLength" class="ml-2 bg-gray-700 text-white rounded px-2 py-1 border border-gray-600">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="all">All</option>
+                        </select>
+                    </label>
                 </div>
-                <div class="controls">
-                    <button id="next-q-btn" class="btn" style="display: none;" onclick="nextQuestion()">Next Question &rarr;</button>
-                </div>
+                <p id="quizQuestion" class="text-2xl font-semibold mb-6">What does BIOS stand for?</p>
+                <div id="quizOptions" class="space-y-3"></div>
             </div>
-
-            <div id="quiz-result-screen" style="display: none; text-align: center;">
-                <h2 style="color: var(--accent-blue); margin-bottom: 1rem;">Quiz Complete!</h2>
-                <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">Your final score: <span id="final-score" style="font-weight: bold; color: var(--accent-purple);">0</span></p>
-                <button class="btn" onclick="resetQuizSetup()">Try Again</button>
+            <div class="text-center">
+                <p id="quizScore" class="text-lg font-semibold text-green-400">Score: 0/0</p>
+            </div>
+            <div id="quizReview" class="hidden mt-6 bg-gray-800 p-6 rounded-lg">
+                <h2 class="text-xl font-bold mb-3 text-yellow-400">Missed This Round</h2>
+                <ul id="quizReviewList" class="space-y-2"></ul>
             </div>
         </div>
 
-        <!-- ARCADE GAME PLACEHOLDER PANEL -->
-        <div id="arcade-panel" class="game-panel" style="text-align: center;">
-            <h2 style="color: var(--accent-blue); margin-bottom: 1rem;">Arcade Mini-Game</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Space reserved for building an interactive matching or shooter style acronym mini-game later!</p>
-            <div style="padding: 3rem; border: 2px dashed rgba(255,255,255,0.1); border-radius: 8px; color: var(--text-muted);">
-                Game Sandbox Area
+        <!-- Speed Drill Mode -->
+        <div id="speedMode" class="hidden">
+            <div class="bg-gray-800 p-6 rounded-lg mb-6 text-center">
+                <p class="text-sm text-gray-400 mb-4">Type the definition (or press Enter to skip)</p>
+                <p id="speedAcronym" class="text-5xl font-bold mb-6">BIOS</p>
+                <input id="speedInput" type="text" autocomplete="off" placeholder="Enter definition..." class="w-full px-4 py-3 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none mb-4">
+                <div id="speedFeedback" class="text-lg font-semibold mb-4 min-h-6"></div>
+            </div>
+            <div class="text-center">
+                <p id="speedScore" class="text-lg font-semibold text-green-400">Correct: 0 | Skipped: 0</p>
+            </div>
+        </div>
+
+        <!-- Missed Terms Mode -->
+        <div id="missedMode" class="hidden">
+            <div class="bg-gray-800 p-6 rounded-lg mb-6">
+                <h2 class="text-2xl font-bold mb-1 text-yellow-400">Missed Terms</h2>
+                <p class="text-sm text-gray-400 mb-4">Saved in this browser until you clear them. Answer a missed term correctly 2 times in a row to retire it.</p>
+                <ul id="missedList" class="space-y-2 mb-4"></ul>
+                <div class="flex gap-3 flex-wrap">
+                    <button id="drillMissedBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-semibold">Drill Missed Terms</button>
+                    <button id="clearMissedBtn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">Clear List</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer>
-        Source material adapted from <strong>Charles Smith</strong> on <a href="https://www.gimkit.com/" target="_blank" rel="noopener noreferrer">Gimkit</a>
-    </footer>
-
     <script>
-        // Full Acronym Dataset
-        const ACRONYMS_DATA = [
-            { term: "IOPS", def: "Input/Output Operations Per Second" },
-            { term: "IR", def: "Infrared" },
-            { term: "ISO", def: "International Organization for Standardization" },
-            { term: "HTTPS", def: "Hypertext Transfer Protocol Secure" },
-            { term: "LAN", def: "Local Area Network" },
-            { term: "IP", def: "Internet Protocol" },
-            { term: "LC", def: "Lucent Connector" },
-            { term: "IPS", def: "In-Plane Switching" },
-            { term: "ITX", def: "Information Technology Extended" },
-            { term: "ISP", def: "Internet Service Provider" },
-            { term: "LTE", def: "Long-Term Evolution" },
-            { term: "LED", def: "Light-Emitting Diode" },
-            { term: "IoT", def: "Internet of Things" },
-            { term: "KVM", def: "Keyboard, Video, and Mouse" },
-            { term: "IAM", def: "Identity and Access Management" },
-            { term: "IMAP", def: "Internet Message Access Protocol" },
-            { term: "HD", def: "High Definition" },
-            { term: "IaaS", def: "Infrastructure as a Service" },
-            { term: "MAC", def: "Media Access Control" },
-            { term: "ESD", def: "Electrostatic Discharge" },
-            { term: "GPU", def: "Graphics Processing Unit" },
-            { term: "LCD", def: "Liquid Crystal Display" },
-            { term: "eSIM", def: "Embedded Subscriber Identity Module" },
-            { term: "LDAP", def: "Lightweight Directory Access Protocol" },
-            { term: "exFAT", def: "Extensible File Allocation Table" },
-            { term: "FRT", def: "Facial Recognition Technology" },
-            { term: "AP", def: "Access Point" },
-            { term: "GFS", def: "Grandfather-Father-Son" },
-            { term: "CAC", def: "Common Access Card" },
-            { term: "CMDB", def: "Configuration Management Database" },
-            { term: "FAT32", def: "32-bit File Allocation Table" },
-            { term: "GUI", def: "Graphical User Interface" },
-            { term: "ACL", def: "Access Control List" },
-            { term: "BYOD", def: "Bring Your Own Device" },
-            { term: "eSATA", def: "External Serial Advanced Technology Attachment" },
-            { term: "ARM", def: "Advanced RISC Machine" },
-            { term: "BSOD", def: "Blue Screen of Death" },
-            { term: "FaaS", def: "Function as a Service" },
-            { term: "APIPA", def: "Automatic Private Internet Protocol Addressing" },
-            { term: "FTP", def: "File Transfer Protocol" },
-            { term: "ATX", def: "Advanced Technology Extended" },
-            { term: "AMD", def: "Advanced Micro Devices" },
-            { term: "HDMI", def: "High-Definition Multimedia Interface" },
-            { term: "AUP", def: "Acceptable Use Policy" },
-            { term: "CAS", def: "Column Address Strobe" },
-            { term: "GUID", def: "Globally Unique Identifier" },
-            { term: "AES", def: "Advanced Encryption Standard" },
-            { term: "EULA", def: "End-User License Agreement" },
-            { term: "APFS", def: "Apple File System" },
-            { term: "HTTP", def: "Hypertext Transfer Protocol" },
-            { term: "BIOS", def: "Basic Input/Output System" },
-            { term: "HDD", def: "Hard Disk Drive" },
-            { term: "BNC", def: "Bayonet Neill-Concelman" },
-            { term: "GPT", def: "GUID Partition Table" },
-            { term: "CIFS", def: "Common Internet File System" },
-            { term: "GPS", def: "Global Positioning System" },
-            { term: "ADF", def: "Automatic Document Feeder" },
-            { term: "EDR", def: "Endpoint Detection and Response" },
-            { term: "HSM", def: "Hardware Security Module" },
-            { term: "BEC", def: "Business Email Compromise" },
-            { term: "CPU", def: "Central Processing Unit" },
-            { term: "DVI", def: "Digital Visual Interface" },
-            { term: "AAA", def: "Authentication, Authorization, and Accounting" },
-            { term: "DNS", def: "Domain Name System" },
-            { term: "DDR", def: "Double Data Rate" },
-            { term: "CNAME", def: "Canonical Name" },
-            { term: "DSL", def: "Digital Subscriber Line" },
-            { term: "DHCP", def: "Dynamic Host Configuration Protocol" },
-            { term: "DB-9", def: "D-subminiature 9-pin connector" },
-            { term: "DKIM", def: "DomainKeys Identified Mail" },
-            { term: "EOL", def: "End of Life" },
-            { term: "DoS", def: "Denial of Service" },
-            { term: "EFS", def: "Encrypting File System" },
-            { term: "CMOS", def: "Complementary Metal-Oxide Semiconductor" },
-            { term: "DMARC", def: "Domain-based Message Authentication, Reporting, and Conformance" },
-            { term: "DDoS", def: "Distributed Denial of Service" },
-            { term: "ECC", def: "Error-Correcting Code" },
-            { term: "DLP", def: "Data Loss Prevention" },
-            { term: "DRM", def: "Digital Rights Management" },
-            { term: "DIMM", def: "Dual In-line Memory Module" },
-            { term: "RDP", def: "Remote Desktop Protocol" },
-            { term: "RPM", def: "Revolutions Per Minute" },
-            { term: "RJ11", def: "Registered Jack 11" },
-            { term: "RAID", def: "Redundant Array of Independent Disks" },
-            { term: "ReFS", def: "Resilient File System" },
-            { term: "SaaS", def: "Software as a Service" },
-            { term: "RISC", def: "Reduced Instruction Set Computer" },
-            { term: "RAM", def: "Random-Access Memory" },
-            { term: "RADIUS", def: "Remote Authentication Dial-In User Service" },
-            { term: "UDP", def: "User Datagram Protocol" },
-            { term: "PXE", def: "Preboot Execution Environment" },
-            { term: "VA", def: "Vertical Alignment" },
-            { term: "SAN", def: "Storage Area Network" },
-            { term: "VDI", def: "Virtual Desktop Infrastructure" },
-            { term: "MBR", def: "Master Boot Record" },
-            { term: "QoS", def: "Quality of Service" },
-            { term: "MAN", def: "Metropolitan Area Network" },
-            { term: "UEFI", def: "Unified Extensible Firmware Interface" },
-            { term: "VRAM", def: "Video Random-Access Memory" },
-            { term: "ST", def: "Straight Tip" },
-            { term: "WWAN", def: "Wireless Wide Area Network" },
-            { term: "NAS", def: "Network-Attached Storage" },
-            { term: "mSATA", def: "Mini-Serial Advanced Technology Attachment" },
-            { term: "UTM", def: "Unified Threat Management" },
-            { term: "WinRM", def: "Windows Remote Management" },
-            { term: "NTFS", def: "New Technology File System" },
-            { term: "SSH", def: "Secure Shell" },
-            { term: "NTP", def: "Network Time Protocol" },
-            { term: "WAN", def: "Wide Area Network" },
-            { term: "TXT", def: "Text" },
-            { term: "ONT", def: "Optical Network Terminal" },
-            { term: "MNDA", def: "Mutual Non-Disclosure Agreement" },
-            { term: "RMM", def: "Remote Monitoring and Management" },
-            { term: "WEP", def: "Wired Equivalent Privacy" },
-            { term: "TPM", def: "Trusted Platform Module" },
-            { term: "SAS", def: "Serial Attached SCSI" },
-            { term: "OTP", def: "One-Time Password or Passcode" },
-            { term: "WPA", def: "Wi-Fi Protected Access" },
-            { term: "MX", def: "Mail Exchange" },
-            { term: "UAC", def: "User Account Control" },
-            { term: "PUP", def: "Potentially Unwanted Program" },
-            { term: "SAML", def: "Security Assertion Markup Language" },
-            { term: "NDA", def: "Non-Disclosure Agreement" },
-            { term: "VM", def: "Virtual Machine" },
-            { term: "TN", def: "Twisted Nematic" },
-            { term: "SD", def: "Secure Digital" },
-            { term: "MFA", def: "Multifactor Authentication" },
-            { term: "VoIP", def: "Voice over Internet Protocol" },
-            { term: "SSO", def: "Single Sign-On" },
-            { term: "PIN", def: "Personal Identification Number" },
-            { term: "RSR", def: "Rapid Security Response" },
-            { term: "MDR", def: "Managed Detection and Response" },
-            { term: "UPnP", def: "Universal Plug and Play" },
-            { term: "OLED", def: "Organic Light-Emitting Diode" },
-            { term: "SDS", def: "Safety Data Sheet" },
-            { term: "SSID", def: "Service Set Identifier" },
-            { term: "NIC", def: "Network Interface Card" },
-            { term: "WLAN", def: "Wireless Local Area Network" },
-            { term: "RJ45", def: "Registered Jack 45" },
-            { term: "PIV", def: "Personal Identity Verification" },
-            { term: "VNC", def: "Virtual Network Computing" },
-            { term: "USB-C", def: "Universal Serial Bus Type-C" },
-            { term: "RFID", def: "Radio-Frequency Identification" },
-            { term: "MDM", def: "Mobile Device Management" },
-            { term: "S.M.A.R.T.", def: "Self-Monitoring, Analysis, and Reporting Technology" },
-            { term: "PaaS", def: "Platform as a Service" },
-            { term: "NFC", def: "Near-Field Communication" },
-            { term: "XSS", def: "Cross-Site Scripting" },
-            { term: "TOTP", def: "Time-Based One-Time Password" },
-            { term: "SPICE", def: "Simple Protocol for Independent Computing Environments" },
-            { term: "NAT", def: "Network Address Translation" },
-            { term: "TCP", def: "Transmission Control Protocol" },
-            { term: "PCIe", def: "Peripheral Component Interconnect Express" },
-            { term: "XFS", def: "X File System" },
-            { term: "NVMe", def: "Non-Volatile Memory Express" },
-            { term: "RGB", def: "Red, Green, and Blue" },
-            { term: "SLA", def: "Service-Level Agreement" },
-            { term: "TKIP", def: "Temporal Key Integrity Protocol" },
-            { term: "MMC", def: "Microsoft Management Console" },
-            { term: "SATA", def: "Serial Advanced Technology Attachment" },
-            { term: "OS", def: "Operating System" },
-            { term: "SOHO", def: "Small Office/Home Office" },
-            { term: "MFP", def: "Multifunction Printer" },
-            { term: "WAP", def: "Wireless Access Point" },
-            { term: "POST", def: "Power-On Self-Test" },
-            { term: "USB", def: "Universal Serial Bus" },
-            { term: "NetBIOS", def: "Network Basic Input/Output System" },
-            { term: "SPF", def: "Sender Policy Framework" },
-            { term: "UPS", def: "Uninterruptible Power Supply" },
-            { term: "WISP", def: "Wireless Internet Service Provider" },
-            { term: "PCL", def: "Printer Command Language" },
-            { term: "SSD", def: "Solid-State Drive" },
-            { term: "NAC", def: "Network Access Control" },
-            { term: "VPN", def: "Virtual Private Network" },
-            { term: "PC", def: "Personal Computer" },
-            { term: "TACACS", def: "Terminal Access Controller Access-Control System" },
-            { term: "SIM", def: "Subscriber Identity Module" },
-            { term: "PAN", def: "Personal Area Network" },
-            { term: "VGA", def: "Video Graphics Array" },
-            { term: "XDR", def: "Extended Detection and Response" },
-            { term: "SFTP", def: "SSH File Transfer Protocol" },
-            { term: "POP", def: "Post Office Protocol" },
-            { term: "SCADA", def: "Supervisory Control and Data Acquisition" },
-            { term: "PAM", def: "Privileged Access Management" },
-            { term: "XaaS", def: "Anything as a Service" },
-            { term: "SMB", def: "Server Message Block" },
-            { term: "PCI", def: "Peripheral Component Interconnect" },
-            { term: "SC", def: "Subscriber Connector" },
-            { term: "OEM", def: "Original Equipment Manufacturer" },
-            { term: "SOP", def: "Standard Operating Procedure" },
-            { term: "PSU", def: "Power Supply Unit" },
-            { term: "SCSI", def: "Small Computer System Interface" },
-            { term: "PoE", def: "Power over Ethernet" },
-            { term: "VLAN", def: "Virtual Local Area Network" },
-            { term: "SNMP", def: "Simple Network Management Protocol" },
-            { term: "SMTP", def: "Simple Mail Transfer Protocol" },
-            { term: "PII", def: "Personally Identifiable Information" },
-            { term: "SODIMM", def: "Small Outline Dual In-line Memory Module" },
-            { term: "SMS", def: "Short Message Service" },
-            { term: "SQL", def: "Structured Query Language" }
+        // Acronym database: CompTIA A+ list + merged extra terms
+        const acronyms = [
+            { acronym: "AAA", definition: "Authentication, Authorization, and Accounting" },
+            { acronym: "AAAA", definition: "Authentication, Authorization, Accounting, and Auditing" },
+            { acronym: "ACL", definition: "Access Control List" },
+            { acronym: "ADF", definition: "Automatic Document Feeder" },
+            { acronym: "AES", definition: "Advanced Encryption Standard" },
+            { acronym: "AMD", definition: "Advanced Micro Devices, Inc." },
+            { acronym: "AP", definition: "Access Point" },
+            { acronym: "APFS", definition: "Apple File System" },
+            { acronym: "APIPA", definition: "Automatic Private Internet Protocol Addressing" },
+            { acronym: "ARM", definition: "Advanced RISC [Reduced Instruction Set Computer] Machine" },
+            { acronym: "ATX", definition: "Advanced Technology Extended" },
+            { acronym: "AUP", definition: "Acceptable Use Policy" },
+            { acronym: "BEC", definition: "Business Email Compromise" },
+            { acronym: "BIOS", definition: "Basic Input/Output System" },
+            { acronym: "BNC", definition: "Bayonet Neill-Concelman" },
+            { acronym: "BSOD", definition: "Blue Screen of Death" },
+            { acronym: "BYOD", definition: "Bring Your Own Device" },
+            { acronym: "CAC", definition: "Common Access Card" },
+            { acronym: "CAS", definition: "Column Address Strobe" },
+            { acronym: "CIFS", definition: "Common Internet File System" },
+            { acronym: "CMDB", definition: "Configuration Management Database" },
+            { acronym: "CMOS", definition: "Complementary Metal-Oxide Semiconductor" },
+            { acronym: "CNAME", definition: "Canonical Name" },
+            { acronym: "CPU", definition: "Central Processing Unit" },
+            { acronym: "DB-9", definition: "Serial Communications D-Shell Connector, 9 pins" },
+            { acronym: "DDoS", definition: "Distributed Denial of Service" },
+            { acronym: "DDR", definition: "Double Data Rate" },
+            { acronym: "DHCP", definition: "Dynamic Host Configuration Protocol" },
+            { acronym: "DIMM", definition: "Dual In-line Memory Module" },
+            { acronym: "DKIM", definition: "DomainKeys Identified Mail" },
+            { acronym: "DLP", definition: "Data Loss Prevention" },
+            { acronym: "DMARC", definition: "Domain-based Message Authentication, Reporting, and Conformance" },
+            { acronym: "DNS", definition: "Domain Name System" },
+            { acronym: "DoS", definition: "Denial of Service" },
+            { acronym: "DRM", definition: "Digital Rights Management" },
+            { acronym: "DSL", definition: "Digital Subscriber Line" },
+            { acronym: "DVI", definition: "Digital Visual Interface" },
+            { acronym: "ECC", definition: "Error-correcting Code" },
+            { acronym: "EDR", definition: "Endpoint Detection and Response" },
+            { acronym: "EFS", definition: "Encrypting File System" },
+            { acronym: "eSATA", definition: "External Serial Advanced Technology Attachment" },
+            { acronym: "eSIM", definition: "Embedded Subscriber Identity Module" },
+            { acronym: "EOL", definition: "End-of-life" },
+            { acronym: "ESD", definition: "Electrostatic Discharge" },
+            { acronym: "EULA", definition: "End-user License Agreement" },
+            { acronym: "exFAT", definition: "Extended File Allocation Table" },
+            { acronym: "FaaS", definition: "Function as a Service" },
+            { acronym: "FAT", definition: "File Allocation Table" },
+            { acronym: "FAT32", definition: "32-bit File Allocation Table" },
+            { acronym: "FRT", definition: "Facial Recognition Technology" },
+            { acronym: "FTP", definition: "File Transfer Protocol" },
+            { acronym: "GFS", definition: "Grandfather-Father-Son" },
+            { acronym: "GPS", definition: "Global Positioning System" },
+            { acronym: "GPT", definition: "GUID [Globally Unique Identifier] Partition Table" },
+            { acronym: "GPU", definition: "Graphics Processing Unit" },
+            { acronym: "GUI", definition: "Graphical User Interface" },
+            { acronym: "GUID", definition: "Globally Unique Identifier" },
+            { acronym: "HD", definition: "High Definition" },
+            { acronym: "HDD", definition: "Hard Disk Drive" },
+            { acronym: "HDMI", definition: "High-definition Media Interface" },
+            { acronym: "HSM", definition: "Hardware Security Module" },
+            { acronym: "HTTP", definition: "Hypertext Transfer Protocol" },
+            { acronym: "HTTPS", definition: "Hypertext Transfer Protocol Secure" },
+            { acronym: "IaaS", definition: "Infrastructure as a Service" },
+            { acronym: "IAM", definition: "Identity Access Management" },
+            { acronym: "IMAP", definition: "Internet Mail Access Protocol" },
+            { acronym: "IOPS", definition: "Input/Output Operations Per Second" },
+            { acronym: "IoT", definition: "Internet of Things" },
+            { acronym: "IP", definition: "Internet Protocol" },
+            { acronym: "IPS", definition: "In-plane Switching" },
+            { acronym: "IR", definition: "Infrared" },
+            { acronym: "ISO", definition: "International Organization for Standardization" },
+            { acronym: "ISP", definition: "Internet Service Provider" },
+            { acronym: "ITX", definition: "Information Technology eXtended" },
+            { acronym: "KVM", definition: "Keyboard-Video-Mouse" },
+            { acronym: "LAN", definition: "Local Area Network" },
+            { acronym: "LC", definition: "Lucent Connector" },
+            { acronym: "LCD", definition: "Liquid Crystal Display" },
+            { acronym: "LDAP", definition: "Lightweight Directory Access Protocol" },
+            { acronym: "LED", definition: "Light-emitting Diode" },
+            { acronym: "LTE", definition: "Long-Term Evolution" },
+            { acronym: "MAC", definition: "Media Access Control" },
+            { acronym: "MAN", definition: "Metropolitan Area Network" },
+            { acronym: "MBR", definition: "Master Boot Record" },
+            { acronym: "MDM", definition: "Mobile Device Management" },
+            { acronym: "MDR", definition: "Managed Detection and Response" },
+            { acronym: "MFA", definition: "Multifactor Authentication" },
+            { acronym: "MFP", definition: "Multifunction Printer" },
+            { acronym: "MMC", definition: "Microsoft Management Console" },
+            { acronym: "MNDA", definition: "Mutual Non-Disclosure Agreement" },
+            { acronym: "mSATA", definition: "Mini-serial Advanced Technology Attachment" },
+            { acronym: "MSDS", definition: "Material Safety Data Sheet" },
+            { acronym: "MX", definition: "Mail Exchange" },
+            { acronym: "NAC", definition: "Network Access Control" },
+            { acronym: "NAS", definition: "Network-Attached Storage" },
+            { acronym: "NAT", definition: "Network Address Translation" },
+            { acronym: "NDA", definition: "Non-Disclosure Agreement" },
+            { acronym: "NetBIOS", definition: "Network Basic Input/Output System" },
+            { acronym: "NFC", definition: "Near-field Communication" },
+            { acronym: "NIC", definition: "Network Interface Card" },
+            { acronym: "NTFS", definition: "New Technology File System" },
+            { acronym: "NTP", definition: "Network Time Protocol" },
+            { acronym: "NVMe", definition: "Non-volatile Memory Express" },
+            { acronym: "OEM", definition: "Original Equipment Manufacturer" },
+            { acronym: "OLED", definition: "Organic Light-emitting Diode" },
+            { acronym: "ONT", definition: "Optical Network Terminal" },
+            { acronym: "OS", definition: "Operating System" },
+            { acronym: "OTP", definition: "One-time Password/Passcode" },
+            { acronym: "PaaS", definition: "Platform as a Service" },
+            { acronym: "PAM", definition: "Privileged Access Management" },
+            { acronym: "PAN", definition: "Personal Area Network" },
+            { acronym: "PC", definition: "Personal Computer" },
+            { acronym: "PCI", definition: "Peripheral Component Interconnect" },
+            { acronym: "PCIe", definition: "Peripheral Component Interconnect Express" },
+            { acronym: "PCL", definition: "Printer Command Language" },
+            { acronym: "PII", definition: "Personally Identifiable Information" },
+            { acronym: "PIN", definition: "Personal Identification Number" },
+            { acronym: "PIV", definition: "Personal Identity Verification" },
+            { acronym: "PoE", definition: "Power over Ethernet" },
+            { acronym: "POP", definition: "Post Office Protocol" },
+            { acronym: "POST", definition: "Power-on Self-test" },
+            { acronym: "PSU", definition: "Power Supply Unit" },
+            { acronym: "PUP", definition: "Potentially Unwanted Program" },
+            { acronym: "PXE", definition: "Preboot Execution Environment" },
+            { acronym: "QoS", definition: "Quality of Service" },
+            { acronym: "RADIUS", definition: "Remote Authentication Dial-in User Server" },
+            { acronym: "RAID", definition: "Redundant Array of Independent Disks" },
+            { acronym: "RAM", definition: "Random-access Memory" },
+            { acronym: "RDP", definition: "Remote Desktop Protocol" },
+            { acronym: "ReFS", definition: "Resilient File System" },
+            { acronym: "RFID", definition: "Radio-frequency Identification" },
+            { acronym: "RGB", definition: "Red, Green, and Blue" },
+            { acronym: "RISC", definition: "Reduced Instruction Set Computer" },
+            { acronym: "RJ11", definition: "Registered Jack Function 11" },
+            { acronym: "RJ45", definition: "Registered Jack Function 45" },
+            { acronym: "RMM", definition: "Remote Monitoring and Management" },
+            { acronym: "RPM", definition: "Revolutions Per Minute" },
+            { acronym: "RSR", definition: "Rapid Security Response" },
+            { acronym: "SaaS", definition: "Software as a Service" },
+            { acronym: "SAML", definition: "Security Assertions Markup Language" },
+            { acronym: "SAN", definition: "Storage Area Network" },
+            { acronym: "SAS", definition: "Serial Attached SCSI [Small Computer System Interface]" },
+            { acronym: "SATA", definition: "Serial Advanced Technology Attachment" },
+            { acronym: "SC", definition: "Subscriber Connector" },
+            { acronym: "SCADA", definition: "Supervisory Control and Data Acquisition" },
+            { acronym: "SCSI", definition: "Small Computer System Interface" },
+            { acronym: "SD", definition: "Secure Digital" },
+            { acronym: "SDS", definition: "Safety Data Sheet" },
+            { acronym: "SFTP", definition: "SSH File Transfer Protocol" },
+            { acronym: "SIM", definition: "Subscriber Identity Module" },
+            { acronym: "SLA", definition: "Service-level Agreement" },
+            { acronym: "S.M.A.R.T", definition: "Self-monitoring Analysis and Reporting Technology" },
+            { acronym: "SMB", definition: "Server Message Block" },
+            { acronym: "SMS", definition: "Short Message Service" },
+            { acronym: "SMTP", definition: "Simple Mail Transfer Protocol" },
+            { acronym: "SNMP", definition: "Simple Network Management Protocol" },
+            { acronym: "SODIMM", definition: "Small Outline Dual In-line Memory Module" },
+            { acronym: "SOHO", definition: "Small Office/Home Office" },
+            { acronym: "SOP", definition: "Standard Operating Procedure" },
+            { acronym: "SPF", definition: "Sender Policy Framework" },
+            { acronym: "SPICE", definition: "Simple Protocol for Independent Computing Environments" },
+            { acronym: "SQL", definition: "Structured Query Language" },
+            { acronym: "SSD", definition: "Solid-state Drive" },
+            { acronym: "SSH", definition: "Secure Shell" },
+            { acronym: "SSID", definition: "Service Set Identifier" },
+            { acronym: "SSO", definition: "Single Sign-on" },
+            { acronym: "ST", definition: "Straight Tip" },
+            { acronym: "TACACS", definition: "Terminal Access Controller Access-control System" },
+            { acronym: "TCP", definition: "Transmission Control Protocol" },
+            { acronym: "TKIP", definition: "Temporal Key Integrity Protocol" },
+            { acronym: "TN", definition: "Twisted Nematic" },
+            { acronym: "TOTP", definition: "Time-based One-time Password" },
+            { acronym: "TPM", definition: "Trusted Platform Module" },
+            { acronym: "TXT", definition: "Text" },
+            { acronym: "UAC", definition: "User Account Control" },
+            { acronym: "UDP", definition: "User Datagram Protocol" },
+            { acronym: "UEFI", definition: "Unified Extensible Firmware Interface" },
+            { acronym: "UPnP", definition: "Universal Plug and Play" },
+            { acronym: "UPS", definition: "Uninterruptible Power Supply" },
+            { acronym: "USB", definition: "Universal Serial Bus" },
+            { acronym: "USB-C", definition: "Universal Serial Bus Type-C" },
+            { acronym: "UTM", definition: "Unified Threat Management" },
+            { acronym: "VA", definition: "Vertical Alignment" },
+            { acronym: "VDI", definition: "Virtual Desktop Infrastructure" },
+            { acronym: "VGA", definition: "Video Graphics Array" },
+            { acronym: "VLAN", definition: "Virtual LAN [Local Area Network]" },
+            { acronym: "VM", definition: "Virtual Machine" },
+            { acronym: "VNC", definition: "Virtual Network Computer" },
+            { acronym: "VoIP", definition: "Voice over Internet Protocol" },
+            { acronym: "VPN", definition: "Virtual Private Network" },
+            { acronym: "VRAM", definition: "Video Random-access Memory" },
+            { acronym: "WAN", definition: "Wide Area Network" },
+            { acronym: "WAP", definition: "Wireless Access Point" },
+            { acronym: "WEP", definition: "Wired Equivalent Privacy" },
+            { acronym: "WinRM", definition: "Windows Remote Management" },
+            { acronym: "WISP", definition: "Wireless Internet Service Provider" },
+            { acronym: "WLAN", definition: "Wireless LAN [Local Area Network]" },
+            { acronym: "WPA", definition: "Wi-Fi Protected Access" },
+            { acronym: "WWAN", definition: "Wireless Wide Area Network" },
+            { acronym: "XaaS", definition: "Anything as a Service" },
+            { acronym: "XDR", definition: "Extended Detection and Response" },
+            { acronym: "XFS", definition: "Extended File System" },
+            { acronym: "XSS", definition: "Cross-site Scripting" }
         ];
 
-        // --- Navigation Logic ---
-        function switchMode(mode) {
-            document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            
-            if(mode === 'flashcards') {
-                document.getElementById('flashcard-panel').classList.add('active');
-                event.target.classList.add('active');
-            } else if(mode === 'quiz') {
-                document.getElementById('quiz-panel').classList.add('active');
-                event.target.classList.add('active');
-            } else if(mode === 'arcade') {
-                document.getElementById('arcade-panel').classList.add('active');
-                event.target.classList.add('active');
+        const $ = (id) => document.getElementById(id);
+        const STORE_KEY = 'aplusMissedTerms';
+        let deck = acronyms.slice();
+        let currentIndex = 0;
+        let quizScore = 0, quizCount = 0, quizTotal = 10, quizMissed = [];
+        let speedCorrect = 0, speedSkipped = 0, speedLocked = false;
+
+        $('termTotal').textContent = acronyms.length;
+
+        // ---- Missed terms store: { ACRONYM: streak } (streak of 2 retires a term) ----
+        function loadMissed() {
+            try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; }
+        }
+        function saveMissed(m) {
+            try { localStorage.setItem(STORE_KEY, JSON.stringify(m)); } catch (e) { /* storage blocked */ }
+            $('missedCount').textContent = Object.keys(m).length;
+        }
+        function recordMiss(term) {
+            const m = loadMissed();
+            m[term.acronym] = 0;
+            saveMissed(m);
+        }
+        function recordHit(term) {
+            const m = loadMissed();
+            if (term.acronym in m) {
+                m[term.acronym] += 1;
+                if (m[term.acronym] >= 2) delete m[term.acronym];
+                saveMissed(m);
             }
         }
-
-        // --- Flashcard Logic ---
-        let currentCardIndex = 0;
-        let isFlipped = false;
-
-        function updateFlashcard() {
-            const cardData = ACRONYMS_DATA[currentCardIndex];
-            document.getElementById('fc-term').textContent = cardData.term;
-            document.getElementById('fc-def').textContent = cardData.def;
-            document.getElementById('fc-current').textContent = currentCardIndex + 1;
-            document.getElementById('fc-total').textContent = ACRONYMS_DATA.length;
-            
-            const cardElem = document.getElementById('flashcard');
-            cardElem.classList.remove('flipped');
-            isFlipped = false;
+        function missedTerms() {
+            const m = loadMissed();
+            return acronyms.filter(t => t.acronym in m);
         }
 
-        function flipCard() {
-            isFlipped = !isFlipped;
-            document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
-        }
-
-        function nextCard() {
-            currentCardIndex = (currentCardIndex + 1) % ACRONYMS_DATA.length;
-            updateFlashcard();
-        }
-
-        function prevCard() {
-            currentCardIndex = (currentCardIndex - 1 + ACRONYMS_DATA.length) % ACRONYMS_DATA.length;
-            updateFlashcard();
-        }
-
-        function shuffleFlashcards() {
-            for (let i = ACRONYMS_DATA.length - 1; i > 0; i--) {
+        function shuffle(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [ACRONYMS_DATA[i], ACRONYMS_DATA[j]] = [ACRONYMS_DATA[j], ACRONYMS_DATA[i]];
+                [a[i], a[j]] = [a[j], a[i]];
             }
-            currentCardIndex = 0;
+            return a;
+        }
+
+        // Normalize for forgiving speed-drill matching: drop [bracketed notes], case, punctuation
+        function norm(s) {
+            return s.toLowerCase().replace(/\[[^\]]*\]/g, ' ').replace(/[^a-z0-9]+/g, ' ').trim();
+        }
+
+        $('flashcardBtn').addEventListener('click', () => switchMode('flashcard'));
+        $('quizBtn').addEventListener('click', () => switchMode('quiz'));
+        $('speedBtn').addEventListener('click', () => switchMode('speed'));
+        $('missedBtn').addEventListener('click', () => switchMode('missed'));
+
+        function switchMode(mode) {
+            currentIndex = 0;
+            quizScore = 0; quizCount = 0; quizMissed = [];
+            speedCorrect = 0; speedSkipped = 0; speedLocked = false;
+
+            ['flashcardMode', 'quizMode', 'speedMode', 'missedMode'].forEach(id => $(id).classList.add('hidden'));
+
+            if (mode === 'flashcard') {
+                deck = acronyms.slice();
+                $('deckLabel').textContent = '';
+                $('fullDeckBtn').classList.add('hidden');
+                $('flashcardMode').classList.remove('hidden');
+                $('flashcard').classList.remove('flipped');
+                updateFlashcard();
+            } else if (mode === 'quiz') {
+                $('quizMode').classList.remove('hidden');
+                $('quizReview').classList.add('hidden');
+                const v = $('quizLength').value;
+                quizTotal = v === 'all' ? acronyms.length : parseInt(v, 10);
+                $('quizTotal').textContent = quizTotal;
+                $('quizScore').textContent = 'Score: 0/0';
+                generateQuizQuestion();
+            } else if (mode === 'speed') {
+                $('speedMode').classList.remove('hidden');
+                $('speedScore').textContent = 'Correct: 0 | Skipped: 0';
+                updateSpeedDrill();
+            } else if (mode === 'missed') {
+                $('missedMode').classList.remove('hidden');
+                renderMissedList();
+            }
+        }
+
+        // ---- Missed Terms view ----
+        function renderMissedList() {
+            const list = $('missedList');
+            list.innerHTML = '';
+            const items = missedTerms();
+            if (items.length === 0) {
+                const li = document.createElement('li');
+                li.className = 'text-gray-400';
+                li.textContent = 'Nothing missed yet. Run a quiz or speed drill and misses will land here.';
+                list.appendChild(li);
+            } else {
+                items.forEach(t => {
+                    const li = document.createElement('li');
+                    li.className = 'bg-gray-700 rounded px-4 py-2';
+                    const a = document.createElement('span');
+                    a.className = 'font-bold text-yellow-300';
+                    a.textContent = t.acronym;
+                    const d = document.createElement('span');
+                    d.textContent = ' \u2014 ' + t.definition;
+                    li.appendChild(a); li.appendChild(d);
+                    list.appendChild(li);
+                });
+            }
+            $('drillMissedBtn').disabled = items.length === 0;
+            $('drillMissedBtn').classList.toggle('opacity-50', items.length === 0);
+        }
+        $('drillMissedBtn').addEventListener('click', () => {
+            const items = missedTerms();
+            if (!items.length) return;
+            ['quizMode', 'speedMode', 'missedMode'].forEach(id => $(id).classList.add('hidden'));
+            $('flashcardMode').classList.remove('hidden');
+            deck = shuffle(items);
+            currentIndex = 0;
+            $('deckLabel').textContent = 'Drilling missed terms only';
+            $('fullDeckBtn').classList.remove('hidden');
+            $('flashcard').classList.remove('flipped');
             updateFlashcard();
-        }
-
-        // --- Quiz Logic ---
-        let quizQuestions = [];
-        let quizCurrentIndex = 0;
-        let quizScore = 0;
-
-        function startQuiz() {
-            const length = parseInt(document.getElementById('quiz-length').value);
-            // Shuffle dataset copy
-            const shuffled = [...ACRONYMS_DATA].sort(() => 0.5 - Math.random());
-            quizQuestions = shuffled.slice(0, length);
-            quizCurrentIndex = 0;
-            quizScore = 0;
-
-            document.getElementById('quiz-setup-screen').style.display = 'none';
-            document.getElementById('quiz-result-screen').style.display = 'none';
-            document.getElementById('quiz-play-screen').style.display = 'block';
-            loadQuizQuestion();
-        }
-
-        function loadQuizQuestion() {
-            document.getElementById('next-q-btn').style.display = 'none';
-            const q = quizQuestions[quizCurrentIndex];
-            
-            document.getElementById('q-current').textContent = quizCurrentIndex + 1;
-            document.getElementById('q-total').textContent = quizQuestions.length;
-            document.getElementById('q-score').textContent = quizScore;
-            document.getElementById('quiz-question-text').textContent = `What does "${q.term}" stand for?`;
-
-            // Generate 3 wrong options + 1 correct option
-            let options = [q.def];
-            while(options.length < 4) {
-                const randomDef = ACRONYMS_DATA[Math.floor(Math.random() * ACRONYMS_DATA.length)].def;
-                if(!options.includes(randomDef)) {
-                    options.push(randomDef);
-                }
+        });
+        $('clearMissedBtn').addEventListener('click', () => {
+            if (confirm('Clear your entire missed-terms list?')) {
+                saveMissed({});
+                renderMissedList();
             }
-            options.sort(() => 0.5 - Math.random());
+        });
+        $('fullDeckBtn').addEventListener('click', () => switchMode('flashcard'));
 
-            const optionsGrid = document.getElementById('quiz-options');
-            optionsGrid.innerHTML = '';
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = opt;
-                btn.onclick = () => selectQuizOption(btn, opt === q.def);
-                optionsGrid.appendChild(btn);
+        // ---- Flashcard ----
+        $('flashcard').addEventListener('click', function () { this.classList.toggle('flipped'); });
+        $('nextBtn').addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % deck.length;
+            $('flashcard').classList.remove('flipped');
+            updateFlashcard();
+        });
+        $('prevBtn').addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + deck.length) % deck.length;
+            $('flashcard').classList.remove('flipped');
+            updateFlashcard();
+        });
+        $('shuffleBtn').addEventListener('click', () => {
+            deck = shuffle(deck);
+            currentIndex = 0;
+            $('flashcard').classList.remove('flipped');
+            updateFlashcard();
+        });
+        function updateFlashcard() {
+            const term = deck[currentIndex];
+            $('flashcardAcronym').textContent = term.acronym;
+            $('flashcardDefinition').textContent = term.definition;
+            $('cardCounter').textContent = `${currentIndex + 1} / ${deck.length}`;
+        }
+
+        // ---- Quiz ----
+        let quizQueue = [];
+        $('quizLength').addEventListener('change', () => { quizQueue = []; switchMode('quiz'); });
+
+        function generateQuizQuestion() {
+            if (quizCount === 0 && quizQueue.length === 0) quizQueue = shuffle(acronyms);
+            if (quizCount >= quizTotal) { finishQuiz(); return; }
+            if (quizQueue.length === 0) quizQueue = shuffle(acronyms);
+            const correctTerm = quizQueue.pop();
+            const options = [correctTerm];
+            while (options.length < 4) {
+                const r = acronyms[Math.floor(Math.random() * acronyms.length)];
+                if (!options.some(o => o.acronym === r.acronym || o.definition === r.definition)) options.push(r);
+            }
+            const shuffled = shuffle(options);
+
+            $('quizQuestion').textContent = `What does ${correctTerm.acronym} stand for?`;
+            $('quizCounter').textContent = quizCount + 1;
+            $('quizOptions').innerHTML = '';
+            shuffled.forEach((opt, idx) => {
+                const b = document.createElement('button');
+                b.className = 'w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded text-left';
+                b.textContent = `${String.fromCharCode(65 + idx)}) ${opt.definition}`;
+                b.addEventListener('click', () => checkAnswer(opt, correctTerm, b));
+                $('quizOptions').appendChild(b);
             });
         }
 
-        function selectQuizOption(selectedBtn, isCorrect) {
-            const buttons = document.querySelectorAll('.option-btn');
-            buttons.forEach(b => {
-                b.disabled = true;
-                if(b.textContent === quizQuestions[quizCurrentIndex].def) {
-                    b.classList.add('correct');
-                }
-            });
-
-            if(isCorrect) {
-                quizScore++;
-                document.getElementById('q-score').textContent = quizScore;
-            } else {
-                selectedBtn.classList.add('wrong');
+        function checkAnswer(selected, correct, btn) {
+            const buttons = Array.from($('quizOptions').children);
+            buttons.forEach(b => b.disabled = true);
+            const isRight = selected.acronym === correct.acronym;
+            if (isRight) { quizScore++; recordHit(correct); }
+            else { quizMissed.push(correct); recordMiss(correct); }
+            quizCount++;
+            btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+            btn.classList.add(isRight ? 'bg-green-700' : 'bg-red-700');
+            if (!isRight) {
+                buttons.forEach(b => {
+                    if (b.textContent.endsWith(correct.definition)) {
+                        b.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                        b.classList.add('bg-green-700');
+                    }
+                });
             }
-
-            document.getElementById('next-q-btn').style.display = 'inline-block';
+            $('quizScore').textContent = `Score: ${quizScore}/${quizCount}`;
+            setTimeout(generateQuizQuestion, isRight ? 600 : 1500);
         }
 
-        function nextQuestion() {
-            quizCurrentIndex++;
-            if(quizCurrentIndex < quizQuestions.length) {
-                loadQuizQuestion();
+        function finishQuiz() {
+            $('quizQuestion').textContent = `Quiz Complete! Final Score: ${quizScore}/${quizTotal}`;
+            $('quizOptions').innerHTML = '';
+            const btn = document.createElement('button');
+            btn.className = 'w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded';
+            btn.textContent = 'Restart Quiz';
+            btn.addEventListener('click', () => { quizQueue = []; switchMode('quiz'); });
+            $('quizOptions').appendChild(btn);
+
+            const review = $('quizReview');
+            const list = $('quizReviewList');
+            list.innerHTML = '';
+            if (quizMissed.length === 0) {
+                const li = document.createElement('li');
+                li.className = 'text-green-400';
+                li.textContent = 'Flawless. No misses this round.';
+                list.appendChild(li);
             } else {
-                document.getElementById('quiz-play-screen').style.display = 'none';
-                document.getElementById('quiz-result-screen').style.display = 'block';
-                document.getElementById('final-score').textContent = `${quizScore} / ${quizQuestions.length}`;
+                quizMissed.forEach(t => {
+                    const li = document.createElement('li');
+                    li.className = 'bg-gray-700 rounded px-4 py-2';
+                    const a = document.createElement('span');
+                    a.className = 'font-bold text-yellow-300';
+                    a.textContent = t.acronym;
+                    const d = document.createElement('span');
+                    d.textContent = ' \u2014 ' + t.definition;
+                    li.appendChild(a); li.appendChild(d);
+                    list.appendChild(li);
+                });
             }
+            review.classList.remove('hidden');
         }
 
-        function resetQuizSetup() {
-            document.getElementById('quiz-result-screen').style.display = 'none';
-            document.getElementById('quiz-setup-screen').style.display = 'block';
+        // ---- Speed Drill ----
+        $('speedInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') checkSpeedAnswer();
+        });
+
+        let speedTerm = null;
+        function updateSpeedDrill() {
+            speedTerm = acronyms[Math.floor(Math.random() * acronyms.length)];
+            $('speedAcronym').textContent = speedTerm.acronym;
+            $('speedInput').value = '';
+            $('speedFeedback').textContent = '';
+            speedLocked = false;
+            $('speedInput').focus();
         }
 
-        // Initialize flashcard view on load
-        updateFlashcard();
+        function checkSpeedAnswer() {
+            if (speedLocked) return;
+            speedLocked = true;
+            const input = norm($('speedInput').value);
+            const correctRaw = speedTerm.definition;
+            const feedback = $('speedFeedback');
+
+            if (input === '') {
+                speedSkipped++;
+                recordMiss(speedTerm);
+                feedback.textContent = `Skipped. Answer: ${correctRaw}`;
+                feedback.className = 'text-lg font-semibold mb-4 min-h-6 text-yellow-400';
+            } else if (input === norm(correctRaw)) {
+                speedCorrect++;
+                recordHit(speedTerm);
+                feedback.textContent = 'Correct!';
+                feedback.className = 'text-lg font-semibold mb-4 min-h-6 text-green-400';
+            } else {
+                recordMiss(speedTerm);
+                feedback.textContent = `Incorrect. Answer: ${correctRaw}`;
+                feedback.className = 'text-lg font-semibold mb-4 min-h-6 text-red-400';
+            }
+            $('speedScore').textContent = `Correct: ${speedCorrect} | Skipped: ${speedSkipped}`;
+            setTimeout(updateSpeedDrill, 1800);
+        }
+
+        // Initialize
+        saveMissed(loadMissed());
+        switchMode('flashcard');
     </script>
 </body>
 </html>
